@@ -4,10 +4,8 @@ public class Sample {
 	
 	 public static void main(String[] args) {
 	     
-	        
-	        System.out.println("creo q ya va");
-	        System.out.println("commit, push");
-
+	  
+	        System.out.println("haced un commit y push, para ver si funciona el pull");
 
 
 	    }
