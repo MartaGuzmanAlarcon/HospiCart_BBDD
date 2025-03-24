@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
-
-public class Client  implements Serializable {
+public class Client implements Serializable {
 
 	private static final long serialVersionUID = -2672315887844188653L;
 	private Integer userId;
@@ -21,24 +19,6 @@ public class Client  implements Serializable {
 	public Client() {
 		super();
 		this.orders = new ArrayList<Order>();
-	}
-
-// equals and hashCode
-	@Override
-	public int hashCode() {
-		return Objects.hash(userId);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Client other = (Client) obj;
-		return Objects.equals(userId, other.userId);
 	}
 
 	// Getters and Setters
@@ -98,13 +78,29 @@ public class Client  implements Serializable {
 		this.orders = orders;
 	}
 
-	//toString
+	// equals and hashCode
+	@Override
+	public int hashCode() {
+		return Objects.hash(userId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Client other = (Client) obj;
+		return Objects.equals(userId, other.userId);
+	}
+
+	// toString
 	@Override
 	public String toString() {
 		return "Client [userId=" + userId + ", name=" + name + ", email=" + email + ", role=" + role + ", phoneNumber="
 				+ phoneNumber + ", address=" + address + "]";
 	}
-	
-	
 
 }
