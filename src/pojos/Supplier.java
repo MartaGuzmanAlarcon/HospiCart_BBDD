@@ -1,10 +1,99 @@
 package pojos;
 
-public class Supplier {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Supplier implements Serializable {
 	
-	//private final int supplierId;
+	private static final long serialVersionUID = 3452839978524351013L;
+	private Integer supplierId;
+	private Product product;
     private String companyName;
     private String contactPerson;
     private String address;
+    
+    
+	public Supplier() {
+		super();
+	}
+
+	// getters and setters
+	public Integer getSupplierId() {
+		return supplierId;
+	}
+
+
+	public void setSupplierId(Integer supplierId) {
+		this.supplierId = supplierId;
+	}
+
+
+	public Product getProduct() {
+		return product;
+	}
+
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+
+	public String getContactPerson() {
+		return contactPerson;
+	}
+
+
+	public void setContactPerson(String contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+
+
+	public String getAddress() {
+		return address;
+	}
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	// hashCode and equals
+	@Override
+	public int hashCode() {
+		return Objects.hash(supplierId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Supplier other = (Supplier) obj;
+		return Objects.equals(supplierId, other.supplierId);
+	}
+	//toString
+	@Override
+	public String toString() {
+		return "Supplier [supplierId=" + supplierId + ", companyName=" + companyName + ", contactPerson="
+				+ contactPerson + ", address=" + address + "]";
+	}
+    
+
+
+    
+    
 
 }
