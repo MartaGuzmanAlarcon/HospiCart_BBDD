@@ -8,12 +8,16 @@ import java.util.Objects;
 // need getters, setter,attributes and empty constructor
 // need equals 
 //implent Serializable 
+// usar wrapper (Integer,Float...) not primitive types (int,float...)
+// las FK implentar en abos lados en JAVA en BBDD solo en el many 
+// PERO EL toString solo en un lado !!!
+// Inicializar listas en los constructores
 
 public class Order implements Serializable {
 
 	private static final long serialVersionUID = 5399184169574043556L;
-	private  int orderId;
-	private  int userId; // FK  Client ESTO NO SE IMPLEMENTA ASI EXCAT Y EN BBDD EN1 SOLO LADO PERO AQUI EN AMBOS
+	private  Integer orderId;
+	private  Integer userId; // FK  Client ESTO NO SE IMPLEMENTA ASI EXCAT Y EN BBDD EN1 SOLO LADO PERO AQUI EN AMBOS
 	private LocalDateTime orderDate;
 	private Status status;
 	public LocalDateTime getOrderDate() {
@@ -21,6 +25,15 @@ public class Order implements Serializable {
 	}
 	
 	
+	// si hubiera lista o algo inicializar!
+	
+	public Order() {
+		super();
+	}
+
+
+
+
 	// Getters and Setters
 	public void setOrderDate(LocalDateTime orderDate) {
 		this.orderDate = orderDate;
