@@ -13,7 +13,7 @@ public class Order implements Serializable {
 
 	private static final long serialVersionUID = 5399184169574043556L;
 	private  int orderId;
-	private  int userId; // FK  Client
+	private  int userId; // FK  Client ESTO NO SE IMPLEMENTA ASI EXCAT Y EN BBDD EN1 SOLO LADO PERO AQUI EN AMBOS
 	private LocalDateTime orderDate;
 	private Status status;
 	public LocalDateTime getOrderDate() {
