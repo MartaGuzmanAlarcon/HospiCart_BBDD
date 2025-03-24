@@ -1,7 +1,7 @@
 package pojos;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDateTime; // cambiar mirar ejemplo xq hay q hacwr una transformacion sql!!
 import java.util.Objects;
 
 // Implementacion ejemplo
