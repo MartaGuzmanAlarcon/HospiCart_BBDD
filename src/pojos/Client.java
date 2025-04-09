@@ -96,7 +96,7 @@ public class Client implements Serializable {
 		return Objects.equals(userId, other.userId);
 	}
 
-	// toString
+	// toString  --> ORDER PRINT??
 	@Override
 	public String toString() {
 		return "Client [userId=" + userId + ", name=" + name + ", email=" + email + ", role=" + role + ", phoneNumber="

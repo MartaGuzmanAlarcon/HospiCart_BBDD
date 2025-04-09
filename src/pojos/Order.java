@@ -86,13 +86,14 @@ public class Order implements Serializable {
 	}
 
 
-	public List<ProductOrder> getProductOrders() {
+
+	public List<ProductOrder> getProducts() {
 		return productOrders;
 	}
 
 
-	public void setProductOrders(List<ProductOrder> productOrders) {
-		this.productOrders = productOrders;
+	public void setProducts(List<ProductOrder> products) {
+		this.productOrders = products;
 	}
 
 
@@ -124,14 +125,14 @@ public class Order implements Serializable {
 		return orderId == other.orderId;
 	}
 
-
+	// toString
 	@Override
 	public String toString() {
 		return "Order [orderId=" + orderId + ", client=" + client + ", payment=" + payment + ", Shipment=" + Shipment
 				+ ", productOrders=" + productOrders + ", orderDate=" + orderDate + ", status=" + status + "]";
 	}
 
-	// toString
+
 	
 
 }

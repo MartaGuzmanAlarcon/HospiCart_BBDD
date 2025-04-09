@@ -42,11 +42,12 @@ public class Product implements Serializable {
 		this.supplier = supplier;
 	}
 
-	public List<ProductOrder> getProductOrders() {
+
+	public List<ProductOrder> getOrders() {
 		return productOrders;
 	}
 
-	public void setProductOrders(List<ProductOrder> productOrders) {
+	public void setOrders(List<ProductOrder> productOrders) {
 		this.productOrders = productOrders;
 	}
 

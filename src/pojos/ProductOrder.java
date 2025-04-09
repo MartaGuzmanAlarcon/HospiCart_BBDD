@@ -1,44 +1,29 @@
 package pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ProductOrder implements Serializable {
 
-	private static final long serialVersionUID = 7095409871191391322L;
-	private Integer orderIdProductId; // PK compuesta de orderId y productId
-	private Product product;
-	private Order order;
+	private Integer productOrderID;
 	private Integer amount;
-	private Integer totalPrice;
+	private Float total_price;
+	private Order order;
+	private Product product;
 
 	public ProductOrder() {
 		super();
 	}
 
-	// getters and setters
-	public Integer getOrderIdProductId() {
-		return orderIdProductId;
+	// Getters and setters
+	public Integer getOrderProductID() {
+		return productOrderID;
 	}
 
-	public void setOrderIdProductId(Integer orderIdProductId) {
-		this.orderIdProductId = orderIdProductId;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
+	public void setOrderProductID(Integer orderProductID) {
+		this.productOrderID = orderProductID;
 	}
 
 	public Integer getAmount() {
@@ -49,19 +34,34 @@ public class ProductOrder implements Serializable {
 		this.amount = amount;
 	}
 
-	public Integer getTotalPrice() {
-		return totalPrice;
+	public Float getTotal_price() {
+		return total_price;
 	}
 
-	public void setTotalPrice(Integer totalPrice) {
-		this.totalPrice = totalPrice;
+	public void setTotal_price(Float total_price) {
+		this.total_price = total_price;
 	}
 
-// hashcode and equals 
+	public Order getOrder() {
+		return order;
+	}
 
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	// equals and hashCode
 	@Override
 	public int hashCode() {
-		return Objects.hash(orderIdProductId);
+		return Objects.hash(productOrderID);
 	}
 
 	@Override
@@ -73,15 +73,14 @@ public class ProductOrder implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ProductOrder other = (ProductOrder) obj;
-		return Objects.equals(orderIdProductId, other.orderIdProductId);
+		return Objects.equals(productOrderID, other.productOrderID);
 	}
 
+// toString
 	@Override
 	public String toString() {
-		return "ProductOrder [orderIdProductId=" + orderIdProductId + ", product=" + product + ", amount=" + amount
-				+ ", totalPrice=" + totalPrice + "]";
+		return "ProductOrder [productOrderID=" + productOrderID + ", amount=" + amount + ", total_price=" + total_price
+				+ ", product=" + product + "]";
 	}
-	
-	
 
 }

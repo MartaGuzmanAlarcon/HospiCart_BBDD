@@ -1,13 +1,15 @@
 package pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Supplier implements Serializable {
 	
 	private static final long serialVersionUID = 3452839978524351013L;
 	private Integer supplierId;
-	private Product product;
+	private List<Product> products;
     private String companyName;
     private String contactPerson;
     private String address;
@@ -15,6 +17,7 @@ public class Supplier implements Serializable {
     
 	public Supplier() {
 		super();
+		this.products = new ArrayList<Product>();
 	}
 
 	// getters and setters
@@ -28,15 +31,14 @@ public class Supplier implements Serializable {
 	}
 
 
-	public Product getProduct() {
-		return product;
+
+	public List<Product> getProducts() {
+		return products;
 	}
 
-
-	public void setProduct(Product product) {
-		this.product = product;
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
-
 
 	public String getCompanyName() {
 		return companyName;
