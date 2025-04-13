@@ -1,4 +1,4 @@
-package HospiCartJDBC;
+package db.HospiCartJDBC;
 
 public class OrderManager {
 
