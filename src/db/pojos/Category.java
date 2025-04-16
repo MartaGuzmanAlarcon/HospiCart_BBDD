@@ -2,7 +2,7 @@ package db.pojos;
 
 public enum Category {
 
-	MEDICINE, // Medicamentos
+	MEDICATIONS, // Medicamentos
 	MEDICAL_EQUIPMENT, // Equipos médicos (tensiómetros, monitores, etc.)
 	SURGICAL_SUPPLIES, // Material quirúrgico (bisturís, guantes, gasas)
 	DIAGNOSTIC_TOOLS, // Herramientas de diagnóstico (ECG, termómetros, etc.)

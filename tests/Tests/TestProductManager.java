@@ -13,10 +13,10 @@ public class TestProductManager {
         SupplierManager sm = new SupplierManager(cm);
         ProductManager pm = new ProductManager(cm); // establezco conexion 
 
-        sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
-        System.out.println("supplies table values inserted");
+        //sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
+       // System.out.println("supplies table values inserted");
 
-       // pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
+        pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
 
 
      /*   int testProductId = 3; 
