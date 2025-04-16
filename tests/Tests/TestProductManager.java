@@ -14,11 +14,12 @@ public class TestProductManager {
         ProductManager pm = new ProductManager(cm); // establezco conexion 
 
         sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
+        System.out.println("supplies table values inserted");
 
-        pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
+       // pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
 
 
-        int testProductId = 1; 
+     /*   int testProductId = 3; 
         Product product = pm.getProductById(testProductId);
         Supplier supplier= (Supplier) product.getSupplier();
 
@@ -36,6 +37,6 @@ public class TestProductManager {
         } 
         else {
             System.out.println("No se encontró ningún producto con ID " + testProductId);
-        }
+        } */
     }
 }

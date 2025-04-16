@@ -10,7 +10,7 @@ public class Supplier implements Serializable {
 	private static final long serialVersionUID = 3452839978524351013L;
 	private Integer supplierId;
 	private List<Product> products;
-    private String companyName;
+    private Manufacturer companyName;
     private String contactPerson;
     private String address;
     
@@ -40,12 +40,12 @@ public class Supplier implements Serializable {
 		this.products = products;
 	}
 
-	public String getCompanyName() {
+	public Manufacturer getCompanyName() {
 		return companyName;
 	}
 
 
-	public void setCompanyName(String companyName) {
+	public void setCompanyName(Manufacturer companyName) {
 		this.companyName = companyName;
 	}
 

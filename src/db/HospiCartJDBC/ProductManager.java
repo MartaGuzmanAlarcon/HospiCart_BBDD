@@ -1,6 +1,8 @@
 package db.HospiCartJDBC;
 
 import db.jdbcInterfaces.IProductManager;
+import db.pojos.Category;
+import db.pojos.Manufacturer;
 import db.pojos.Product;
 import db.pojos.Supplier;
 
@@ -57,11 +59,10 @@ public class ProductManager implements IProductManager {
 
 	        while ((line = br.readLine()) != null) {
 	            String[] data = line.split(csvSplitBy);
-
-	            // data[0] => supplier_id
+	            
 	            stmt.setInt(1, Integer.parseInt(data[0]));  // supplier_id
 	            stmt.setString(2, data[1]);  // name
-	            stmt.setString(3, data[2]);  // category
+	            stmt.setString(3,Category.valueOf(data[2].toUpperCase()).name());  // category
 	            stmt.setString(4, data[3]);  // description
 	            stmt.setInt(5, Integer.parseInt(data[4]));  // price
 	            stmt.setInt(6, Integer.parseInt(data[5]));  // stock_quantity
@@ -79,7 +80,12 @@ public class ProductManager implements IProductManager {
 	}
 
 
-
+	/**
+	 * Retrieves a product by its ID, including supplier information (company name).
+	 *
+	 * @param id The ID of the product to retrieve.
+	 * @return the Product if found.
+	 */
 	@Override
 	public Product getProductById(int id) {
 	    String sql = "SELECT p.product_id, p.name AS product_name, p.category, p.description, p.price, p.stock_quantity, p.need_prescription, s.supplier_id, s.company_name "
@@ -96,7 +102,7 @@ public class ProductManager implements IProductManager {
 	            // Obtener los datos del producto
 	            product.setProductId(rs.getInt("product_id"));
 	            product.setName(rs.getString("product_name"));
-	            product.setCategory(rs.getString("category"));
+	            product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
 	            product.setDescription(rs.getString("description"));
 	            product.setPrice(rs.getInt("price"));
 	            product.setStockQuantity(rs.getInt("stock_quantity"));
@@ -105,7 +111,7 @@ public class ProductManager implements IProductManager {
 	            // Crear el objeto Supplier y asignarlo al producto
 	            Supplier supplier = new Supplier();
 	            supplier.setSupplierId(rs.getInt("supplier_id"));
-	            supplier.setCompanyName(rs.getString("company_name"));
+	            supplier.setCompanyName(Manufacturer.valueOf(rs.getString("company_name").toUpperCase()));
 
 	            product.setSupplier(supplier); // Asociar el Supplier al Product
 
@@ -117,4 +123,68 @@ public class ProductManager implements IProductManager {
 	    return null;
 	}
 
+
+
+    /**
+     * Retrieves products by category.
+     * 
+     * @param category 
+     * @return List of products of the specified category.
+     */
+	@Override
+    public List<Product> getProductsByCategory(Category category) {
+		
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM product WHERE category = ?";
+        try (PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setString(1, category.name()); // // Esto convierte el enum a un String (su nombre)
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setName(rs.getString("name"));
+                product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
+                product.setDescription(rs.getString("description"));
+                product.setPrice(rs.getInt("price"));
+                product.setStockQuantity(rs.getInt("stock_quantity"));
+                product.setNeedPrescription(rs.getBoolean("need_prescription"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    /**
+     * Retrieves products by manufacturer.
+     * 
+     * @param manufacturer The name of the manufacturer.
+     * @return List of products from the specified manufacturer.
+     */
+	@Override
+    public List<Product> getProductsByManufacturer(String manufacturer) {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM product p JOIN supplier s ON p.supplier_id = s.supplier_id WHERE s.company_name = ?";
+        try (PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setString(1, manufacturer);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setName(rs.getString("name"));
+                product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
+                product.setDescription(rs.getString("description"));
+                product.setPrice(rs.getInt("price"));
+                product.setStockQuantity(rs.getInt("stock_quantity"));
+                product.setNeedPrescription(rs.getBoolean("need_prescription"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
 }
+

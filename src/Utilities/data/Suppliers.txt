@@ -1,4 +1,25 @@
 company_name,contact_person,address
-PharmaCorp,John Smith,123 Health Ave
-MediSupply,Ana López,45 Wellness St
-SaniEquip,Carlos Ruiz,78 Medical Blvd
+Pfizer Inc.,John Smith,123 Health Ave
+Roche Diagnostics,Clara Müller,88 Pharma Way
+Novartis Pharma,David García,56 Biotech Blvd
+Sanofi Health,Emily Dubois,22 Wellness St
+AstraZeneca Ltd.,Laura Brown,19 Cure Avenue
+Johnson & Johnson,Miguel Torres,35 Vitality Rd
+Merck Group,Julia Schmidt,78 Innovation Ln
+Bayer Healthcare,Antonio Ruiz,40 Greenfield Blvd
+Moderna Therapeutics,Grace Liu,66 mRNA Drive
+Siemens Healthineers,Elena García,34 Diagnostic Ln
+GE Healthcare,Mark Johnson,12 Imaging Park
+Philips Medical,Sophia Lee,21 Monitor Blvd
+Medtronic Inc.,Héctor Fernández,18 NeuroTech St
+Baxter Healthcare,Luis Ortega,90 Dialysis Rd
+Stryker Corporation,Natalie Perez,51 Ortho Center
+Boston Scientific,Alejandro Kim,73 Surgery Plaza
+Olympus Medical,María Suzuki,28 Endoscopy Ave
+Abbott Laboratories,Carlos Rivera,84 Biomed Blvd
+Zoll Medical,Ana Martínez,77 Emergency Rd
+Thermo Fisher Scientific,Daniel Kim,55 Lab District
+BD (Becton Dickinson),Isabel Moreno,65 Syringe Street
+Cardinal Health,Victor Sánchez,42 Distribution Way
+Fresenius Medical Care,Emma Becker,61 Renal Ave
+Smith & Nephew,Cristina Romero,36 WoundCare Blvd

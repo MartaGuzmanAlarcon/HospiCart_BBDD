@@ -13,7 +13,7 @@ public class Product implements Serializable {
 	private List<ProductOrder> productOrders;
 	private String name;
 	private String description;
-	private String category;
+	private Category category;
 	private Integer price;
 	private Integer stockQuantity;
 	private Boolean needPrescription;
@@ -67,11 +67,11 @@ public class Product implements Serializable {
 		this.description = description;
 	}
 
-	public String getCategory() {
+	public Category getCategory() {
 		return category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 
