@@ -1,4 +1,0 @@
-company_name,contact_person,address
-PharmaCorp,John Smith,123 Health Ave
-MediSupply,Ana López,45 Wellness St
-SaniEquip,Carlos Ruiz,78 Medical Blvd

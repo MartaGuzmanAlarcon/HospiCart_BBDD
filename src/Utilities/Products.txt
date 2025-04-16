@@ -1,9 +1,0 @@
-name,category,description,price,stock_quantity,need_prescription
-Paracetamol,Medications,Analgesic,50,200,true
-Aspirin,Medications,Anti-inflammatory,45,150,true
-Ibuprofen,Medications,Anti-inflammatory,60,180,true
-Surgical Mask,Medical Supplies,Mask for surgical protection,15,1000,false
-Latex Gloves,Medical Supplies,Disposable gloves,10,2000,false
-Syringe,Medical Supplies,10 ml disposable syringe,5,1500,false
-Digital Thermometer,Medical Equipment,Quick reading thermometer,25,300,false
-Stethoscope,Medical Equipment,Professional stethoscope,50,200,false
