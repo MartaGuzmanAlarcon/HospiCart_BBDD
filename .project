@@ -16,14 +16,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/Utilities/Resources/Products.txt</name>
+			<name>src/Utilities/Products.txt</name>
 			<type>1</type>
-			<locationURI>PROJECT_LOC/src/Utilities/Products.txt</locationURI>
+			<locationURI>PROJECT_LOC/src/Products.txt</locationURI>
 		</link>
 		<link>
-			<name>src/Utilities/Resources/Suppliers.txt</name>
+			<name>src/Utilities/Suppliers.txt</name>
 			<type>1</type>
-			<locationURI>PROJECT_LOC/src/Utilities/Suppliers.txt</locationURI>
+			<locationURI>PROJECT_LOC/src/Suppliers.txt</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
