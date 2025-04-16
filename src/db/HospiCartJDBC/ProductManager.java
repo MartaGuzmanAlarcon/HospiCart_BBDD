@@ -46,32 +46,30 @@ public class ProductManager implements IProductManager {
 	    String line;
 	    String csvSplitBy = ",";
 
-	    // SQL para insertar productos, omitiendo product_id y supplier_id
-	    String sql = "INSERT INTO product (name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?)";
+	    
+	    String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	    try (PreparedStatement stmt = c.prepareStatement(sql);
-	            BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+	         BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
 	        // Saltar la cabecera
 	        br.readLine();
 
-	        // Leer cada línea del archivo CSV
 	        while ((line = br.readLine()) != null) {
 	            String[] data = line.split(csvSplitBy);
 
-	            // Asignar los valores a la consulta SQL
-	            stmt.setString(1, data[0]);  // name
-	            stmt.setString(2, data[1]);  // category
-	            stmt.setString(3, data[2]);  // description
-	            stmt.setInt(4, Integer.parseInt(data[3]));  // price
-	            stmt.setInt(5, Integer.parseInt(data[4]));  // stock_quantity
-	            stmt.setBoolean(6, Boolean.parseBoolean(data[5]));  // need_prescription
+	            // data[0] => supplier_id
+	            stmt.setInt(1, Integer.parseInt(data[0]));  // supplier_id
+	            stmt.setString(2, data[1]);  // name
+	            stmt.setString(3, data[2]);  // category
+	            stmt.setString(4, data[3]);  // description
+	            stmt.setInt(5, Integer.parseInt(data[4]));  // price
+	            stmt.setInt(6, Integer.parseInt(data[5]));  // stock_quantity
+	            stmt.setBoolean(7, Boolean.parseBoolean(data[6]));  // need_prescription
 
-	            // Ejecutar la inserción
 	            stmt.executeUpdate();
 	        }
 
-	        // Realizar commit para confirmar los cambios
 	        c.commit();
 	        System.out.println("Products inserted correctly from the CSV.");
 
@@ -79,6 +77,7 @@ public class ProductManager implements IProductManager {
 	        e.printStackTrace();
 	    }
 	}
+
 
 
 	@Override

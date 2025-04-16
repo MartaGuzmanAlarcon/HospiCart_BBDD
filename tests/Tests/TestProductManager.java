@@ -1,22 +1,26 @@
 package Tests;
 
-
 import db.HospiCartJDBC.ConnectionManagerJDBC;
 import db.HospiCartJDBC.ProductManager;
-import db.pojos.Product;
+import db.HospiCartJDBC.SupplierManager;
+import db.pojos.*;
 
 
 public class TestProductManager {
 	public static void main(String[] args) {
     
         ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
+        SupplierManager sm = new SupplierManager(cm);
         ProductManager pm = new ProductManager(cm); // establezco conexion 
 
-        pm.insertProductsFromCSV("src/Utilities/Products.txt");
+        sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
+
+        pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
 
 
         int testProductId = 1; 
         Product product = pm.getProductById(testProductId);
+        Supplier supplier= (Supplier) product.getSupplier();
 
        
         if (product != null) {
@@ -27,8 +31,10 @@ public class TestProductManager {
             System.out.println("Description: " + product.getDescription());
             System.out.println("Price: " + product.getPrice());
             System.out.println("Stock: " + product.getStockQuantity());
+            System.out.println("Company name: " + supplier.getCompanyName());
             System.out.println("¿Need prescrption?: " + product.getNeedPrescription());
-        } else {
+        } 
+        else {
             System.out.println("No se encontró ningún producto con ID " + testProductId);
         }
     }
