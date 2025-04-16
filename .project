@@ -14,16 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/Utilities/Products.txt</name>
-			<type>1</type>
-			<locationURI>PROJECT_LOC/src/Products.txt</locationURI>
-		</link>
-		<link>
-			<name>src/Utilities/Suppliers.txt</name>
-			<type>1</type>
-			<locationURI>PROJECT_LOC/src/Suppliers.txt</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
