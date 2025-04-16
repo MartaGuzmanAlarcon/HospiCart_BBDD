@@ -20,7 +20,7 @@ public class ConnectionManagerJDBC {
 		try {
 			connect();
 			createTables();
-			//initManagers();
+			initManagers();
 		} catch (SQLException | ClassNotFoundException e) {
 			System.err.println("Error initializing ConnectionManagerJDBC: " + e.getMessage());
 			e.printStackTrace();
@@ -122,16 +122,16 @@ public class ConnectionManagerJDBC {
 		}
 	}
 
-	/*private void initManagers() {
-		this.clientMan = new ClientManager(this);
-		this.orderMan = new OrderManager(this);
+	private void initManagers() {
+		//this.clientMan = new ClientManager(this);
+		//this.orderMan = new OrderManager(this);
 		this.productMan = new ProductManager(this);
 		this.productOrderMan = new ProductOrderManager(this);
-		this.shipmentMan = new ShipmentManager(this);
-		this.supplierMan = new SupplierManager(this);
-		this.paymentMan = new PaymentManager(this);
+		//this.shipmentMan = new ShipmentManager(this);
+		//this.supplierMan = new SupplierManager(this);
+		//this.paymentMan = new PaymentManager(this);
 		System.out.println("Managers inicializados correctamente.");
-	}*/
+	}
 
 	public Connection getConnection() {
 		return c;
