@@ -1,6 +1,7 @@
 package Tests;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 
 import Utilities.Utilities;
@@ -16,10 +17,10 @@ public class TestProductManager {
 		SupplierManager sm = new SupplierManager(cm);
 		ProductManager pm = new ProductManager(cm); // establezco conexion
 
-		 sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
+		// sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
 		// System.out.println("supplies table values inserted");
 
-		pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
+		// pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
 
 		/*
 		 * int testProductId = 3; Product product = pm.getProductById(testProductId);
@@ -58,45 +59,58 @@ public class TestProductManager {
 
 		// mas pruebas!
 		// Prueba1:
-		int testProductId = 3;
-
-		Product product = pm.getProductById(testProductId);
-		System.out.println(product);
-
-		if (product != null) {
-
-			product.setPrice (Utilities.truncateBigDecimal( new BigDecimal("5.555"),2));
-			product.setStockQuantity(50);
-
-		
-			boolean updated = pm.updateProduct(product);
-			System.out.println("¿Actualización exitosa?: " + updated);
-			System.out.println(product);
-		} else {
-			System.out.println("No se encontró el producto con ID: " + testProductId);
-		}
+		/*
+		 * int testProductId = 3;
+		 * 
+		 * Product product = pm.getProductById(testProductId);
+		 * System.out.println(product);
+		 * 
+		 * if (product != null) {
+		 * 
+		 * product.setPrice (Utilities.truncateBigDecimal( new BigDecimal("5.555"),2));
+		 * product.setStockQuantity(50);
+		 * 
+		 * 
+		 * boolean updated = pm.updateProduct(product);
+		 * System.out.println("¿Actualización exitosa?: " + updated);
+		 * System.out.println(product); } else {
+		 * System.out.println("No se encontró el producto con ID: " + testProductId); }
+		 */
 
 		/*
-		 * // Prueba 3: Reducir stock int quantityToReduce = 5; boolean
-		 * reduceStockResult = pm.reduceStock(testProductId, quantityToReduce);
-		 * System.out.println("Stock reduced successfully: " + reduceStockResult);
+		 * Prueba : Reducir stock int quantityToReduce = 50; boolean reduceStockResult;
+		 * try { reduceStockResult = pm.reduceStock(3, quantityToReduce); } catch
+		 * (SQLException e) {
 		 * 
-		 * // Prueba 4: Actualizar stock de producto int newStock = 50; boolean
-		 * updateStockResult = pm.updateProductStockInDB(testProductId, newStock);
+		 * e.printStackTrace(); }
+		 */
+
+		/*
+		 * Prueba : Actualizar stock de producto int newStock = 5; boolean
+		 * updateStockResult = pm.increaseStock(3, newStock);
 		 * System.out.println("Stock update successful: " + updateStockResult);
-		 * 
-		 * // Prueba 5: Verificar alerta de bajo stock Product lowStockProduct = new
-		 * Product(testProductId, "Low Stock Product", Category.MEDICAL_EQUIPMENT,
-		 * "Low stock description", 50, 2, false);
-		 * pm.checkLowStockAlert(lowStockProduct); // Si el stock está bajo, debería
-		 * mostrar una advertencia
-		 * 
-		 * // Prueba 6: Obtener productos con stock bajo por categoría Category category
-		 * = Category.MEDICAL_EQUIPMENT; // Usa una categoría válida List<Product>
+		 */
+
+		/*
+		 * Prueba 6: Obtener productos con stock bajo por categoría Category category =
+		 * Category.MEDICATIONS; // Usa una categoría válida List<Product>
 		 * lowStockProducts = pm.getLowStockProductsByCategory(category);
 		 * System.out.println("Low stock products in category " + category + ":"); for
 		 * (Product p : lowStockProducts) { System.out.println(p); }
 		 */
 
+		/*String productName = "ecg";
+		List<Product> foundProducts = pm.searchProductsByName(productName);
+
+		if (foundProducts.isEmpty()) {
+			System.out.println("No products found with the name: " + productName);
+		} else {
+
+			for (Product p : foundProducts) {
+				System.out.println(p);
+			}
+		}*/
+		
+		//pm.deleteProduct(1);
 	}
 }
