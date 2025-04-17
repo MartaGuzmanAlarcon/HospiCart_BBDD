@@ -19,6 +19,10 @@ public class Supplier implements Serializable {
 		super();
 		this.products = new ArrayList<Product>();
 	}
+	
+	public Supplier(Manufacturer m) {
+	 this.companyName=m;
+	}
 
 	// getters and setters
 	public Integer getSupplierId() {

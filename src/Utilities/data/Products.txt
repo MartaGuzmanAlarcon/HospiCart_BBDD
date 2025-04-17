@@ -2,105 +2,105 @@ supplier_id,name,category,description,price,stock_quantity,need_prescription
 1,Paracetamol,MEDICATIONS,Analgesic,50,200,true
 1,Aspirin,MEDICATIONS,Anti-inflammatory,45,150,true
 1,Ibuprofen,MEDICATIONS,Anti-inflammatory,60,180,true
-2,Surgical Mask,DISPOSABLES,Mask for surgical protection,15,1000,false
-2,Latex Gloves,DISPOSABLES,Disposable gloves,10,2000,false
-2,Syringe,DISPOSABLES,10 ml disposable syringe,5,1500,false
-3,Digital Thermometer,DIAGNOSTIC_TOOLS,Quick reading thermometer,25,300,false
-3,Stethoscope,MEDICAL_EQUIPMENT,Professional stethoscope,50,200,false
+4,Surgical Mask,DISPOSABLES,Mask for surgical protection,15,1000,false
+4,Latex Gloves,DISPOSABLES,Disposable gloves,10,2000,false
+4,Syringe,DISPOSABLES,10 ml disposable syringe,5,1500,false
+8,Digital Thermometer,DIAGNOSTIC_TOOLS,Quick reading thermometer,25,300,false
+8,Stethoscope,MEDICAL_EQUIPMENT,Professional stethoscope,50,200,false
 4,Insulin Syringe,DISPOSABLES,Syringe for insulin administration,8,1000,false
-5,ECG Monitor,DIAGNOSTIC_TOOLS,Portable ECG machine,300,50,true
-6,Oxygen Mask,DISPOSABLES,Mask for oxygen therapy,20,500,false
-7,Medical Bandages,SURGICAL_SUPPLIES,Elastic bandages for wound care,10,700,false
-8,Glucose Meter,DIAGNOSTIC_TOOLS,Device to monitor blood glucose levels,50,300,true
-9,X-Ray Film,IMAGING,Film for X-Ray imaging,30,400,false
-10,Cotton Swabs,LAB_SUPPLIES,Swabs for lab testing,5,10000,false
-11,Adrenaline Syringe,MEDICATIONS,Emergency adrenaline for shock treatment,80,100,true
-12,Electric Blood Pressure Monitor,MEDICAL_EQUIPMENT,Automatic blood pressure monitor,120,500,false
-13,Stethoscope With Headphones,MEDICAL_EQUIPMENT,Professional stethoscope with noise-canceling headphones,80,250,false
-14,Disinfectant Wipes,DISPOSABLES,Alcohol wipes for cleaning,2,2000,false
-15,IV Set,DISPOSABLES,Intravenous infusion set,15,1200,false
-16,Endotracheal Tube,SURGICAL_SUPPLIES,Tube for airway management,40,150,false
-17,Defibrillator,MEDICAL_EQUIPMENT,Automated external defibrillator,1500,30,true
-18,Glucose Test Strips,LAB_SUPPLIES,Strips for testing glucose levels,10,5000,false
-19,Insulin Pen,MEDICATIONS,Pen for insulin injection,50,300,true
-20,Blood Collection Tube,LAB_SUPPLIES,Tube for collecting blood samples,3,8000,false
-21,Face Shield,DISPOSABLES,Face protection for healthcare professionals,30,600,false
-22,Orthopedic Cast,SURGICAL_SUPPLIES,Plaster cast for bone fractures,25,400,false
-23,Hearing Aid,MEDICAL_EQUIPMENT,Device to assist with hearing loss,250,150,true
-24,Infrared Thermometer,DIAGNOSTIC_TOOLS,Non-contact thermometer for fever detection,40,500,false
-25,ECG Electrode Pads,DIAGNOSTIC_TOOLS,Electrodes for ECG monitoring,5,5000,false
-26,Wheelchair,MEDICAL_EQUIPMENT,Portable wheelchair for mobility,300,100,false
-27,Inhaler,MEDICATIONS,Device for asthma medication administration,60,300,true
-28,Surgical Gloves,DISPOSABLES,Gloves for sterile procedures,10,2500,false
-29,Eye Protection Goggles,DISPOSABLES,Protective goggles for eye safety,20,800,false
-30,Microscope,LAB_SUPPLIES,High-quality microscope for lab use,500,50,false
-31,Oxygen Cylinder,MEDICAL_EQUIPMENT,Portable oxygen supply cylinder,200,120,false
-32,Surgical Stapler,SURGICAL_SUPPLIES,Automatic stapler for closing wounds,100,150,false
-33,Ultrasound Gel,DIAGNOSTIC_TOOLS,Conductive gel for ultrasound procedures,10,1200,false
-34,Neck Brace,DISPOSABLES,Brace for cervical spine support,30,600,false
-35,Suture Set,SURGICAL_SUPPLIES,Set of sutures for wound closure,40,300,false
-36,Spinal Column Support,SURGICAL_SUPPLIES,Back support for patients with spinal issues,70,150,false
-37,Electric Surgical Drill,SURGICAL_SUPPLIES,Electric drill for orthopedic surgery,300,40,false
-38,Blood Pressure Cuff,MEDICAL_EQUIPMENT,Cuff for measuring blood pressure manually,20,500,false
-39,Microneedle,DISPOSABLES,Fine needle for injections,3,4000,false
-40,Walking Cane,MEDICAL_EQUIPMENT,Walking cane for patient support,40,200,false
-41,Medical Thermometer,DIAGNOSTIC_TOOLS,Traditional medical thermometer,10,1000,false
-42,Heart Rate Monitor,DIAGNOSTIC_TOOLS,Device for tracking heart rate,60,400,false
-43,Glove Box,MEDICAL_EQUIPMENT,Box for storing sterile gloves,15,1200,false
-44,Ankle Brace,DISPOSABLES,Brace for ankle support and injury prevention,25,350,false
-45,Antiseptic Solution,MEDICATIONS,Solution for cleaning wounds,15,500,true
-46,Medical Tape,SURGICAL_SUPPLIES,Adhesive tape for surgical dressing,5,2000,false
-47,Surgical Scissors,SURGICAL_SUPPLIES,Scissors for surgical procedures,10,500,false
-48,Insulin Syringe,DISPOSABLES,Syringe for insulin injection,7,1000,false
-49,Surgical Knife,SURGICAL_SUPPLIES,Knife for incision during surgery,15,200,false
-50,Examination Table,MEDICAL_EQUIPMENT,Table for patient examination,500,30,false
-51,Defibrillator Pads,DISPOSABLES,Pads for defibrillator use,50,300,false
-52,Patient Gown,DISPOSABLES,Clothing for patients during procedures,10,1000,false
-53,Electrocardiogram Machine,DIAGNOSTIC_TOOLS,ECG machine for heart health monitoring,700,100,true
-54,Microscope Slides,LAB_SUPPLIES,Slides for laboratory microscopes,2,10000,false
-55,Medical Bed,MEDICAL_EQUIPMENT,Bed for patient rest and comfort,800,50,false
-56,Vacuum Sealer,MEDICAL_EQUIPMENT,Machine for sealing medical items,150,100,false
-57,Pulse Oximeter,DIAGNOSTIC_TOOLS,Device for measuring blood oxygen levels,45,400,false
-58,Surgical Gown,DISPOSABLES,Protective gown for sterile surgeries,20,1500,false
-59,Auto-Injector,MEDICATIONS,Automatic injector for epinephrine,70,500,true
-60,First Aid Kit,DISPOSABLES,Portable kit for first aid treatment,30,1000,false
-61,CPR Mask,DISPOSABLES,Mask for CPR resuscitation,15,1000,false
-62,Ultrasound Machine,MEDICAL_EQUIPMENT,Portable ultrasound for diagnostics,1500,40,true
-63,Medical Imaging Scanner,IMAGING,Scanner for medical imaging,5000,10,true
-64,Incubator,MEDICAL_EQUIPMENT,Equipment for incubating newborns,3000,20,true
-65,Pet Thermometer,DIAGNOSTIC_TOOLS,Digital thermometer for pets,25,400,false
-66,Surgical Drapes,DISPOSABLES,Sheets for surgical sterile procedures,8,2000,false
-67,IV Pump,MEDICAL_EQUIPMENT,Infusion pump for patient fluids,350,60,false
-68,Wheelchair Ramp,MEDICAL_EQUIPMENT,Portable ramp for wheelchair accessibility,200,150,false
-69,Pharmacy Dispensing System,OFFICE_SUPPLIES,System for dispensing pharmacy products,1000,5,false
-70,Hydrocolloid Dressing,SURGICAL_SUPPLIES,Dressing for wound healing,20,700,false
-71,Plastic Bandages,SURGICAL_SUPPLIES,Small bandages for wound coverage,5,5000,false
-72,Compression Stockings,DISPOSABLES,Stockings for blood circulation,30,1000,false
-73,Urinary Catheter,DISPOSABLES,Catheter for urine collection,10,800,false
-74,Medical Gloves,DISPOSABLES,Disposable gloves for protection,8,3000,false
-75,Body Scale,MEDICAL_EQUIPMENT,Scale for monitoring patient weight,60,400,false
-76,Glove Dispenser,MEDICAL_EQUIPMENT,Dispenser for medical gloves,30,1000,false
-77,Oxygen Concentrator,MEDICAL_EQUIPMENT,Device for providing concentrated oxygen,1000,50,true
-78,Cardiac Monitor,MEDICAL_EQUIPMENT,Monitor for heart activity,2000,20,true
-79,Hip Protector,DISPOSABLES,Protective hip device for elderly patients,25,600,false
-80,Cervical Collar,DISPOSABLES,Support collar for neck injuries,15,800,false
-81,Foley Catheter,DISPOSABLES,Catheter for urinary drainage,7,1000,false
-82,Incision Set,SURGICAL_SUPPLIES,Set of instruments for making surgical incisions,25,300,false
-83,Hydrotherapy Equipment,MEDICAL_EQUIPMENT,Equipment for water-based physical therapy,400,20,false
-84,Stoma Care Kit,DISPOSABLES,Kit for colostomy care,20,500,false
-85,Respirator,DISPOSABLES,Protective respirator for airborne diseases,50,800,false
-86,Antiseptic Gel,DISPOSABLES,Gel for cleaning wounds,10,1500,false
-87,Breathing Apparatus,MEDICAL_EQUIPMENT,Device for assisting with breathing,1000,30,true
-88,Artificial Limb,MEDICAL_EQUIPMENT,Prosthetic for arm or leg replacement,2000,10,true
-89,Optical Lens,DISPOSABLES,Lens for eye correction,80,400,false
-90,Respiratory Ventilator,MEDICAL_EQUIPMENT,Machine for assisting with breathing,5000,20,true
-91,Diabetes Testing Kit,LAB_SUPPLIES,Complete kit for testing diabetes,25,1000,true
-92,Surgical Sponges,SURGICAL_SUPPLIES,Sponges for surgical procedures,5,2000,false
-93,Antibiotic Cream,MEDICATIONS,Cream for infection treatment,15,1500,false
-94,Airway Tube,SURGICAL_SUPPLIES,Tube for managing airway during surgery,30,500,false
-95,Electrode Gel,DIAGNOSTIC_TOOLS,Conductive gel for ECG electrodes,15,1000,false
-96,Transfusion Set,DISPOSABLES,Set for blood transfusion,50,200,false
-97,Medical Apron,DISPOSABLES,Protective apron for healthcare workers,15,1000,false
-98,Spinal Injury Collar,DISPOSABLES,Collar for neck injury stabilization,25,600,false
-99,Hand Sanitizer,PERSONAL_CARE,Sanitizing gel for hands,5,5000,false
-100,Alcohol Pads,DISPOSABLES,Pads for sterilizing skin,2,3000,false
+8,ECG Monitor,DIAGNOSTIC_TOOLS,Portable ECG machine,300,50,true
+4,Oxygen Mask,DISPOSABLES,Mask for oxygen therapy,20,500,false
+4,Medical Bandages,SURGICAL_SUPPLIES,Elastic bandages for wound care,10,700,false
+13,Glucose Meter,DIAGNOSTIC_TOOLS,Device to monitor blood glucose levels,50,300,true
+14,X-Ray Film,IMAGING,Film for X-Ray imaging,30,400,false
+15,Cotton Swabs,LAB_SUPPLIES,Swabs for lab testing,5,10000,false
+1,Adrenaline Syringe,MEDICATIONS,Emergency adrenaline for shock treatment,80,100,true
+8,Electric Blood Pressure Monitor,MEDICAL_EQUIPMENT,Automatic blood pressure monitor,120,500,false
+8,Stethoscope With Headphones,MEDICAL_EQUIPMENT,Professional stethoscope with noise-canceling headphones,80,250,false
+4,Disinfectant Wipes,DISPOSABLES,Alcohol wipes for cleaning,2,2000,false
+4,IV Set,DISPOSABLES,Intravenous infusion set,15,1200,false
+4,Endotracheal Tube,SURGICAL_SUPPLIES,Tube for airway management,40,150,false
+8,Defibrillator,MEDICAL_EQUIPMENT,Automated external defibrillator,1500,30,true
+15,Glucose Test Strips,LAB_SUPPLIES,Strips for testing glucose levels,10,5000,false
+1,Insulin Pen,MEDICATIONS,Pen for insulin injection,50,300,true
+1,Blood Collection Tube,LAB_SUPPLIES,Tube for collecting blood samples,3,8000,false
+12,Face Shield,DISPOSABLES,Face protection for healthcare professionals,30,600,false
+15,Orthopedic Cast,SURGICAL_SUPPLIES,Plaster cast for bone fractures,25,400,false
+13,Hearing Aid,MEDICAL_EQUIPMENT,Device to assist with hearing loss,250,150,true
+10,Infrared Thermometer,DIAGNOSTIC_TOOLS,Non-contact thermometer for fever detection,40,500,false
+10,ECG Electrode Pads,DIAGNOSTIC_TOOLS,Electrodes for ECG monitoring,5,5000,false
+14,Wheelchair,MEDICAL_EQUIPMENT,Portable wheelchair for mobility,300,100,false
+1,Inhaler,MEDICATIONS,Device for asthma medication administration,60,300,true
+12,Surgical Gloves,DISPOSABLES,Gloves for sterile procedures,10,2500,false
+12,Eye Protection Goggles,DISPOSABLES,Protective goggles for eye safety,20,800,false
+20,Microscope,LAB_SUPPLIES,High-quality microscope for lab use,500,50,false
+10,Oxygen Cylinder,MEDICAL_EQUIPMENT,Portable oxygen supply cylinder,200,120,false
+15,Surgical Stapler,SURGICAL_SUPPLIES,Automatic stapler for closing wounds,100,150,false
+10,Ultrasound Gel,DIAGNOSTIC_TOOLS,Conductive gel for ultrasound procedures,10,1200,false
+12,Neck Brace,DISPOSABLES,Brace for cervical spine support,30,600,false
+15,Suture Set,SURGICAL_SUPPLIES,Set of sutures for wound closure,40,300,false
+15,Spinal Column Support,SURGICAL_SUPPLIES,Back support for patients with spinal issues,70,150,false
+15,Electric Surgical Drill,SURGICAL_SUPPLIES,Electric drill for orthopedic surgery,300,40,false
+14,Blood Pressure Cuff,MEDICAL_EQUIPMENT,Cuff for measuring blood pressure manually,20,500,false
+12,Microneedle,DISPOSABLES,Fine needle for injections,3,4000,false
+14,Walking Cane,MEDICAL_EQUIPMENT,Walking cane for patient support,40,200,false
+10,Medical Thermometer,DIAGNOSTIC_TOOLS,Traditional medical thermometer,10,1000,false
+10,Heart Rate Monitor,DIAGNOSTIC_TOOLS,Device for tracking heart rate,60,400,false
+14,Glove Box,MEDICAL_EQUIPMENT,Box for storing sterile gloves,15,1200,false
+12,Ankle Brace,DISPOSABLES,Brace for ankle support and injury prevention,25,350,false
+1,Antiseptic Solution,MEDICATIONS,Solution for cleaning wounds,15,500,true
+15,Medical Tape,SURGICAL_SUPPLIES,Adhesive tape for surgical dressing,5,2000,false
+15,Surgical Scissors,SURGICAL_SUPPLIES,Scissors for surgical procedures,10,500,false
+12,Insulin Syringe,DISPOSABLES,Syringe for insulin injection,7,1000,false
+15,Surgical Knife,SURGICAL_SUPPLIES,Knife for incision during surgery,15,200,false
+13,Examination Table,MEDICAL_EQUIPMENT,Table for patient examination,500,30,false
+12,Defibrillator Pads,DISPOSABLES,Pads for defibrillator use,50,300,false
+12,Patient Gown,DISPOSABLES,Clothing for patients during procedures,10,1000,false
+13,Electrocardiogram Machine,DIAGNOSTIC_TOOLS,ECG machine for heart health monitoring,700,100,true
+20,Microscope Slides,LAB_SUPPLIES,Slides for laboratory microscopes,2,10000,false
+14,Medical Bed,MEDICAL_EQUIPMENT,Bed for patient rest and comfort,800,50,false
+14,Vacuum Sealer,MEDICAL_EQUIPMENT,Machine for sealing medical items,150,100,false
+13,Pulse Oximeter,DIAGNOSTIC_TOOLS,Device for measuring blood oxygen levels,45,400,false
+12,Surgical Gown,DISPOSABLES,Protective gown for sterile surgeries,20,1500,false
+1,Auto-Injector,MEDICATIONS,Automatic injector for epinephrine,70,500,true
+20,First Aid Kit,DISPOSABLES,Portable kit for first aid treatment,30,1000,false
+12,CPR Mask,DISPOSABLES,Mask for CPR resuscitation,15,1000,false
+13,Ultrasound Machine,MEDICAL_EQUIPMENT,Portable ultrasound for diagnostics,1500,40,true
+10,Medical Imaging Scanner,IMAGING,Scanner for medical imaging,5000,10,true
+13,Incubator,MEDICAL_EQUIPMENT,Equipment for incubating newborns,3000,20,true
+1,Pet Thermometer,DIAGNOSTIC_TOOLS,Digital thermometer for pets,25,400,false
+12,Surgical Drapes,DISPOSABLES,Sheets for surgical sterile procedures,8,2000,false
+14,IV Pump,MEDICAL_EQUIPMENT,Infusion pump for patient fluids,350,60,false
+14,Wheelchair Ramp,MEDICAL_EQUIPMENT,Portable ramp for wheelchair accessibility,200,150,false
+18,Pharmacy Dispensing System,OFFICE_SUPPLIES,System for dispensing pharmacy products,1000,5,false
+15,Hydrocolloid Dressing,SURGICAL_SUPPLIES,Dressing for wound healing,20,700,false
+15,Plastic Bandages,SURGICAL_SUPPLIES,Small bandages for wound coverage,5,5000,false
+12,Compression Stockings,DISPOSABLES,Stockings for blood circulation,30,1000,false
+12,Urinary Catheter,DISPOSABLES,Catheter for urine collection,10,800,false
+12,Medical Gloves,DISPOSABLES,Disposable gloves for protection,8,3000,false
+14,Body Scale,MEDICAL_EQUIPMENT,Scale for monitoring patient weight,60,400,false
+14,Glove Dispenser,MEDICAL_EQUIPMENT,Dispenser for medical gloves,30,1000,false
+14,Oxygen Concentrator,MEDICAL_EQUIPMENT,Device for providing concentrated oxygen,1000,50,true
+14,Cardiac Monitor,MEDICAL_EQUIPMENT,Monitor for heart activity,2000,20,true
+12,Hip Protector,DISPOSABLES,Protective hip device for elderly patients,25,600,false
+12,Cervical Collar,DISPOSABLES,Support collar for neck injuries,15,800,false
+12,Foley Catheter,DISPOSABLES,Catheter for urinary drainage,7,1000,false
+15,Incision Set,SURGICAL_SUPPLIES,Set of instruments for making surgical incisions,25,300,false
+14,Hydrotherapy Equipment,MEDICAL_EQUIPMENT,Equipment for water-based physical therapy,400,20,false
+12,Stoma Care Kit,DISPOSABLES,Kit for colostomy care,20,500,false
+12,Respirator,DISPOSABLES,Protective respirator for airborne diseases,50,800,false
+12,Antiseptic Gel,DISPOSABLES,Gel for cleaning wounds,10,1500,false
+14,Breathing Apparatus,MEDICAL_EQUIPMENT,Device for assisting with breathing,1000,30,true
+14,Artificial Limb,MEDICAL_EQUIPMENT,Prosthetic for arm or leg replacement,2000,10,true
+12,Optical Lens,DISPOSABLES,Lens for eye correction,80,400,false
+14,Respiratory Ventilator,MEDICAL_EQUIPMENT,Machine for assisting with breathing,5000,20,true
+20,Diabetes Testing Kit,LAB_SUPPLIES,Complete kit for testing diabetes,25,1000,true
+15,Surgical Sponges,SURGICAL_SUPPLIES,Sponges for surgical procedures,5,2000,false
+1,Antibiotic Cream,MEDICATIONS,Cream for infection treatment,15,1500,false
+15,Airway Tube,SURGICAL_SUPPLIES,Tube for managing airway during surgery,30,500,false
+10,Electrode Gel,DIAGNOSTIC_TOOLS,Conductive gel for ECG electrodes,15,1000,false
+12,Transfusion Set,DISPOSABLES,Set for blood transfusion,50,200,false
+12,Medical Apron,DISPOSABLES,Protective apron for healthcare workers,15,1000,false
+12,Spinal Injury Collar,DISPOSABLES,Collar for neck injury stabilization,25,600,false
+5,Hand Sanitizer,PERSONAL_CARE,Sanitizing gel for hands,5,5000,false
+12,Alcohol Pads,DISPOSABLES,Pads for sterilizing skin,2,3000,false

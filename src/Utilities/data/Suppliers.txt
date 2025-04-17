@@ -1,25 +1,25 @@
 company_name,contact_person,address
-Pfizer Inc.,John Smith,123 Health Ave
-Roche Diagnostics,Clara Müller,88 Pharma Way
-Novartis Pharma,David García,56 Biotech Blvd
-Sanofi Health,Emily Dubois,22 Wellness St
-AstraZeneca Ltd.,Laura Brown,19 Cure Avenue
-Johnson & Johnson,Miguel Torres,35 Vitality Rd
-Merck Group,Julia Schmidt,78 Innovation Ln
-Bayer Healthcare,Antonio Ruiz,40 Greenfield Blvd
-Moderna Therapeutics,Grace Liu,66 mRNA Drive
-Siemens Healthineers,Elena García,34 Diagnostic Ln
-GE Healthcare,Mark Johnson,12 Imaging Park
-Philips Medical,Sophia Lee,21 Monitor Blvd
-Medtronic Inc.,Héctor Fernández,18 NeuroTech St
-Baxter Healthcare,Luis Ortega,90 Dialysis Rd
-Stryker Corporation,Natalie Perez,51 Ortho Center
-Boston Scientific,Alejandro Kim,73 Surgery Plaza
-Olympus Medical,María Suzuki,28 Endoscopy Ave
-Abbott Laboratories,Carlos Rivera,84 Biomed Blvd
-Zoll Medical,Ana Martínez,77 Emergency Rd
-Thermo Fisher Scientific,Daniel Kim,55 Lab District
-BD (Becton Dickinson),Isabel Moreno,65 Syringe Street
-Cardinal Health,Victor Sánchez,42 Distribution Way
-Fresenius Medical Care,Emma Becker,61 Renal Ave
-Smith & Nephew,Cristina Romero,36 WoundCare Blvd
+PFIZER,John Smith,123 Health Ave
+ROCHE,Clara Müller,88 Pharma Way
+NOVARTIS,David García,56 Biotech Blvd
+SANOFI,Emily Dubois,22 Wellness St
+ASTRAZENECA,Laura Brown,19 Cure Avenue
+JOHNSON_AND_JOHNSON,Miguel Torres,35 Vitality Rd
+MERCK,Julia Schmidt,78 Innovation Ln
+BAYER,Antonio Ruiz,40 Greenfield Blvd
+MODERNA,Grace Liu,66 mRNA Drive
+SIEMENS,Elena García,34 Diagnostic Ln
+GE_HEALTHCARE,Mark Johnson,12 Imaging Park
+PHILIPS,Sophia Lee,21 Monitor Blvd
+MEDTRONIC,Héctor Fernández,18 NeuroTech St
+BAXTER,Luis Ortega,90 Dialysis Rd
+STRYKER,Natalie Perez,51 Ortho Center
+BOSTON_SCIENTIFIC,Alejandro Kim,73 Surgery Plaza
+OLYMPUS,María Suzuki,28 Endoscopy Ave
+ABBOTT,Carlos Rivera,84 Biomed Blvd
+ZOLL,Ana Martínez,77 Emergency Rd
+THERMO_FISHER,Daniel Kim,55 Lab District
+BD,Isabel Moreno,65 Syringe Street
+CARDINAL_HEALTH,Victor Sánchez,42 Distribution Way
+FRESENIUS,Emma Becker,61 Renal Ave
+SMITH_AND_NEPHEW,Cristina Romero,36 WoundCare Blvd

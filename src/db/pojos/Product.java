@@ -42,7 +42,6 @@ public class Product implements Serializable {
 		this.supplier = supplier;
 	}
 
-
 	public List<ProductOrder> getOrders() {
 		return productOrders;
 	}
@@ -120,11 +119,15 @@ public class Product implements Serializable {
 	// toString
 	@Override
 	public String toString() {
-		return "Product [productId=" + productId + ", supplier=" + supplier + ", name=" + name + ", description="
-				+ description + ", category=" + category + ", price=" + price + ", stockQuantity=" + stockQuantity
-				+ ", needPrescription=" + needPrescription + "]";
+	    return "-Product-" + "\n" +
+	           "  productId: " + productId + "\n" +
+	           "  supplier: " + supplier.getCompanyName() + "\n" +
+	           "  name: " + name + "\n" +
+	           "  description: " + description + "\n" +
+	           "  category: " + category + "\n" +
+	           "  price: " + price + "\n" +
+	           "  stockQuantity: " + stockQuantity + "\n" +
+	           "  needPrescription: " + needPrescription + "\n\n";  
 	}
-	
-	
 
 }
