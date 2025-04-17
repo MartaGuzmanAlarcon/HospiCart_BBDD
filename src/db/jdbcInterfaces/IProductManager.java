@@ -11,21 +11,20 @@ public interface IProductManager {
 
 	List<Product> getAllProducts(); // Obtener todos los productos
 
-//	boolean addProduct(Product product); // Agregar un nuevo producto
-	
-	boolean updateProduct(Product product); // Actualizar producto
-
-	boolean updateProductStockInDB(int productId, int newStock);
-
-	List<Product> getLowStockProductsByCategory(Category category);
-
-	 boolean deleteProduct(int id); // Eliminar un producto
-
-	// Buscar por nombre, tipo (medicamento, material, etc.) o fabricante
 	List<Product> searchProductsByName(String name);
 
 	List<Product> getProductsByCategory(Category type);
 
 	List<Product> getProductsByManufacturer(Manufacturer manufacturer);
+
+	List<Product> getLowStockProductsByCategory(Category category);
+
+	boolean addProduct(int supplierId, Product product); // Agregar un nuevo producto
+
+	boolean updateProduct(Product product); // Actualizar producto
+
+	boolean updateProductStockInDB(int productId, int newStock);
+
+	boolean deleteProduct(int id); // Eliminar un producto
 
 }

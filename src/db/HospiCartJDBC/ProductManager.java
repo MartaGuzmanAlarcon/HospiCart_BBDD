@@ -507,7 +507,41 @@ public class ProductManager implements IProductManager {
 			stmt.setInt(1, id);
 			int rowsAffected = stmt.executeUpdate();
 			if (rowsAffected > 0) {
-				c.commit(); 
+				c.commit();
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * Adds a new product to the database.
+	 * 
+	 * @param supplierId The supplier's ID for the product.
+	 * @param product    The product to be added.
+	 * @return true if product was added, false otherwise.
+	 */
+	@Override
+	public boolean addProduct(int supplierId, Product product) {
+		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement stmt = c.prepareStatement(sql)) {
+			// Set parameters for the SQL query
+			stmt.setInt(1, supplierId); // Using the supplierId passed as a parameter
+			stmt.setString(2, product.getName());
+			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
+			stmt.setString(4, product.getDescription());
+			stmt.setBigDecimal(5, Utilities.truncateBigDecimal(product.getPrice(), 2)); // Assuming price comes from the
+																						// Product object
+			stmt.setInt(6, product.getStockQuantity());
+			stmt.setBoolean(7, product.getNeedPrescription());
+
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+			    System.out.println(rowsAffected);
+				c.commit();
 				return true;
 			}
 		} catch (SQLException e) {

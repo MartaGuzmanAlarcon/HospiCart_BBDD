@@ -99,18 +99,30 @@ public class TestProductManager {
 		 * (Product p : lowStockProducts) { System.out.println(p); }
 		 */
 
-		/*String productName = "ecg";
-		List<Product> foundProducts = pm.searchProductsByName(productName);
+		/*
+		 * String productName = "ecg"; List<Product> foundProducts =
+		 * pm.searchProductsByName(productName);
+		 * 
+		 * if (foundProducts.isEmpty()) {
+		 * System.out.println("No products found with the name: " + productName); } else
+		 * {
+		 * 
+		 * for (Product p : foundProducts) { System.out.println(p); } }
+		 */
 
-		if (foundProducts.isEmpty()) {
-			System.out.println("No products found with the name: " + productName);
+		// pm.deleteProduct(1);
+		sm.showCompanyNames();
+		// Proveedor seleccionado (por ejemplo, ID 1)
+		int supplierId = 1;
+		Product product = new Product(supplierId, "New Product", Category.MEDICATIONS, "Description",
+				new BigDecimal("199.99"), 10, true);
+
+		// Llamamos al método público
+		boolean success = pm.addProduct(supplierId, product);
+		if (success) {
+			System.out.println("Product added successfully!");
 		} else {
-
-			for (Product p : foundProducts) {
-				System.out.println(p);
-			}
-		}*/
-		
-		//pm.deleteProduct(1);
+			System.out.println("Failed to add product.");
+		}
 	}
 }
