@@ -83,7 +83,7 @@ public class ConnectionManagerJDBC {
 							name TEXT NOT NULL,
 							description TEXT,
 							category TEXT,
-							price REAL,
+							price NUMERIC(10,2),
 							stock_quantity INTEGER,
 							need_prescription TEXT
 						);

@@ -1,6 +1,7 @@
 package db.pojos;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +15,7 @@ public class Product implements Serializable {
 	private String name;
 	private String description;
 	private Category category;
-	private Integer price;
+	private BigDecimal price;
 	private Integer stockQuantity;
 	private Boolean needPrescription;
 
@@ -24,7 +25,18 @@ public class Product implements Serializable {
 
 	}
 
+	public Product(int productId, String name, Category category, String description, BigDecimal price, int stockQuantity, boolean needPrescription) {
+        this.productId = productId;          
+        this.name = name;                       
+        this.category = category;                
+        this.description = description;          
+        this.price = price;                      
+        this.stockQuantity = stockQuantity;     
+        this.needPrescription = needPrescription; 
+    }
+	
 	// getters and setters
+
 
 	public Integer getProductId() {
 		return productId;
@@ -74,11 +86,11 @@ public class Product implements Serializable {
 		this.category = category;
 	}
 
-	public Integer getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(Integer price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
