@@ -17,10 +17,10 @@ public class TestProductManager {
 		SupplierManager sm = new SupplierManager(cm);
 		ProductManager pm = new ProductManager(cm); // establezco conexion
 
-		// sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
+		 sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
 		// System.out.println("supplies table values inserted");
 
-		// pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
+		 pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
 
 		/*
 		 * int testProductId = 3; Product product = pm.getProductById(testProductId);
@@ -111,7 +111,7 @@ public class TestProductManager {
 		 */
 
 		// pm.deleteProduct(1);
-		sm.showCompanyNames();
+	/*	sm.showCompanyNames();
 		// Proveedor seleccionado (por ejemplo, ID 1)
 		int supplierId = 1;
 		Product product = new Product(supplierId, "New Product", Category.MEDICATIONS, "Description",
@@ -123,6 +123,6 @@ public class TestProductManager {
 			System.out.println("Product added successfully!");
 		} else {
 			System.out.println("Failed to add product.");
-		}
+		}*/
 	}
 }
