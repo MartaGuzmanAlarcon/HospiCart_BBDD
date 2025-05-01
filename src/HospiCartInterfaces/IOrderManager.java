@@ -87,6 +87,7 @@ public interface IOrderManager {
 	 * @return true if the order exists.
 	 */
 	//TODO: throw an exception
+	//TODO SEE IF THIS METHOD IS USEFUL
 	boolean orderExists(int order_id);
 	
 	

@@ -30,7 +30,7 @@ public class OrderManager implements IOrderManager {
     public Order createOrder(Client client) throws SQLException{
         Order order = new Order(); //I create the Order object
 
-       //I initialise the order fields
+       //I initialize the order fields
        order.setClient(client);
        order.setOrderDate(Date.valueOf(LocalDate.now()));
        order.setStatus(Status.ORDERED);
@@ -60,7 +60,6 @@ public class OrderManager implements IOrderManager {
             }
             stmt.close();
             c.commit(); //we do this because we disabled the autocommit in the connection
-            return order;
         } catch (SQLException e) {
             //We "rollback" the transaction in case of error.
             if(c != null){ //We make sure that c is not null as an error would be thrown when trying to rollback over a null object
@@ -72,11 +71,20 @@ public class OrderManager implements IOrderManager {
             }
             throw new RuntimeException("Error creating order: " + e.getMessage(), e);
         }
+        return order;
+
     }
 
     @Override
     public Order getOrderByID(int order_id) {
-        return null;
+    	Order order = null;
+    	/*
+    	String sql = "SELECT o.order_id, o. "
+    	try {
+    		Statement
+    	}
+    	*/
+        return order;
     }
 
     @Override
