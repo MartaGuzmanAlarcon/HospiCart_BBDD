@@ -1,4 +1,4 @@
-package db.HospiCartJDBC;
+package HospiCartJDBC;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -49,11 +49,12 @@ public class ConnectionManagerJDBC {
 				// client
 				"""
 						CREATE TABLE IF NOT EXISTS client (
-							user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+							id INTEGER PRIMARY KEY AUTOINCREMENT,
 							name TEXT NOT NULL,
+							surname TEXT NOT NULL,
 							email TEXT NOT NULL,
 							role TEXT NOT NULL,
-							phoneNumber INTEGER,
+							phone_number INTEGER,
 							address TEXT NOT NULL
 						);
 						""",

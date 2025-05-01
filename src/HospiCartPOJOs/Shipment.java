@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 import java.io.Serializable;
 import java.util.Objects;

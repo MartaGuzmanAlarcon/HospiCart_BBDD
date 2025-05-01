@@ -1,9 +1,10 @@
-package db.jdbcInterfaces;
+package HospiCartInterfaces;
 
-import db.pojos.Category;
-import db.pojos.Manufacturer;
-import db.pojos.Product;
 import java.util.List;
+
+import HospiCartPOJOs.Category;
+import HospiCartPOJOs.Manufacturer;
+import HospiCartPOJOs.Product;
 
 public interface IProductManager {
 

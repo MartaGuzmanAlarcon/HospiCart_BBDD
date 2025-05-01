@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,7 +11,7 @@ public class Product implements Serializable {
 	private static final long serialVersionUID = 3199455987362996759L;
 	private Integer productId;
 	private Supplier supplier;
-	private List<ProductOrder> productOrders;
+	private List<ProductOrder> productOrders; // 1 Product has many ProductOrders 
 	private String name;
 	private String description;
 	private Category category;

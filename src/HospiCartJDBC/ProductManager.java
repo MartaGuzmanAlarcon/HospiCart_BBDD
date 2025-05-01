@@ -1,16 +1,15 @@
-package db.HospiCartJDBC;
-
-import db.jdbcInterfaces.IProductManager;
-import db.pojos.Category;
-import db.pojos.Manufacturer;
-import db.pojos.Product;
-import db.pojos.Supplier;
+package HospiCartJDBC;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import HospiCartInterfaces.IProductManager;
+import HospiCartPOJOs.Category;
+import HospiCartPOJOs.Manufacturer;
+import HospiCartPOJOs.Product;
+import HospiCartPOJOs.Supplier;
 import Utilities.Utilities;
 
 import java.io.BufferedReader;

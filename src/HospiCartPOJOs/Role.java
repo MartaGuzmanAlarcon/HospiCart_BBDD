@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 public enum Role {
 	DOCTOR,NURSE;

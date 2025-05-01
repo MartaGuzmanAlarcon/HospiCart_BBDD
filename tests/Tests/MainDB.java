@@ -1,6 +1,6 @@
 package Tests;
 
-import db.HospiCartJDBC.ConnectionManagerJDBC;
+import HospiCartJDBC.ConnectionManagerJDBC;
 
 public class MainDB {
 

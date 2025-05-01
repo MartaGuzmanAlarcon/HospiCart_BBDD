@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
+import HospiCartJDBC.ConnectionManagerJDBC;
+import HospiCartJDBC.ProductManager;
+import HospiCartJDBC.SupplierManager;
+import HospiCartPOJOs.*;
 import Utilities.Utilities;
-import db.HospiCartJDBC.ConnectionManagerJDBC;
-import db.HospiCartJDBC.ProductManager;
-import db.HospiCartJDBC.SupplierManager;
-import db.pojos.*;
 
 public class TestProductManager {
 	public static void main(String[] args) {

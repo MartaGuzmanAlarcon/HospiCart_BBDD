@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 public enum Status {
 	ORDERED, DELIVERED, CANCELLED

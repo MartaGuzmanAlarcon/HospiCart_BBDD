@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,8 +9,8 @@ public class ProductOrder implements Serializable {
 	private Integer productOrderID;
 	private Integer amount;
 	private Float total_price;
-	private Order order;
-	private Product product;
+	private Order order; // 1 ProductOrder has 1 Order 
+	private Product product; // 1 ProductOrder has 1 Product 
 
 	public ProductOrder() {
 		super();

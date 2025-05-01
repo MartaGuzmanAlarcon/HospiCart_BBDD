@@ -1,4 +1,4 @@
-package db.jdbcInterfaces;
+package HospiCartInterfaces;
 
 public interface ISupplierManager {
 

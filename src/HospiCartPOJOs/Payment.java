@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -7,7 +7,7 @@ public class Payment implements Serializable {
 
 	private static final long serialVersionUID = 8072301622699680035L;
 	private Integer paymentId;
-	private Order Order;
+	private Order Order; // 1 Payment has 1 Order 
 	private Integer amount;
 	private PaymentMethod paymentMethod;
 	private PaymentStatus paymentStatus;
@@ -15,6 +15,19 @@ public class Payment implements Serializable {
 	public Payment() {
 		super();
 	}
+	
+	
+	public Payment(Integer paymentId, HospiCartPOJOs.Order order, Integer amount, PaymentMethod paymentMethod,
+			PaymentStatus paymentStatus) {
+		super();
+		this.paymentId = paymentId;
+		Order = order;
+		this.amount = amount;
+		this.paymentMethod = paymentMethod;
+		this.paymentStatus = paymentStatus;
+	}
+
+
 
 	// getters and setters
 
@@ -79,8 +92,8 @@ public class Payment implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Payment [paymentId=" + paymentId + ", amount=" + amount + ", paymentMethod=" + paymentMethod
-				+ ", paymentStatus=" + paymentStatus + "]";
+		return "Payment [paymentId=" + this.paymentId + ", amount=" + this.amount + ", paymentMethod=" + 
+				this.paymentMethod + ", paymentStatus=" + this.paymentStatus + "]";
 	}
 
 }

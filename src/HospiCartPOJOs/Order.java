@@ -1,4 +1,4 @@
-package db.pojos;
+package HospiCartPOJOs;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -11,14 +11,14 @@ public class Order implements Serializable {
 
 	private static final long serialVersionUID = 5399184169574043556L;
 	private Integer orderId;
-	private Client client;
+	private Client client; // 1 Order has 1 Client 
 	private Payment payment;
-	private Shipment Shipment;
-	private List<ProductOrder> productOrders;
+	private Shipment Shipment; // 1 Order has 1 Shipment 
+	private List<ProductOrder> productOrders; // 1 Order has many ProductOrders 
 	private Date orderDate;
 	private Status status;
 
-	// empty constr.
+	// Empty constructor 
 	public Order() {
 		super();
 		this.productOrders = new ArrayList<ProductOrder>();

@@ -1,6 +1,6 @@
 package Utilities;
 
-import db.HospiCartJDBC.*;
+import HospiCartJDBC.*;
 
 public class CSVProducts {
 	

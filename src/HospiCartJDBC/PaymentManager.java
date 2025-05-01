@@ -1,0 +1,211 @@
+package HospiCartJDBC;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import HospiCartInterfaces.IPaymentManager;
+import HospiCartPOJOs.Order;
+import HospiCartPOJOs.Payment;
+import HospiCartPOJOs.PaymentMethod;
+import HospiCartPOJOs.PaymentStatus;
+import Utilities.Utilities;
+
+public class PaymentManager implements IPaymentManager {
+	private ConnectionManagerJDBC manager;
+	// private OrderManager orderManager;
+
+    public PaymentManager(ConnectionManagerJDBC m) {
+        this.manager = m;
+    }
+
+
+    /**
+     * This method inserts a new payment record (row) into the database.
+     * @param p the Payment to insert.
+     */
+	@Override
+	public void insertPayment(Payment p) {
+		try {
+			String sql = "INSERT INTO payment (order_id, amount, payment_method, payment_status)" + " VALUES (?,?,?,?)";
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql); 
+			
+			 prep.setInt(1, p.getOrder().getOrderId()); // The 1 binds to the first "?"
+	         prep.setInt(2, p.getAmount()); // The 2 binds to the second "?", etc.
+	         prep.setString(3, p.getPaymentMethod().name()); // name() Returns the name of this enum constant, exactly as declared in its enum declaration
+	         prep.setString(4, p.getPaymentStatus().name()); // The 4 binds to the fourth "?"
+	         
+	         prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+	         
+		} catch(Exception e){ // All the previous methods throw an exception that is generally caught here in the form of Exception 
+			e.printStackTrace(); // To print where the error comes from
+		}
+		
+	}
+
+	/**
+     * This method deletes the payment with the given id.
+     * @param paymentId unique identifier of the payment.
+     * @throws Exception if no such payment exists or a database error occurs.
+     */
+	@Override
+	public void deletePaymentById(Integer paymentId) throws Exception {
+		try {
+			 String sql = "DELETE FROM payment WHERE payment_id = ?";
+			 PreparedStatement prep = manager.getConnection().prepareStatement(sql); 
+			 
+			 prep.setInt(1, paymentId); // The 1 binds to the first and unique "?"
+			 
+			 int rows = prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+             if (rows == 0) {
+            	 throw new Exception("No payment found with id " + paymentId);
+            	 } 
+		} catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+		
+	}
+
+	/**
+     * This method retrieves all payments from the database.
+     * @return a List of Payment objects; never null but possibly empty if there are no records.
+     */
+	@Override
+	public List<Payment> getListOfPayments() {
+		List<Payment> payments = new ArrayList<>();
+		try {
+			Statement stmt = manager.getConnection().createStatement();
+			String sql = "SELECT * FROM payment";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) { // next() Moves the cursor forward one row from its current position
+				Integer paymentId = rs.getInt("payment_id");
+				// TODO Order order = orderManager.getOrderById(order_id); -> ABRIL HAS TO IMPLEMENT THIS EXACT METHOD FOR ME 
+				Integer amount = rs.getInt("amount");
+				PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("payment_method")); // valueOf() is a function from Enum
+				PaymentStatus paymentStatus = PaymentStatus.valueOf(rs.getString("payment_status")); // valueOf() is a function from Enum
+				
+				// IMPLEMENT THIS ONCE THE CLASS ORDER IS FINISHED
+				// Payment payment = new Payment(paymentId, order, amount, paymentMethod, paymentStatus);
+				// payments.add(payment);
+			}
+			
+			rs.close();
+			stmt.close();
+			
+		} catch(Exception e){ // All the previous methods throw an exception that is generally caught here in the form of Exception 
+			e.printStackTrace(); // To print where the error comes from
+		}
+		
+		return payments;
+	}
+
+	/**
+	 * This method retrieves a single payment by its id.
+	 * @param p_id the unique identifier of the payment to fetch.
+	 * @return the matching Payment, or null if no such payment exists.
+	 */
+	@Override
+	public Payment getPaymentById(Integer p_id) {
+		Payment payment = null;
+		
+		try {
+			Statement stmt = manager.getConnection().createStatement();
+			String sql = "SELECT * FROM payment WHERE payment_id = " + p_id;
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			Integer paymentId = rs.getInt("payment_id");
+			// TODO Order order = orderManager.getOrderById(order_id); -> ABRIL HAS TO IMPLEMENT THIS EXACT METHOD FOR ME 
+			Integer amount = rs.getInt("amount");
+			PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("payment_method")); // valueOf() is a function from Enum
+			PaymentStatus paymentStatus = PaymentStatus.valueOf(rs.getString("payment_status")); // valueOf() is a function from Enum
+			
+			// IMPLEMENT THIS ONCE THE CLASS ORDER IS FINISHED
+			// payment = new Payment(paymentId, order, amount, paymentMethod, paymentStatus);
+			
+			rs.close();
+			stmt.close();
+			
+		}catch(Exception e){ // All the previous methods throw an exception that is generally caught here in the form of Exception 
+			e.printStackTrace(); // To print where the error comes from.
+		}
+		return payment;
+	}
+
+	/**
+	 * This method updates the amount on an existing payment.
+	 * @param paymentId the unique identifier of the payment to update.
+	 * @param amount the new amount value.
+	 * @throws Exception if no payment exists with that ID or a database error occurs.
+	 */
+	@Override
+	public void updateAmount(Integer paymentId, Integer amount) throws Exception {
+		try {
+			String sql = "UPDATE payment SET amount = ? WHERE payment_id = ?";
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			
+			prep.setInt(1, amount); // The 1 binds to the first "?"
+            prep.setInt(2, paymentId); // The 2 binds to the second "?"
+            int rows = prep.executeUpdate();
+            if (rows == 0) {
+                throw new Exception("No payment found with id " + paymentId);
+            } 
+		} catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+		
+	}
+
+	/**
+	 * This method updates the payment method on an existing payment.
+	 * @param paymentId the unique identifier of the payment to update.
+	 * @param method the new PaymentMethod to set.
+	 * @throws Exception if no payment exists with that ID or a database error occurs.
+	 */
+	@Override
+	public void updatePaymentMethod(Integer paymentId, PaymentMethod method) throws Exception {
+		try {
+			 String sql = "UPDATE payment SET payment_method = ? WHERE payment_id = ?";
+			 PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			 
+			 prep.setString(1, method.name()); // name() Returns the name of this enum constant, exactly as declared in its enum declaration
+             prep.setInt(2, paymentId);
+             int rows = prep.executeUpdate();
+             if (rows == 0) {
+            	 throw new Exception("No payment found with id " + paymentId);
+             }
+		} catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+		
+	}
+
+	/**
+	 * This method updates the payment status on an existing payment.
+	 * @param paymentId the unique identifier of the payment to update.
+	 * @param status the new PaymentStatus to set.
+	 * @throws Exception if no payment exists with that ID or a database error occurs.
+	 */
+	@Override
+	public void updatePaymentStatus(Integer paymentId, PaymentStatus status) throws Exception {
+		try {
+			String sql = "UPDATE payment SET payment_status = ? WHERE payment_id = ?";
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			
+			prep.setString(1, status.name()); // name() Returns the name of this enum constant, exactly as declared in its enum declaration
+            prep.setInt(2, paymentId);
+            int rows = prep.executeUpdate();
+            if (rows == 0) {
+                throw new Exception("No payment found with id " + paymentId);
+            }
+		} catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+		
+	}
+
+}

@@ -1,7 +1,8 @@
-package db.jdbcInterfaces;
+package HospiCartInterfaces;
 
-import db.pojos.ProductOrder;
 import java.util.List;
+
+import HospiCartPOJOs.ProductOrder;
 
 public interface IProductOrderManager {
 
