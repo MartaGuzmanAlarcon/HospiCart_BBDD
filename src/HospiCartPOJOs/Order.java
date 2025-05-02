@@ -103,6 +103,7 @@ public class Order implements Serializable {
 
 
 	public void setStatus(Status status) {
+		//TODO: this method should check if the received status is valid and throw an exception in the case it is not valid.
 		this.status = status;
 	}
 

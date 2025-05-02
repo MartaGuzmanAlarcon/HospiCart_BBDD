@@ -1,7 +1,7 @@
 package HospiCartInterfaces;
 
+import java.sql.Date;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 
 import HospiCartPOJOs.Client;
@@ -34,27 +34,27 @@ public interface IOrderManager {
 	
 	/**
 	 * Method that retrieves a list containing all the orders that were purchased on the date received as parameter.
-	 * @param order_date variable of local date type.
+	 * @param order_date variable of date type.
 	 * @return the list of orders that were purchased on the date introduced.
 	 */
 	//TODO: throw an exception if either no orders were purchased on the received date or if the date is invalid.
-	List<Order> getOrdersByOrderDate(LocalDate order_date);
+	List<Order> getOrdersByOrderDate(Date order_date);
 	
 	/**
 	 * Method that receives two dates as parameter, which establish the date range that is of our interest in order to filter the orders and see only the ones that fall within this range.
-	 * @param startDate variable of LocalDate type that stores the start date of the range.
-	 * @param endDate variable of LocalDate type that stores the end date of the range.
+	 * @param startDate variable of Date type that stores the start date of the range.
+	 * @param endDate variable of Date type that stores the end date of the range.
 	 * @return a list containing all the orders whose order date is between the range.
 	 */
 	//TODO: throw an exception if any of the dates is invalid or if there are no orders in the provided range.
-	List<Order> getOrdersWithinDateRange(LocalDate startDate, LocalDate endDate);
+	List<Order> getOrdersWithinDateRange(Date startDate, Date endDate);
 	
 	/**
 	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
 	 * @param order_id integer that stores the id of the order whose status we wish to update.
 	 * @param newStatus variable of type Status that store the status we want the order to have.
 	 */
-	//TODO: this method should throw an exception for the cases in which an order with the introduced id does not exist.
+	//TODO: this method should rethrow the exception thrown by "get order by id" an order with the introduced id does not exist. CHECK WHEN DO WE HAVE TO CJECK IF THE NEW STATUS IS VALID
 	void updateOrderStatus(int order_id, Status newStatus);
 	
 	/**
@@ -78,16 +78,4 @@ public interface IOrderManager {
 	 */
 	//TODO: should this method throw an exception in case there are no orders with the specified status?
 	List<Order> getOrdersByStatus(Status status);
-	
-	/**
-	 * Method that checks whether an order exists with the order id received as parameter or not.
-	 * @param order_id integer that stores the id of the order we want to check its existence.
-	 * @return true if the order exists.
-	 */
-	//TODO: throw an exception
-	//TODO SEE IF THIS METHOD IS USEFUL
-	boolean orderExists(int order_id);
-	
-	
-
 }

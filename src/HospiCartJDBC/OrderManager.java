@@ -17,8 +17,10 @@ import HospiCartJDBC.ProductOrderManager;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderManager implements IOrderManager {
@@ -106,17 +108,17 @@ public class OrderManager implements IOrderManager {
     				order.setOrderDate(resultSet.getDate("order_date"));
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
-    				Payment payment = getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
     				int user_id = resultSet.getInt("user_id");
-    				Client client = getClientById(user_id);
+    				Client client = cm.getClientManager().getClientById(user_id);
     				order.setClient(client);
     				
-    				Shipment shipment = getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = getProductOrdersByOrderId(order_id);
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
     				order.setProducts(productOrders);
     				
     			}
@@ -129,44 +131,356 @@ public class OrderManager implements IOrderManager {
     	}
         return order;
     }
-
+    
+    /**
+	 * Method that retrieves a list of orders whose buyer's id coincides with the id received as parameter.
+	 * @param user_id integer that stores the id of the user whose orders we want to see.
+	 * @return a list that contains all the orders associated to the user.
+	 */
     @Override
     public List<Order> getOrdersByUser(int user_id) {
-        return List.of();
+    	Order order = null;
+    	List<Order> ordersOfUser = new ArrayList<>();
+    	
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
+    			+ "FROM client_order AS o"
+    			+ "WHERE o.user_id = ?";
+    	
+    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setInt(1, user_id);
+    		try(var resultSet = stmt.executeQuery()){
+    			// Get the full Client object from ClientManager
+                Client client = cm.getClientManager().getClientById(user_id);
+    			if(resultSet.next()) {
+    				order = new Order();
+    				//I create a variable called order id and store the id of the order in it.
+    				int order_id = resultSet.getInt("order_id");
+    				//I set the fields of the order object.
+    				order.setOrderId(order_id);
+    				order.setOrderDate(resultSet.getDate("order_date"));
+    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				order.setClient(client);   
+    				
+    				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				order.setPayment(payment);
+    				
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				order.setShipment(shipment);
+    				
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				order.setProducts(productOrders);
+    				
+    				//Finally, I add the created order to the list of orders the user made.
+    				ordersOfUser.add(order);
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	}catch(SQLException e) {
+    		System.err.println("Error retrieving orders from user: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return ordersOfUser;
     }
 
+    /**
+	 * Method that retrieves a list containing all the orders that were purchased on the date received as parameter.
+	 * @param order_date variable of date type.
+	 * @return the list of orders that were purchased on the date introduced.
+	 */
     @Override
-    public List<Order> getOrdersByOrderDate(LocalDate order_date) {
-        return List.of();
+    public List<Order> getOrdersByOrderDate(Date order_date) {
+    	
+    	Order order = null;
+    	List<Order> ordersWithSpecifiedDate = new ArrayList<>();
+    	
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
+    			+ "FROM client_order AS o"
+    			+ "WHERE o.order_date = ?";
+    	
+    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setDate(1, order_date);
+    		try(var resultSet = stmt.executeQuery()){
+    			
+    			if(resultSet.next()) {
+    				order = new Order();
+    				//I create a variable called order id and store the id of the order in it.
+    				int order_id = resultSet.getInt("order_id");
+    				//I set the fields of the order object.
+    				order.setOrderId(order_id);
+    				order.setOrderDate(order_date);
+    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				
+    				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
+    				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
+    				order.setClient(client);
+    				
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				order.setPayment(payment);
+    				
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				order.setShipment(shipment);
+    				
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				order.setProducts(productOrders);
+    				
+    				//Finally, I add the created order to the list of orders the user made.
+    				ordersWithSpecifiedDate.add(order);
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	}catch(SQLException e) {
+    		System.err.println("Error retrieving orders purchased on the specified date: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return ordersWithSpecifiedDate;
     }
 
+    /**
+	 * Method that receives two dates as parameter, which establish the date range that is of our interest in order to filter the orders and see only the ones that fall within this range.
+	 * @param startDate variable of Date type that stores the start date of the range.
+	 * @param endDate variable of Date type that stores the end date of the range.
+	 * @return a list containing all the orders whose order date is between the range.
+	 */
     @Override
-    public List<Order> getOrdersWithinDateRange(LocalDate startDate, LocalDate endDate) {
+    public List<Order> getOrdersWithinDateRange(Date startDate, Date endDate) {
+    	Order order = null;
+    	List<Order> ordersWithinDateRange = new ArrayList<>();
+    	
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
+    			+ "FROM client_order AS o"
+    			+ "WHERE o.order_date BETWEEN ? AND ?";
+    	
+    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setDate(1, startDate);
+    		stmt.setDate(2, endDate);
+
+    		try(var resultSet = stmt.executeQuery()){
+    			
+    			if(resultSet.next()) {
+    				order = new Order();
+    				//I create a variable called order id and store the id of the order in it.
+    				int order_id = resultSet.getInt("order_id");
+    				//I set the fields of the order object.
+    				order.setOrderId(order_id);
+    				order.setOrderDate(resultSet.getDate("order_date"));
+    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				
+    				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
+    				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
+    				order.setClient(client);
+    				
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				order.setPayment(payment);
+    				
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				order.setShipment(shipment);
+    				
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				order.setProducts(productOrders);
+    				
+    				//Finally, I add the created order to the list of orders the user made.
+    				ordersWithinDateRange.add(order);
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	}catch(SQLException e) {
+    		System.err.println("Error retrieving orders between the specified date range: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return ordersWithinDateRange;
         return List.of();
     }
-
+    
+    /**
+	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
+	 * @param order_id integer that stores the id of the order whose status we wish to update.
+	 * @param newStatus variable of type Status that store the status we want the order to have.
+	 */
     @Override
     public void updateOrderStatus(int order_id, Status newStatus) {
-
+    	Order order = getOrderByID(order_id);
+    	order.setStatus(newStatus);
+    	
+    	String sql = "UPDATE client_order SET status = ? WHERE order_id = ?";
+    	
+    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setString(1, newStatus.name());
+    		stmt.setInt(2, order_id);
+    		
+    		int rowsUpdated = stmt.executeUpdate();
+    		if (rowsUpdated == 0) {
+                System.out.println("No order found with ID: " + order_id);
+            } else {
+                System.out.println("Order ID " + order_id + " updated to status: " + newStatus);
+            }
+			stmt.close();
+    		c.commit();
+    	} catch (SQLException e) {
+            try {
+                c.rollback();  // Rollback in case of error
+            } catch (SQLException rollbackEx) {
+                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+            }
+            throw new RuntimeException("Error updating order status: " + e.getMessage(), e);
+        }
     }
 
+    /**
+	 * Method that receives an order's id as parameter and deletes it.
+	 * @param order_id integer that stores the id of the order we wish to remove.
+	 */
     @Override
     public void deleteOrder(int order_id) {
+    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
+    	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
+    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ?";
+    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ?";
+    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ?";
+    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ?";
+    	
+    	try (
+    			//I create one prepared statement per each SQL sequence created.
+    			PreparedStatement stmtProductOrders = c.prepareStatement(deleteFromProductOrders);
+    			PreparedStatement stmtPayment = c.prepareStatement(deleteFromPayment);
+    			PreparedStatement stmtFromShipment = c.prepareStatement(deleteFromShipment);
+    			PreparedStatement stmtOrder = c.prepareStatement(deleteFromOrder);
+    	){
+    		//Delete from product orders
+    		stmtProductOrders.setInt(1, order_id);
+    		stmtProductOrders.executeUpdate();
+    		
+    		//Delete from payment
+    		stmtPayment.setInt(1, order_id);
+    		stmtPayment.executeUpdate();
 
+    		//Delete from shipment
+    		stmtFromShipment.setInt(1, order_id);
+    		stmtFromShipment.executeUpdate();
+    		
+    		//Delete from client_order
+    		stmtOrder.setInt(1, order_id);
+    		int rowsAffected = stmtOrder.executeUpdate();
+    		
+    		//We check whether a line was or not affected (is yes, then the order was removed)
+    		if (rowsAffected == 0) {
+                System.out.println("No order found with ID: " + order_id);
+            } else {
+                System.out.println("Order with ID " + order_id + " deleted successfully.");
+            }
+    		stmtProductOrders.close();
+    		stmtPayment.close();
+    		stmtFromShipment.close();
+    		stmtOrder.close();
+
+            c.commit(); //we commit the transaction
+    		
+    	}catch (SQLException e) {
+            try {
+                c.rollback(); // Rollback on failure
+            } catch (SQLException rollbackEx) {
+                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+            }
+            throw new RuntimeException("Error deleting order: " + e.getMessage(), e);
+        }
     }
-
+    
+    
+    /**
+	 * Method that retrieves a list containing all the orders of HospiCart.
+	 * @return a list with all the orders.
+	 */
     @Override
     public List<Order> getAllOrders() {
-        return List.of();
+    	Order order = null;
+    	List<Order> orders = new ArrayList<>();
+
+    	String sql = "SELECT *"
+    			+ "FROM client_order AS o";
+    	
+    	try (PreparedStatement stmt = c.prepareStatement(sql)){
+    		try(ResultSet resultSet = stmt.executeQuery()){
+    			if(resultSet.next()) {
+    				order = new Order();
+    				order.setOrderId(resultSet.getInt("order_id"));
+    				order.setOrderDate(resultSet.getDate("order_date"));
+    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				order.setPayment(payment);
+    				
+    				int user_id = resultSet.getInt("user_id");
+    				Client client = cm.getClientManager().getClientById(user_id);
+    				order.setClient(client);
+    				
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				order.setShipment(shipment);
+    				
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				order.setProducts(productOrders);
+    				
+    				//Finally, I add the created order to the list of orders the user made.
+    				orders.add(order);
+    				
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	} catch(SQLException e) {
+    		System.err.println("Error retrieving order: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return orders;
     }
 
     @Override
     public List<Order> getOrdersByStatus(Status status) {
-        return List.of();
-    }
-
-    @Override
-    public boolean orderExists(int order_id) {
-        return false;
+    	Order order = null;
+    	List<Order> ordersWithSpecifiedStatus = new ArrayList<>();
+    	
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
+    			+ "FROM client_order AS o"
+    			+ "WHERE o.order_status = ?";
+    	
+    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setString(1, status.name());
+    		try(var resultSet = stmt.executeQuery()){
+    			
+    			if(resultSet.next()) {
+    				order = new Order();
+    				//I create a variable called order id and store the id of the order in it.
+    				int order_id = resultSet.getInt("order_id");
+    				//I set the fields of the order object.
+    				order.setOrderId(order_id);
+    				order.setOrderDate(resultSet.getDate("order_date"));
+    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				
+    				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
+    				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
+    				order.setClient(client);
+    				
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				order.setPayment(payment);
+    				
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				order.setShipment(shipment);
+    				
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				order.setProducts(productOrders);
+    				
+    				//Finally, I add the created order to the list of orders the user made.
+    				ordersWithSpecifiedStatus.add(order);
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	}catch(SQLException e) {
+    		System.err.println("Error retrieving orders purchased on the specified date: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return ordersWithSpecifiedStatus;    
     }
 }
