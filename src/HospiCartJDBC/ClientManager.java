@@ -26,7 +26,7 @@ public class ClientManager implements IClientManager{
 	@Override
 	public void insertClient(Client c) {
 		try {
-			String sql = "INSERT INTO client (name, surname, phone_number, email, address)" + "VALUES (?,?,?,?,?,?)"; // 6 "?" corresponding to 6 expressions in the SQL sentence
+			String sql = "INSERT INTO client (name, surname, phone_number, email, address, role)" + "VALUES (?,?,?,?,?,?)"; // 6 "?" corresponding to 6 expressions in the SQL sentence
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
 			
 			prep.setString(1, c.getName()); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
