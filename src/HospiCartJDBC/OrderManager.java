@@ -115,10 +115,10 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(user_id);
     				order.setClient(client);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
     			}
@@ -165,10 +165,10 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
@@ -219,10 +219,10 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
@@ -275,10 +275,10 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
@@ -405,7 +405,9 @@ public class OrderManager implements IOrderManager {
     		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				order = new Order();
-    				order.setOrderId(resultSet.getInt("order_id"));
+    				//I create a variable called order id and store the id of the order in it.
+    				int order_id = resultSet.getInt("order_id");
+    				order.setOrderId(order_id);
     				order.setOrderDate(resultSet.getDate("order_date"));
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
@@ -416,10 +418,10 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(user_id);
     				order.setClient(client);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
@@ -465,10 +467,10 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderId(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
     				order.setShipment(shipment);
     				
-    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderId(order_id); //TODO do this method
+    				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.

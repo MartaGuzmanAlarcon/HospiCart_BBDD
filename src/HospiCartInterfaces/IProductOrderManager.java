@@ -13,26 +13,50 @@ import java.util.List;
 public interface IProductOrderManager {
 
 	//boolean addProductOrder(ProductOrder productOrder); // Agregar un producto a mi pedido
-
-	//List<ProductOrder> getProductOrdersByOrderId(int orderId); // Ver productos de un pedido
-
-	//ProductOrder getProductOrderById(int productOrderId); // Ver un producto específico
-
-	//boolean cancelProductOrder(int productOrderId); // Borrar un producto
-	//TODO this method should delete the product order. How would this work? If I were to delete a product order, I would have to delete the order associated to it and what should I do with its products?
 	
-	//Actualizar cantidad del pedido
-	boolean updateProductOrderQuantity(int productOrderId, int quantity);
+	
+	/**
+	 * Method that receives the id of a product and the id of an order and returns the object of Product Order that corresponds with the received IDs.
+	 * @param product_id integer that stores the id of a product.
+	 * @param order_id integer that stores the id of an order.
+	 * @return an object of the class product order whose id matches with the received one as parameter.
+	 */
+	ProductOrder getProductOrderByIDs(int product_id, int order_id);
+	
+	/**
+	 * Method that receives an order id as parameter and returns a list that contains all the product orders whose order id matches the received one.
+	 * @param order_id integer that stores the id of an order.
+	 * @return a list that contains objects of "ProductOrder".
+	 */
+	List<ProductOrder> getProductOrdersByOrderID(int order_id);
+	
+	/**
+	 * Method that receives an order id and deletes the product orders associated to it.
+	 * @param order_id integer that stores the id of an order.
+	 */
+	void deleteProductOrdersByOrderID(int order_id);
+	
+	/**
+	 * Method that receives the id of a product order as parameter and deletes the product order whose id matches the received one.
+	 * @param po_id integer that stores the id of a product order.
+	 */
+	/**
+	 * Method that receives the id of a product and the id of an order as parameter and deletes the product order whose IDs match with the received ones.
+	 * @param product_id integer that stores the id of a product.
+	 * @param order_id integer that stores the id of an order.
+	 */
+	void deleteProductOrderByIDs(int product_id, int order_id);
+	
 	/**
 	 * Method that receives a product and an order id by parameter and adds the received product to the order that corresponds with the received order id.
-	 * @param product_id instance of the Product class that we want to add to an order.
+	 * @param product_id integer that stores the id of the product that we want to add to an order.
 	 * @param order_id integer that stores the id of the order to which we want to add a product.
 	 */
 	void addProductToAnOrder(int product_id, int order_id);
 	
 	/**
 	 * Method that receives a product and an order id by parameter and removed the received product to the order that corresponds with the received order id.
-	 * @param product_id instance of the Product class that we want to remove from an order.
+	 * @param product_id integer that stores the id of the product that we want to remove from an order.
 	 * @param order_id integer that stores the id of the order from which we want to remove a product.
 	 */
 	void removeProductFromAnOrder(int product_id, int order_id);
@@ -61,9 +85,9 @@ public interface IProductOrderManager {
 	/**
 	 * Method that receives an order id and returns the total price of the order that corresponds with the receives id.
 	 * @param order_id integer that stores the id of the order whose products we wish to obtain.
-	 * @return an integer that stores the total price of the order.
+	 * @return a floating number that stores the total price of the order.
 	 */
-	int getTotalPriceOfAnOrder(int order_id);
+	double getTotalPriceOfAnOrder(int order_id);
 	
 	/**
 	 * Method that receives a product id and returns a list that contains all the orders that have the product passed as parameter.
@@ -71,7 +95,4 @@ public interface IProductOrderManager {
 	 * @return a list containing instances of Order.
 	 */
 	List<Order> getOrdersWithAProduct(int product_id);
-	
-	
-	//GET PRODUCT ORDERS FROM ORDER ID
 }
