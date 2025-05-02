@@ -14,8 +14,6 @@ public interface IOrderManager {
 	 * Method that receives the id of the user and creates an order. 
 	 * @param client
 	 */
-	//TODO: this method should establish the order_date as the present one (LOCAL DATE: i think we have to use just DATE, CHECK!) and sets its order id and status to the appropriate ones
-	//TODO: order id should be unique values and auto-increment as orders are created.
 	Order createOrder(Client client) throws SQLException;
 	
 	/**

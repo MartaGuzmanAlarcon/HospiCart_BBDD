@@ -3,7 +3,16 @@ package HospiCartJDBC;
 import HospiCartInterfaces.IOrderManager;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
+import HospiCartPOJOs.Payment;
+import HospiCartPOJOs.ProductOrder;
+import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
+
+import HospiCartJDBC.ClientManager;
+import HospiCartJDBC.PaymentManager;
+import HospiCartJDBC.ShipmentManager;
+import HospiCartJDBC.ProductOrderManager;
+
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -74,16 +83,50 @@ public class OrderManager implements IOrderManager {
         return order;
 
     }
-
+    
+    /**
+	 * Method that retrieves a specific order whose id matches the one received as parameter.
+	 * @param order_id integer that contains the id of the order we wish to obtain.
+	 * @return an object of Order
+	 */
     @Override
     public Order getOrderByID(int order_id) {
     	Order order = null;
-    	/*
-    	String sql = "SELECT o.order_id, o. "
-    	try {
-    		Statement
+    
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
+    			+ "FROM client_order AS o"
+    			+ "WHERE o.order_id = ?";
+    	
+    	try (PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setInt(1, order_id);
+    		try(var resultSet = stmt.executeQuery()){
+    			if(resultSet.next()) {
+    				order = new Order();
+    				order.setOrderId(resultSet.getInt("order_id"));
+    				order.setOrderDate(resultSet.getDate("order_date"));
+    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				
+    				Payment payment = getPaymentByOrderId(order_id); //TODO do this method
+    				order.setPayment(payment);
+    				
+    				int user_id = resultSet.getInt("user_id");
+    				Client client = getClientById(user_id);
+    				order.setClient(client);
+    				
+    				Shipment shipment = getShipmentByOrderId(order_id); //TODO do this method
+    				order.setShipment(shipment);
+    				
+    				List<ProductOrder> productOrders = getProductOrdersByOrderId(order_id);
+    				order.setProducts(productOrders);
+    				
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	} catch(SQLException e) {
+    		System.err.println("Error retrieving order: " + e.getMessage());
+            e.printStackTrace();
     	}
-    	*/
         return order;
     }
 
