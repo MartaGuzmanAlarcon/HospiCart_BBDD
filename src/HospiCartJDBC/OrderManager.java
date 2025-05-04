@@ -27,6 +27,7 @@ public class OrderManager implements IOrderManager {
     private Connection c;
     private ConnectionManagerJDBC cm; //TODO delete this? it is not used
 
+    //Constructor
     public OrderManager(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
@@ -115,7 +116,7 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(user_id);
     				order.setClient(client);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
@@ -165,7 +166,7 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
@@ -219,7 +220,7 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
@@ -275,7 +276,7 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
@@ -418,7 +419,7 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(user_id);
     				order.setClient(client);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
@@ -432,12 +433,17 @@ public class OrderManager implements IOrderManager {
     			resultSet.close();
     		}
     	} catch(SQLException e) {
-    		System.err.println("Error retrieving order: " + e.getMessage());
+    		System.err.println("Error retrieving orders: " + e.getMessage());
             e.printStackTrace();
     	}
         return orders;
     }
 
+    /**
+	 * Method that retrieves a list that contains all the orders whose status matches the one received as parameter.
+	 * @param status variable of type Status that contains the status we are interested in (in order to see the orders that have this status)
+	 * @return a list that contains the orders with the received status.
+	 */
     @Override
     public List<Order> getOrdersByStatus(Status status) {
     	Order order = null;
@@ -467,7 +473,7 @@ public class OrderManager implements IOrderManager {
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
     				order.setPayment(payment);
     				
-    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id); //TODO do this method
+    				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);

@@ -189,9 +189,9 @@ public class ProductOrderManager implements IProductOrderManager{
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
-			stmt.setInt(1,  order_id);
+			stmt.setInt(1, order_id);
 			stmt.setInt(2, product_id);
-			stmt.setInt(3,  product_id);
+			stmt.setInt(3, product_id);
 					
 			stmt.executeUpdate();
 			stmt.close();

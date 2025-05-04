@@ -54,7 +54,7 @@ public interface IOrderManager {
 	 * @param order_id integer that stores the id of the order whose status we wish to update.
 	 * @param newStatus variable of type Status that store the status we want the order to have.
 	 */
-	//TODO: this method should rethrow the exception thrown by "get order by id" an order with the introduced id does not exist. CHECK WHEN DO WE HAVE TO CJECK IF THE NEW STATUS IS VALID
+	//TODO: this method should re-throw the exception thrown by "get order by id" an order with the introduced id does not exist. CHECK WHEN DO WE HAVE TO CJECK IF THE NEW STATUS IS VALID
 	void updateOrderStatus(int order_id, Status newStatus);
 	
 	/**
@@ -71,6 +71,7 @@ public interface IOrderManager {
 	//TODO: throw an exception in case there are no orders.
 	List<Order> getAllOrders();
 	//TODO ver si es util
+	
 	/**
 	 * Method that retrieves a list that contains all the orders whose status matches the one received as parameter.
 	 * @param status variable of type Status that contains the status we are interested in (in order to see the orders that have this status)
