@@ -6,11 +6,11 @@ import HospiCartPOJOs.ProductOrder;
 
 import HospiCartPOJOs.Order;
 
+/**
+ * Interface that defines the operations for managing product orders in the HospiCart system.
+ * Implementing classes must provide functionality to create, retrieve, update, and delete product orders, as well as manage the products within those product orders.
+ */
 public interface IProductOrderManager {
-
-	//boolean addProductOrder(ProductOrder productOrder); // Agregar un producto a mi pedido
-	
-	
 	/**
 	 * Method that receives the id of a product and the id of an order and returns the object of Product Order that corresponds with the received IDs.
 	 * @param product_id integer that stores the id of a product.

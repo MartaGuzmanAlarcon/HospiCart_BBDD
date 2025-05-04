@@ -6,6 +6,10 @@ import java.util.List;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Shipment;
 
+/**
+ * Interface that defines the operations for managing shipments in the HospiCart system.
+ * Implementing classes must provide functionality to create, retrieve and delete shipments.
+ */
 public interface IShipmentManager {
 	
 	/**

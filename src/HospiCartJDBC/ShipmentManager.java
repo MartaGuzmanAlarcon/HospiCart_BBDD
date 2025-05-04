@@ -11,6 +11,12 @@ import HospiCartInterfaces.IShipmentManager;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Shipment;
 
+/**
+ * This class is the responsible for handling all the operations related to shipments.
+ * This includes creating new shipments, finding shipments by their shipment id, tracking number or order id or deleting shipments.
+ * 
+ * This class implements the interface "IShipmentManager" and implements all of its methods. 
+ */
 public class ShipmentManager implements IShipmentManager{
 
 	private Connection c;
@@ -169,6 +175,7 @@ public class ShipmentManager implements IShipmentManager{
     				shipment = new Shipment();
     				shipment.setShipmentId(resultSet.getInt("shipment_id"));
     				shipment.setTrackingNumber(resultSet.getInt("tracking_number"));
+    				shipment.setOrder(order);
     			}
     			stmt.close();
     			resultSet.close();

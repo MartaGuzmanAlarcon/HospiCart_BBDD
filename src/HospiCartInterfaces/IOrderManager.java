@@ -8,7 +8,11 @@ import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Status;
 
+/**
+ * Interface that defines the operations for managing orders in the HospiCart system.
+ *  * Implementing classes must provide functionality to create, retrieve, update, and delete orders.
 
+ */
 public interface IOrderManager {
 	/**
 	 * Method that receives the id of the user and creates an order. 

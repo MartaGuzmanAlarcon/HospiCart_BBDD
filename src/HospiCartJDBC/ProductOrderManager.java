@@ -14,7 +14,13 @@ import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 
-
+/**
+ * This class is the responsible for handling all the operations related product orders.
+ * This includes finding product orders by their order id, product id or both, deleting product orders, updating existing product orders (changing the amount of a product and 
+ * the price or deleting a product) or creating a new product order.
+ * 
+ * This class implements the interface "IProductOrderManager" and implements all of its methods. 
+ */
 public class ProductOrderManager implements IProductOrderManager{
 	
     private Connection c;

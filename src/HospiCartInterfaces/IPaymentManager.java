@@ -18,4 +18,7 @@ public interface IPaymentManager {
 	public void updateAmount(Integer paymentId, Integer amount) throws Exception;
 	public void updatePaymentMethod(Integer paymentId, PaymentMethod method) throws Exception;
 	public void updatePaymentStatus(Integer paymentId, PaymentStatus status) throws Exception;
+	
+	
+	public Payment getPaymentByOrderId(int order_id);
 }

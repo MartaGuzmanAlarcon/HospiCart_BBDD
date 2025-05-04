@@ -9,6 +9,7 @@ import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Payment;
 import HospiCartPOJOs.PaymentMethod;
 import HospiCartPOJOs.PaymentStatus;
+import HospiCartPOJOs.Shipment;
 import Utilities.Utilities;
 
 public class PaymentManager implements IPaymentManager {
@@ -208,4 +209,39 @@ public class PaymentManager implements IPaymentManager {
 		
 	}
 
+	/**
+	 * Method that receives an order id by parameter and retrieves the payment that is associated to the order of the received order id.
+	 * @param order_id integer that stores the id of the order whose payment we want to get.
+	 */
+	@Override
+	public Payment getPaymentByOrderId(int order_id) {
+		Payment payment = null;
+	    //SQL query
+    	String sql = "SELECT *"
+    			+ "FROM payment"
+    			+ "WHERE order_id = ?";
+    	//I create the statement
+    	try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)){
+    		stmt.setInt(1, order_id);
+    		
+    		try(var resultSet = stmt.executeQuery()){
+    			if(resultSet.next()) {
+    				Order order = manager.getOrderManager().getOrderByID(order_id);
+    				//I set the fields of the payment object.
+    				payment = new Payment();
+    				payment.setPaymentId(resultSet.getInt("payment_id"));
+    				payment.setOrder(order);
+    				payment.setAmount(resultSet.getInt("amount"));
+    				payment.setPaymentMethod(PaymentMethod.valueOf(resultSet.getString("payment_method")));
+    				payment.setPaymentStatus(PaymentStatus.valueOf(resultSet.getString("payment_status")));
+    			}
+    			stmt.close();
+    			resultSet.close();
+    		}
+    	} catch(SQLException e) {
+    		System.err.println("Error retrieving the payment: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return payment;
+	}
 }

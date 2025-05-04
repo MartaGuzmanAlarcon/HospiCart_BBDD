@@ -8,11 +8,6 @@ import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
 
-import HospiCartJDBC.ClientManager;
-import HospiCartJDBC.PaymentManager;
-import HospiCartJDBC.ShipmentManager;
-import HospiCartJDBC.ProductOrderManager;
-
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -22,6 +17,13 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * This class is the responsible for handling all the operations related to orders.
+ * This includes creating new orders, finding orders by their order id, client, date or status, deleting orders, updating existing orders by updating their status.
+ * 
+ * This class implements the interface "IOrderManager" and implements all of its methods. 
+ */
 
 public class OrderManager implements IOrderManager {
     private Connection c;
@@ -36,7 +38,7 @@ public class OrderManager implements IOrderManager {
     /**
      * Method that creates a new order with the client it receives as parameter and setting the current date and the default status to the order.
      * @param client object of Client that stores the user who made the order.
-     * @throws SQLException if there is a problem with the connection (it is closed or not properly initialised), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
+     * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
     public Order createOrder(Client client) throws SQLException{
@@ -63,7 +65,7 @@ public class OrderManager implements IOrderManager {
 
             //Now, I get the generated order id
             try(var generatedKeys = stmt.getGeneratedKeys()) {
-                //We use var because it enables the compiler to infer the type of the variable from the initialization (in this case, var represents a result set)
+                //We use VAR because it enables the compiler to infer the type of the variable from the initialization (in this case, VAR represents a result set)
                 if (generatedKeys.next()) {
                     order.setOrderId(generatedKeys.getInt(1));
                 } else {
@@ -71,10 +73,10 @@ public class OrderManager implements IOrderManager {
                 }
             }
             stmt.close();
-            c.commit(); //we do this because we disabled the autocommit in the connection
+            c.commit(); //we do this because we disabled the auto-commit in the connection
         } catch (SQLException e) {
-            //We "rollback" the transaction in case of error.
-            if(c != null){ //We make sure that c is not null as an error would be thrown when trying to rollback over a null object
+            //We roll back the transaction in case of error.
+            if(c != null){ //We make sure that c is not null as an error would be thrown when trying to roll back over a null object
                 try{
                     c.rollback();
                 } catch(SQLException ex){
@@ -109,7 +111,7 @@ public class OrderManager implements IOrderManager {
     				order.setOrderDate(resultSet.getDate("order_date"));
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				order.setPayment(payment);
     				
     				int user_id = resultSet.getInt("user_id");
@@ -163,7 +165,7 @@ public class OrderManager implements IOrderManager {
     				order.setClient(client);   
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				order.setPayment(payment);
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -217,7 +219,7 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); 
     				order.setPayment(payment);
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -273,7 +275,7 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				order.setPayment(payment);
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -293,7 +295,6 @@ public class OrderManager implements IOrderManager {
             e.printStackTrace();
     	}
         return ordersWithinDateRange;
-        return List.of();
     }
     
     /**
@@ -322,7 +323,7 @@ public class OrderManager implements IOrderManager {
     		c.commit();
     	} catch (SQLException e) {
             try {
-                c.rollback();  // Rollback in case of error
+                c.rollback();  // Roll back in case of error
             } catch (SQLException rollbackEx) {
                 System.err.println("Rollback failed: " + rollbackEx.getMessage());
             }
@@ -381,7 +382,7 @@ public class OrderManager implements IOrderManager {
     		
     	}catch (SQLException e) {
             try {
-                c.rollback(); // Rollback on failure
+                c.rollback(); // Roll back on failure
             } catch (SQLException rollbackEx) {
                 System.err.println("Rollback failed: " + rollbackEx.getMessage());
             }
@@ -412,7 +413,7 @@ public class OrderManager implements IOrderManager {
     				order.setOrderDate(resultSet.getDate("order_date"));
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				order.setPayment(payment);
     				
     				int user_id = resultSet.getInt("user_id");
@@ -470,7 +471,7 @@ public class OrderManager implements IOrderManager {
     				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); //TODO do this method
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				order.setPayment(payment);
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
