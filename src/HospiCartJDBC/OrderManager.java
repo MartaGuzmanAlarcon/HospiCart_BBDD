@@ -4,6 +4,7 @@ import HospiCartInterfaces.IOrderManager;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Payment;
+import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
@@ -72,6 +73,8 @@ public class OrderManager implements IOrderManager {
                     throw new SQLException("Creating order failed, no ID obtained.");
                 }
             }
+            //TODO I think I have to create the objects or ProductOrder, Shipment and Payment also.
+            
             stmt.close();
             c.commit(); //we do this because we disabled the auto-commit in the connection
         } catch (SQLException e) {
@@ -86,7 +89,6 @@ public class OrderManager implements IOrderManager {
             throw new RuntimeException("Error creating order: " + e.getMessage(), e);
         }
         return order;
-
     }
     
     /**
@@ -377,6 +379,15 @@ public class OrderManager implements IOrderManager {
     		stmtPayment.close();
     		stmtFromShipment.close();
     		stmtOrder.close();
+    		
+    		//I call the method of Product Order that increases the stock of a product.
+    		List<ProductOrder> productOrdersOfOrder = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
+			for(int i = 0; i<productOrdersOfOrder.size(); i++) {
+				
+				ProductOrder productOrder = productOrdersOfOrder.get(i);
+				Product product = productOrder.getProduct();
+				cm.getProductOrderManager().addProductToStockQuantity(product.getProductId(), productOrder.getAmount());
+			}
 
             c.commit(); //we commit the transaction
     		

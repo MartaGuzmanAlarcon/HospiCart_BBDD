@@ -1,5 +1,6 @@
 package HospiCartInterfaces;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import HospiCartPOJOs.ProductOrder;
@@ -30,14 +31,21 @@ public interface IProductOrderManager {
 	 * Method that receives an order id and deletes the product orders associated to it.
 	 * @param order_id integer that stores the id of an order.
 	 */
-	void deleteProductOrdersByOrderID(int order_id);
+	void deleteProductOrdersByOrderID(int order_id)throws SQLException;
 	
 	/**
 	 * Method that receives the id of a product and the id of an order as parameter and deletes the product order whose IDs match with the received ones.
 	 * @param product_id integer that stores the id of a product.
 	 * @param order_id integer that stores the id of an order.
 	 */
-	void deleteProductOrderByIDs(int product_id, int order_id);
+	void deleteProductOrderByIDs(int product_id, int order_id)throws SQLException;
+	
+	/**
+	 * Method that receives a product id and an amount and adds that amount of the specified product to the product's stock quantity.
+	 * @param product_id integer that stores the id of a product.
+	 * @param amount integer that stores the amount of the product that we want to add to the stock.
+	 */
+	void addProductToStockQuantity(int product_id, int amount) throws SQLException;
 	
 	/**
 	 * Method that receives a product and an order id by parameter and adds the received product to the order that corresponds with the received order id. i.e: the method creates a new
@@ -45,7 +53,14 @@ public interface IProductOrderManager {
 	 * @param product_id integer that stores the id of the product that we want to add to an order.
 	 * @param order_id integer that stores the id of the order to which we want to add a product.
 	 */
-	void createProductOrder(int product_id, int order_id);
+	void createProductOrder(int product_id, int order_id)throws SQLException;
+	
+	/**
+	 * Method that receives a product id and an amount and removes that amount of the specified product from the product's stock.
+	 * @param product_id integer that stores a product id.
+	 * @param amount integer that stores the amount of the product that we want to remove from the prosuct's stock.
+	 */
+	public void removeProductFromStockQuantity(int product_id, int amount)throws SQLException;
 	
 	/**
 	 * Method that receives an order id, a product's id and a quantity. The method updates the amount of the received product for the quantity passed by parameter of the order that corresponds with the received order id.
@@ -53,7 +68,7 @@ public interface IProductOrderManager {
 	 * @param order_id integer that stores the id of the order which we wish to modify.
 	 * @param amount integer that stores the amount we wish to order of the specified product.
 	 */
-	void updateProductAmountInAnOrder(int product_id, int order_id, int amount);
+	void updateProductAmountInAnOrder(int product_id, int order_id, int amount)throws SQLException;
 	
 	/**
 	 * Method that receives an order id and returns the total price of the order that corresponds with the receives id.

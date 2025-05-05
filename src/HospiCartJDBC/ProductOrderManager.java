@@ -143,12 +143,22 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param order_id integer that stores the id of an order.
 	 */
 	@Override
-	public void deleteProductOrdersByOrderID(int order_id) {
+	public void deleteProductOrdersByOrderID(int order_id) throws SQLException{
+		
 		//SQL query
 		String sql = "DELETE * FROM product_order WHERE order_id = ?";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
+			//I get a list with the product orders associated to the order with the received order id and create a for loop in which, 
+			//for each product order, I call the method that adds the products to the stock.
+			List<ProductOrder> productOrdersOfOrder = getProductOrdersByOrderID(order_id);
+			for(int i = 0; i < productOrdersOfOrder.size(); i++) {
+				ProductOrder productOrder = productOrdersOfOrder.get(i);
+				Product product = productOrder.getProduct();
+				addProductToStockQuantity(product.getProductId(), productOrder.getAmount());
+			}
+			
 			stmt.setInt(1,  order_id);
 			
 			stmt.executeUpdate();
@@ -165,12 +175,21 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param order_id integer that stores the id of an order.
 	 */
 	@Override
-	public void deleteProductOrderByIDs(int product_id, int order_id) {
+	public void deleteProductOrderByIDs(int product_id, int order_id) throws SQLException{
+					
 		//SQL query
 		String sql = "DELETE * FROM product_order WHERE order_id = ? AND product_id = ?";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
+			//I get a list with the product orders associated to the order with the received order id and create a for loop in which, 
+			//for each product order, I call the method that adds the products to the stock.
+			List<ProductOrder> productOrdersOfOrder = getProductOrdersByOrderID(order_id); //TODO is this ok? can I have more than one product order of the same product i the same order?
+			for(int i = 0; i < productOrdersOfOrder.size(); i++) {
+				ProductOrder productOrder = productOrdersOfOrder.get(i);
+				addProductToStockQuantity(product_id, productOrder.getAmount());
+			}
+			
 			stmt.setInt(1,  order_id);
 			stmt.setInt(2, product_id);
 			
@@ -181,6 +200,16 @@ public class ProductOrderManager implements IProductOrderManager{
 		    e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Method that receives a product id and an amount and adds that amount of the specified product to the product's stock quantity.
+	 * @param product_id integer that stores the id of a product.
+	 * @param amount integer that stores the amount of the product that we want to add to the stock.
+	 */
+	@Override
+	public void addProductToStockQuantity(int product_id, int amount) throws SQLException{
+		boolean added = cm.getProductManager().increaseStock(product_id, amount);
+	}
 
 	/**
 	 * Method that receives a product and an order id by parameter and adds the received product to the order that corresponds with the received order id. i.e: the method creates a new
@@ -189,16 +218,19 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param order_id integer that stores the id of the order to which we want to add a product.
 	 */
 	@Override
-	public void createProductOrder(int product_id, int order_id){
+	public void createProductOrder(int product_id, int order_id) throws SQLException{
 		//SQL query
 		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, 1, (SELECT price FROM product WHERE product_id = ?))";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
+			removeProductFromStockQuantity(product_id, 1); //I remove the added product from the stock.
+			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
+
 			stmt.setInt(1, order_id);
 			stmt.setInt(2, product_id);
 			stmt.setInt(3, product_id);
-					
+			
 			stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e) {
@@ -208,13 +240,27 @@ public class ProductOrderManager implements IProductOrderManager{
 	}
 	
 	/**
+	 * Method that receives a product id and an amount and removes that amount of the specified product from the product's stock.
+	 * @param product_id integer that stores a product id.
+	 * @param amount integer that stores the amount of the product that we want to remove from the prosuct's stock.
+	 */
+	@Override
+	public void removeProductFromStockQuantity(int product_id, int amount) throws SQLException{
+		boolean removed = cm.getProductManager().reduceStock(product_id, amount);
+		if (!removed) {
+			//TODO throw an exception
+		}
+		
+	}
+	
+	/**
 	 * Method that receives an order id, a product's id and a quantity. The method updates the amount of the received product for the quantity passed by parameter of the order that corresponds with the received order id.
 	 * @param product_id integer that stores the id of the product whose quantity we wish to update.
 	 * @param order_id integer that stores the id of the order which we wish to modify.
 	 * @param product_amount integer that stores the amount we wish to order of the specified product.
 	 */
 	@Override
-	public void updateProductAmountInAnOrder(int product_id, int order_id, int product_amount) {
+	public void updateProductAmountInAnOrder(int product_id, int order_id, int product_amount) throws SQLException {
 		//I get the product out of its ID
 		Product product = cm.getProductManager().getProductById(product_id);
 		BigDecimal product_price = product.getPrice();
@@ -228,6 +274,9 @@ public class ProductOrderManager implements IProductOrderManager{
 
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
+			removeProductFromStockQuantity(product_id, 1); //I remove the added product from the stock.
+			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
+
 			stmt.setInt(1,  product_amount);
 			stmt.setBigDecimal(2, updated_price);
 			stmt.setInt(3,  order_id);
