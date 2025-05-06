@@ -45,8 +45,8 @@ public class ProductOrderManager implements IProductOrderManager{
 	public ProductOrder getProductOrderByIDs(int product_id, int order_id) {
 		ProductOrder productOrder = null;
 	    
-    	String sql = "SELECT *"
-    			+ "FROM product_order AS po"
+    	String sql = "SELECT * "
+    			+ "FROM product_order AS po "
     			+ "WHERE po.order_id = ? AND po.product_id = ?";
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
@@ -66,11 +66,6 @@ public class ProductOrderManager implements IProductOrderManager{
     				
     				Product product = cm.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);
-    				
-    				/*I set the id of the product order manually because it is not a fiel in the database. In order to ensure that it is unique, I set it to be equal 
-    				 * to the sum of the order id and its product (which have both unique values)
-    				 */
-    				productOrder.setOrderProductID(product_id+order_id);
     			}
     			stmt.close();
     			resultSet.close();
@@ -92,8 +87,8 @@ public class ProductOrderManager implements IProductOrderManager{
 		ProductOrder productOrder = null;
     	List<ProductOrder> productOrdersOfOrder = new ArrayList<>();
     	
-    	String sql = "SELECT *"
-    			+ "FROM product_order AS po"
+    	String sql = "SELECT * "
+    			+ "FROM product_order AS po "
     			+ "WHERE po.order_id = ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -117,11 +112,6 @@ public class ProductOrderManager implements IProductOrderManager{
     				int product_id = resultSet.getInt("product_id");
     				Product product = cm.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);
-    				
-    				/*I set the id of the product order manually because it is not a fiel in the database. In order to ensure that it is unique, I set it to be equal 
-    				 * to the sum of the order id and its product (which have both unique values)
-    				 */
-    				productOrder.setOrderProductID(product_id+order_id);
     				
     				//Finally, I add the created product order to the list of product orders associated to the received order id.
     				productOrdersOfOrder.add(productOrder);
@@ -268,8 +258,8 @@ public class ProductOrderManager implements IProductOrderManager{
 		BigDecimal updated_price = product_price.multiply(BigDecimal.valueOf(product_amount));
 		
 		//SQL query
-		String sql = "UPDATE product_order SET amount = ?, total_price = ?"
-				+ "FROM product"
+		String sql = "UPDATE product_order SET amount = ?, total_price = ? "
+				+ "FROM product "
 				+ "WHERE order_id = ? AND product_id = ?";
 
 		//I create the statement in the try catch block

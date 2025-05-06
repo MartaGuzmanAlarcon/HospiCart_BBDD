@@ -100,8 +100,8 @@ public class OrderManager implements IOrderManager {
     public Order getOrderByID(int order_id) {
     	Order order = null;
     
-    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
-    			+ "FROM client_order AS o"
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
+    			+ "FROM client_order AS o "
     			+ "WHERE o.order_id = ?";
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
@@ -147,8 +147,8 @@ public class OrderManager implements IOrderManager {
     	Order order = null;
     	List<Order> ordersOfUser = new ArrayList<>();
     	
-    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
-    			+ "FROM client_order AS o"
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
+    			+ "FROM client_order AS o "
     			+ "WHERE o.user_id = ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -200,8 +200,8 @@ public class OrderManager implements IOrderManager {
     	Order order = null;
     	List<Order> ordersWithSpecifiedDate = new ArrayList<>();
     	
-    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
-    			+ "FROM client_order AS o"
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
+    			+ "FROM client_order AS o "
     			+ "WHERE o.order_date = ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -254,8 +254,8 @@ public class OrderManager implements IOrderManager {
     	Order order = null;
     	List<Order> ordersWithinDateRange = new ArrayList<>();
     	
-    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
-    			+ "FROM client_order AS o"
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
+    			+ "FROM client_order AS o "
     			+ "WHERE o.order_date BETWEEN ? AND ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -461,8 +461,8 @@ public class OrderManager implements IOrderManager {
     	Order order = null;
     	List<Order> ordersWithSpecifiedStatus = new ArrayList<>();
     	
-    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status"
-    			+ "FROM client_order AS o"
+    	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
+    			+ "FROM client_order AS o "
     			+ "WHERE o.order_status = ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){

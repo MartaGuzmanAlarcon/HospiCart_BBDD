@@ -6,7 +6,6 @@ import java.util.Objects;
 public class ProductOrder implements Serializable {
 
 	private static final long serialVersionUID = 1794207772823018743L;
-	private Integer productOrderID;
 	private Integer amount;
 	private Float total_price;
 	private Order order; // 1 ProductOrder has 1 Order 
@@ -17,13 +16,6 @@ public class ProductOrder implements Serializable {
 	}
 
 	// Getters and setters
-	public Integer getOrderProductID() {
-		return productOrderID;
-	}
-
-	public void setOrderProductID(Integer orderProductID) {
-		this.productOrderID = orderProductID;
-	}
 
 	public Integer getAmount() {
 		return amount;
@@ -57,10 +49,9 @@ public class ProductOrder implements Serializable {
 		this.product = product;
 	}
 
-	// equals and hashCode
 	@Override
 	public int hashCode() {
-		return Objects.hash(productOrderID);
+		return Objects.hash(order, product);
 	}
 
 	@Override
@@ -72,14 +63,13 @@ public class ProductOrder implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ProductOrder other = (ProductOrder) obj;
-		return Objects.equals(productOrderID, other.productOrderID);
+		return Objects.equals(order, other.order) && Objects.equals(product, other.product);
 	}
 
 // toString
 	@Override
 	public String toString() {
-		return "ProductOrder [productOrderID=" + productOrderID + ", amount=" + amount + ", total_price=" + total_price
-				+ ", product=" + product + "]";
+		return "ProductOrder [amount=" + amount + ", total_price=" + total_price + ", product=" + product + "]";
 	}
 
 }

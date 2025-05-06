@@ -217,8 +217,8 @@ public class PaymentManager implements IPaymentManager {
 	public Payment getPaymentByOrderId(int order_id) {
 		Payment payment = null;
 	    //SQL query
-    	String sql = "SELECT *"
-    			+ "FROM payment"
+    	String sql = "SELECT * "
+    			+ "FROM payment "
     			+ "WHERE order_id = ?";
     	//I create the statement
     	try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)){

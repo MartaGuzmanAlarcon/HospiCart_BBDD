@@ -88,8 +88,8 @@ public class ShipmentManager implements IShipmentManager{
 	public Shipment getShipmentByID(int shipment_id) {
 		Shipment shipment = null;
 	    //SQL query
-    	String sql = "SELECT *"
-    			+ "FROM shipment"
+    	String sql = "SELECT * "
+    			+ "FROM shipment "
     			+ "WHERE shipment_id = ?";
     	//I create the statement
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
@@ -123,8 +123,8 @@ public class ShipmentManager implements IShipmentManager{
 	public Shipment getShipmentByTrackingNumber(int tracking_number) {
 		Shipment shipment = null;
 	    //SQL query
-    	String sql = "SELECT *"
-    			+ "FROM shipment"
+    	String sql = "SELECT * "
+    			+ "FROM shipment "
     			+ "WHERE tracking_number = ?";
     	//I create the statement
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
@@ -161,8 +161,8 @@ public class ShipmentManager implements IShipmentManager{
 	public Shipment getShipmentByOrderID(int order_id) {
 		Shipment shipment = null;
 	    //SQL query
-    	String sql = "SELECT *"
-    			+ "FROM shipment"
+    	String sql = "SELECT * "
+    			+ "FROM shipment "
     			+ "WHERE order_id = ?";
     	//I create the statement
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
@@ -315,7 +315,7 @@ public class ShipmentManager implements IShipmentManager{
 	@Override
 	public 	void setOrderToNull(Shipment shipment) {
 		shipment.setOrder(null);
-    	
+    	//TODO see what I do with this method
 		//NOT NECESSARY IF WE CHANGE THE TABLE OF THE DB
     	/*String sql = "UPDATE shipment SET order_id = ? WHERE shipment_id = ?";
     	
@@ -350,7 +350,7 @@ public class ShipmentManager implements IShipmentManager{
 		Shipment shipment = null;
     	List<Shipment> shipments = new ArrayList<>();
 
-    	String sql = "SELECT *"
+    	String sql = "SELECT * "
     			+ "FROM shipment AS s";
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
