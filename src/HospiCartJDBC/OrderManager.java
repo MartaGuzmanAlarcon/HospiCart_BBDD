@@ -19,6 +19,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import Exceptions.OrderExceptions;
+
 /**
  * This class is the responsible for handling all the operations related to orders.
  * This includes creating new orders, finding orders by their order id, client, date or status, deleting orders, updating existing orders by updating their status.
@@ -28,7 +30,7 @@ import java.util.List;
 
 public class OrderManager implements IOrderManager {
     private Connection c;
-    private ConnectionManagerJDBC cm; //TODO delete this? it is not used
+    private ConnectionManagerJDBC cm;
 
     //Constructor
     public OrderManager(ConnectionManagerJDBC cm) {
@@ -42,9 +44,13 @@ public class OrderManager implements IOrderManager {
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
-    public Order createOrder(Client client) throws SQLException{
+    public Order createOrder(Client client) throws SQLException, OrderExceptions{
         Order order = new Order(); //I create the Order object
-
+        
+        if(client == null) {
+        	//We throw a personalized exception
+            throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
+        }
        //I initialize the order fields
        order.setClient(client);
        order.setOrderDate(Date.valueOf(LocalDate.now()));
@@ -97,7 +103,7 @@ public class OrderManager implements IOrderManager {
 	 * @return an object of Order
 	 */
     @Override
-    public Order getOrderByID(int order_id) {
+    public Order getOrderByID(int order_id) throws OrderExceptions{
     	Order order = null;
     
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
@@ -126,6 +132,9 @@ public class OrderManager implements IOrderManager {
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
     				order.setProducts(productOrders);
     				
+    			} else {
+    				//I throw a personalized exceptions that indicates that was not found an order with the introduced order_id in the database.
+    				throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_ID);
     			}
     			stmt.close();
     			resultSet.close();
@@ -156,6 +165,7 @@ public class OrderManager implements IOrderManager {
     		try(var resultSet = stmt.executeQuery()){
     			// Get the full Client object from ClientManager
                 Client client = cm.getClientManager().getClientById(user_id);
+                //TODO should this be a while???? 
     			if(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
@@ -207,7 +217,7 @@ public class OrderManager implements IOrderManager {
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setDate(1, order_date);
     		try(var resultSet = stmt.executeQuery()){
-    			
+    			//TODO should this be a WHILE????
     			if(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.

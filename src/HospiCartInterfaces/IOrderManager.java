@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
+import Exceptions.OrderExceptions;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Status;
@@ -18,7 +19,7 @@ public interface IOrderManager {
 	 * Method that receives the id of the user and creates an order. 
 	 * @param client
 	 */
-	Order createOrder(Client client) throws SQLException;
+	Order createOrder(Client client) throws SQLException, OrderExceptions;
 	
 	/**
 	 * Method that retrieves a specific order whose id matches the one received as parameter.
@@ -26,7 +27,7 @@ public interface IOrderManager {
 	 * @return an object of Order
 	 */
 	//TODO: this method should throw an exception for the cases in which an order with the introduced id does not exist.
-	Order getOrderByID(int order_id);
+	Order getOrderByID(int order_id) throws OrderExceptions;
 	
 	/**
 	 * Method that retrieves a list of orders whose buyer's id coincides with the id received as parameter.
