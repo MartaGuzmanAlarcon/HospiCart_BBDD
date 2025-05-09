@@ -23,7 +23,7 @@ class OrderManagerTest {
 		ClientManager clientM = new ClientManager(cm);
 		
 		//I create a client and an order and call the method that I want to test.
-		Client client1 = new Client(1, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
+		Client client1 = new Client(null, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
 		try {
 			clientM.insertClient(client1);
 			Order order = om.createOrder(client1);

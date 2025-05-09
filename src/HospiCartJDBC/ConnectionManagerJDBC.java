@@ -31,7 +31,7 @@ public class ConnectionManagerJDBC {
 	private void connect() {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:db/HospiCartDB.db");
+			c = DriverManager.getConnection("jdbc:sqlite:./db/HospiCartDB.db");
 			c.setAutoCommit(false); // ← desactiva el auto-commit
 			c.createStatement().execute("PRAGMA foreign_keys=ON");
 			System.out.println("Connection established.");
@@ -48,7 +48,7 @@ public class ConnectionManagerJDBC {
 		String[] tableStatements = {
 				// client
 				"""
-						CREATE TABLE IF NOT EXISTS client (
+						CREATE TABLE client (
 							id INTEGER PRIMARY KEY AUTOINCREMENT,
 							name TEXT NOT NULL,
 							surname TEXT NOT NULL,
@@ -60,7 +60,7 @@ public class ConnectionManagerJDBC {
 						""",
 				// client_order
 				"""
-						CREATE TABLE IF NOT EXISTS client_order (
+						CREATE TABLE client_order (
 							order_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							user_id INTEGER NOT NULL,
 							order_date DATE NOT NULL,
@@ -69,7 +69,7 @@ public class ConnectionManagerJDBC {
 						""",
 				// supplier
 				"""
-						CREATE TABLE IF NOT EXISTS supplier (
+						CREATE TABLE supplier (
 							supplier_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							company_name TEXT NOT NULL,
 							contact_person INTEGER NOT NULL,
@@ -78,7 +78,7 @@ public class ConnectionManagerJDBC {
 						""",
 				// product
 				"""
-						CREATE TABLE IF NOT EXISTS product (
+						CREATE TABLE product (
 							product_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							supplier_id INTEGER NOT NULL REFERENCES supplier(supplier_id),
 							name TEXT NOT NULL,
@@ -91,7 +91,7 @@ public class ConnectionManagerJDBC {
 						""",
 				// product_order
 				"""
-						CREATE TABLE IF NOT EXISTS product_order (
+						CREATE TABLE product_order (
 							order_id INTEGER REFERENCES client_order(order_id) ON DELETE SET NULL,
 							product_id INTEGER REFERENCES product(product_id) ON DELETE SET NULL,
 							amount INTEGER NOT NULL,
@@ -101,7 +101,7 @@ public class ConnectionManagerJDBC {
 						""",
 				// shipment
 				"""
-						CREATE TABLE IF NOT EXISTS shipment (
+						CREATE TABLE shipment (
 							shipment_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							order_id INTEGER NOT NULL,
 							tracking_number INTEGER NOT NULL,
@@ -110,7 +110,7 @@ public class ConnectionManagerJDBC {
 						""",
 				// payment
 				"""
-						CREATE TABLE IF NOT EXISTS payment (
+						CREATE TABLE payment (
 							payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							order_id INTEGER REFERENCES client_order(order_id) ON DELETE SET NULL,
 							amount INTEGER NOT NULL,
