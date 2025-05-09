@@ -35,6 +35,16 @@ public class Client implements Serializable {
 		this.role = role;
 	}
 
+	public Client(String name, String surname, Integer phoneNumber, String email, String address,
+			Role role) {
+		super();
+		this.name = name;
+		this.surname = surname;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.address = address;
+		this.role = role;
+	}
 
 
 	// Getters and Setters

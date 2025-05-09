@@ -61,7 +61,8 @@ public class OrderManager implements IOrderManager {
 
        //I create the order record and fetch the generated key (the id of the order)
         try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, client.getUserId());
+            //TODO see how can I retrieve the id of the user from the db
+        	stmt.setInt(1, client.getUserId());
             stmt.setDate(2, Date.valueOf(LocalDate.now())); // we set current date
             stmt.setString(3, Status.ORDERED.name()); // we set the default status (ordered)
 

@@ -20,21 +20,26 @@ class OrderManagerTest {
 		//I create the connection manager and use it to create an instance of ProductOrder
 		ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
 		OrderManager om = new OrderManager(cm);
-		ClientManager clientM = new ClientManager(cm);
+		ClientManager clientManager = new ClientManager(cm);
 		
 		//I create a client and an order and call the method that I want to test.
-		Client client1 = new Client(null, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
+		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
 		try {
-			clientM.insertClient(client1);
-			Order order = om.createOrder(client1);
-			//I store the clients name to check if the order was properly created or not
-			Client client = order.getClient();
-			int clientID = client.getUserId();
+			clientManager.insertClient(expectedClient);
+			String email = expectedClient.getEmail();
 			
-			assertEquals(clientID, client1.getUserId());
+			expectedClient = clientManager.getClientByEmail(email);
+			
+			Order order = om.createOrder(expectedClient);
+			//I store the clients name to check if the order was properly created or not
+			Client actualClient = order.getClient();
+			
+			assertEquals(expectedClient.getUserId(), actualClient.getUserId());
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
