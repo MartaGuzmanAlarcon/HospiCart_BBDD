@@ -12,48 +12,58 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ClientManagerTest {
-	private static ConnectionManagerJDBC testConnMgr;
-    private ClientManager mgr;
+// TODO REVISE THIS WHOLE CLASS AND FINISH IT 
 
-    @BeforeAll
-    static void initDatabase() throws Exception {
-        // Use your existing no‐arg constructor:
-        testConnMgr = new ConnectionManagerJDBC();
+public class ClientManagerTest {
+	// Define global variables that are going to be needed in several tests
+	ConnectionManagerJDBC connectionManager = new ConnectionManagerJDBC();
+    ClientManager clientManager = new ClientManager(connectionManager);
+
+    // TODO REVIEW THIS ANNOTATIONS AND MAKE THEM WORK!
+    /*
+    @BeforeAll 
+    void initAll() throws Exception {
+    	// This annotation is used to signal that the annotated method should be executed before all tests in the current test class.
+        // In our case, this annotation allows us to create tables once.
+        // Initialize the ConnectionManager (creates tables)
+        connectionManager = new ConnectionManagerJDBC();
+        clientManager = new ClientManager(connectionManager);
     }
 
     @BeforeEach
-    void setUp() throws Exception {
-        // Get the ClientManager that was initialized inside ConnectionManagerJDBC:
-        mgr = testConnMgr.getClientManager();
-
-        // Clean out the table so each test starts fresh:
-        try (Connection c = testConnMgr.getConnection();
+    void cleanTable() throws Exception {
+    	// This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
+        // Crucial for wiping or resetting data so tests can’t influence each other.
+        // Ensure a clean state
+        try (Connection c = connectionManager.getConnection();
              Statement s = c.createStatement()) {
-            s.execute("DELETE FROM client;");
+            s.execute("DELETE FROM client");
             c.commit();
         }
     }
 
     @AfterAll
-    static void tearDown() {
-        // Close the DB file when done
-        testConnMgr.disconnect();
+    void tearDown() {
+    	// This annotation is used to signal that the annotated method should be executed after all tests in the current test class.
+        // Tear down shared resources (e.g. close the database connection)
+        connectionManager.disconnect();
     }
-
+    
+    */
+    
+    
     @Test
-    void testInsertAndGetById() throws Exception {
-        Client c = new Client(null,
-                              "Alice",
-                              "Smith",
-                              123456789,
-                              "alice@example.com",
-                              "123 Oak St",
-                              Role.DOCTOR);
-        mgr.insertClient(c);
-        assertNotNull(c.getUserId(), "ID should be generated on insert");
-
-        Client fetched = mgr.getClientById(c.getUserId());
-        assertEquals(c, fetched, "Fetched client must equal the one inserted");
+    void insertClientTest() {
+    	// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+    	Client expectedClient = new Client("Belen", "Esteban", 656329185, "belenesteban@gmail.com", "Vallekas 3", Role.DOCTOR); 
+    	clientManager.insertClient(expectedClient);
+    	
+    	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+    	int idRetrieved = expectedClient.getUserId();
+    	Client actualClient = clientManager.getClientById(idRetrieved);
+    	
+    	// Compare both clients
+    	assertEquals(expectedClient, actualClient);
+    	
     }
 }

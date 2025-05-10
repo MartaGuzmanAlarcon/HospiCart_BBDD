@@ -22,7 +22,16 @@ public class Client implements Serializable {
 		this.orders = new ArrayList<Order>();
 	}
 	
-	
+	/**
+	 * Constructor that receives all the parameters.
+	 * @param id
+	 * @param name
+	 * @param surname
+	 * @param phoneNumber
+	 * @param email
+	 * @param address
+	 * @param role
+	 */
 	public Client(Integer id, String name, String surname, Integer phoneNumber, String email, String address,
 			Role role) {
 		super();
@@ -35,6 +44,15 @@ public class Client implements Serializable {
 		this.role = role;
 	}
 
+	/**
+	 * Constructor that receives all the parameters except the ID.
+	 * @param name
+	 * @param surname
+	 * @param phoneNumber
+	 * @param email
+	 * @param address
+	 * @param role
+	 */
 	public Client(String name, String surname, Integer phoneNumber, String email, String address,
 			Role role) {
 		super();
