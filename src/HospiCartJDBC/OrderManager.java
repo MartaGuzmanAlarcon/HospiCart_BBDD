@@ -72,7 +72,7 @@ public class OrderManager implements IOrderManager {
             }
 
             //Now, I get the generated order id
-            try(var generatedKeys = stmt.getGeneratedKeys()) {
+            try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 //We use VAR because it enables the compiler to infer the type of the variable from the initialization (in this case, VAR represents a result set)
                 if (generatedKeys.next()) {
                     order.setOrderId(generatedKeys.getInt(1));
@@ -113,7 +113,7 @@ public class OrderManager implements IOrderManager {
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				order = new Order();
     				order.setOrderId(resultSet.getInt("order_id"));
@@ -163,7 +163,7 @@ public class OrderManager implements IOrderManager {
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, user_id);
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			// Get the full Client object from ClientManager
                 Client client = cm.getClientManager().getClientById(user_id);
                 //TODO should this be a while???? 
@@ -217,7 +217,7 @@ public class OrderManager implements IOrderManager {
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setDate(1, order_date);
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			//TODO should this be a WHILE????
     			if(resultSet.next()) {
     				order = new Order();
@@ -273,7 +273,7 @@ public class OrderManager implements IOrderManager {
     		stmt.setDate(1, startDate);
     		stmt.setDate(2, endDate);
 
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			
     			if(resultSet.next()) {
     				order = new Order();
@@ -478,7 +478,7 @@ public class OrderManager implements IOrderManager {
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setString(1, status.name());
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			
     			if(resultSet.next()) {
     				order = new Order();

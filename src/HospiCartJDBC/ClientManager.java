@@ -166,6 +166,31 @@ public class ClientManager implements IClientManager{
 		
 		return client;
 	}
+	
+	@Override 
+	/**
+	 * Method that receives an email of a client and returns true if the client was already introduced in the database or false if not.
+	 * @param c_email string that stores the email of the client whose presence in the database we want to check.
+	 * @return true if the client is found in the database or false otherwise.
+	 */
+	public boolean isClientInDatabase(String c_email) {
+		try {
+			Statement stmt = manager.getConnection().createStatement();
+			String sql = "SELECT * FROM client WHERE email = '" + c_email + "'";
+
+			ResultSet rs = stmt.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			rs.close();
+			stmt.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
 
 	/**
 	 * This method updates the name field of the Client with the given ID.
