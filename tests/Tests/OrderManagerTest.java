@@ -18,9 +18,9 @@ import HospiCartPOJOs.Role;
 class OrderManagerTest {
 	
 	//I create the connection manager and use it to create an instance of OrderManager and ClientManager
-	ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
-	OrderManager om = new OrderManager(cm);
-	ClientManager clientManager = new ClientManager(cm);
+	//ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
+	//OrderManager om = new OrderManager(cm);
+	//ClientManager clientManager = new ClientManager(cm);
 	
 	@Test
 	/**
@@ -29,7 +29,17 @@ class OrderManagerTest {
 	void createOrderTest(){
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
+		
+		ConnectionManagerJDBC cm = null;
+		OrderManager om = null;
+		ClientManager clientManager = null;
+		
 		try {
+			//I initialize the managers
+			cm = new ConnectionManagerJDBC();
+			om = new OrderManager(cm);
+			clientManager = new ClientManager(cm);
+			
 			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
 			if(!clientManager.isClientInDatabase(expectedClient.getEmail())) {
 				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
@@ -50,6 +60,8 @@ class OrderManagerTest {
 			System.out.println("ERROR: " + e);
 		}catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			cm.disconnect();
 		}
 	}
 	
@@ -60,12 +72,19 @@ class OrderManagerTest {
 	void createOrderWithNullClientTest(){
 		//I create a client and set it to null.
 		Client expectedClient = null;
+		
+		//I initialize the manager			
+		ConnectionManagerJDBC cm = new ConnectionManagerJDBC();;
+		OrderManager om = new OrderManager(cm);;
+		
 		try {
 			//I call the method I want to check and pass the null client as parameter. I expect the method to throw an exception and check if it really does by using the "assertThrows".
 			assertThrows(OrderExceptions.class, () ->{om.insertOrder(expectedClient);});
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			cm.disconnect();
 		}
 	}
 	
@@ -78,7 +97,17 @@ class OrderManagerTest {
 	 */
 	void getOrderByValidIDTest() {
 		Client client = new Client("Serena", "Williams", 346667865, "serewilliams@gmail.com", "Calle de Uruguay 50", Role.NURSE);
+		
+		ConnectionManagerJDBC cm = null;
+		OrderManager om = null;
+		ClientManager clientManager = null;
+		
 		try {
+			//I initialize the managers
+			cm = new ConnectionManagerJDBC();
+			om = new OrderManager(cm);
+			clientManager = new ClientManager(cm);
+			
 			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
 			if(!clientManager.isClientInDatabase(client.getEmail())) {
 				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
@@ -88,8 +117,9 @@ class OrderManagerTest {
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			Order order = om.insertOrder(client);
 			List<Order> orders = om.getOrdersByUser(client.getUserId());
+			List<Order> allOrders = om.getAllOrders();
 			//I get the last order added to the list of orders of the user.
-			Order orderAdded = orders.get(orders.size()-1);
+			Order orderAdded = orders.get(allOrders.size()-1);
 			//I compare the created order and the last one in the retrieved list of orders of the user.
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
 			assertEquals(orderAdded, order);
@@ -98,6 +128,8 @@ class OrderManagerTest {
 			System.out.println("ERROR: " + e);
 		}catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			cm.disconnect();
 		}
 	}
 	

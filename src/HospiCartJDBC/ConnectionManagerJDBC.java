@@ -32,7 +32,7 @@ public class ConnectionManagerJDBC {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:./db/HospiCartDB.db");
-			c.setAutoCommit(false); // ← desactiva el auto-commit
+			c.setAutoCommit(false); // We disable the auto commit
 			c.createStatement().execute("PRAGMA foreign_keys=ON");
 			System.out.println("Connection established.");
 		} catch (ClassNotFoundException cnfE) {
@@ -126,20 +126,24 @@ public class ConnectionManagerJDBC {
 			c.commit();
 			System.out.println("Tables created correctly.");
 		} catch (SQLException e) {
-			c.rollback();
-			System.err.println("Error creating tables: " + e.getMessage());
-			throw e;
+			// Check if the exception is because the tables already exist
+			if (e.getMessage().contains("already exist")) {
+				return;
+			}
+			System.out.println("Database error.");
+			e.printStackTrace();
 		}
 	}
-
+	
+	//TODO see what we do with this
 	private void initManagers() {
-		// this.clientMan = new ClientManager(this);
-		// this.orderMan = new OrderManager(this);
+		this.clientMan = new ClientManager(this);
+		this.orderMan = new OrderManager(this);
 		this.productMan = new ProductManager(this);
 		this.productOrderMan = new ProductOrderManager(this);
-		// this.shipmentMan = new ShipmentManager(this);
-		// this.supplierMan = new SupplierManager(this);
-		// this.paymentMan = new PaymentManager(this);
+		this.shipmentMan = new ShipmentManager(this);
+		this.supplierMan = new SupplierManager(this);
+		this.paymentMan = new PaymentManager(this);
 		System.out.println("Managers initialized correctly.");
 	}
 

@@ -417,7 +417,7 @@ public class OrderManager implements IOrderManager {
     				int order_id = resultSet.getInt("order_id");
     				order.setOrderId(order_id);
     				order.setOrderDate(resultSet.getDate("order_date"));
-    				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
+    				order.setStatus(Status.valueOf(resultSet.getString("status")));
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				order.setPayment(payment);

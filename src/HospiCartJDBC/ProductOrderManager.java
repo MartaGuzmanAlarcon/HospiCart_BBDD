@@ -192,7 +192,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 */
 	@Override
 	public void addProductToStockQuantity(int product_id, int amount) throws SQLException{
-		boolean added = cm.getProductManager().increaseStock(product_id, amount);
+		cm.getProductManager().increaseStock(product_id, amount);
 	}
 
 	/**
