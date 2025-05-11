@@ -40,7 +40,7 @@ class OrderManagerTest {
 			//I use the method get client by email from the manager of client in order to obtain the complete client (the client that I created but with the ID that the database assigned to him/her)
 			expectedClient = clientManager.getClientByEmail(email);
 			//I create the order with the respective method from OrderManager and pass the complete client as parameter
-			Order order = om.createOrder(expectedClient);
+			Order order = om.insertOrder(expectedClient);
 			//I store the client assigned to the order to check if the order was properly created or not.
 			Client actualClient = order.getClient();
 			//I check if the emails (which is a unique attribute) of the created client and the client assigned to the order match.
@@ -62,7 +62,7 @@ class OrderManagerTest {
 		Client expectedClient = null;
 		try {
 			//I call the method I want to check and pass the null client as parameter. I expect the method to throw an exception and check if it really does by using the "assertThrows".
-			assertThrows(OrderExceptions.class, () ->{om.createOrder(expectedClient);});
+			assertThrows(OrderExceptions.class, () ->{om.insertOrder(expectedClient);});
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,7 +86,7 @@ class OrderManagerTest {
 			}
 			client = clientManager.getClientByEmail(client.getEmail());
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			Order order = om.createOrder(client);
+			Order order = om.insertOrder(client);
 			List<Order> orders = om.getOrdersByUser(client.getUserId());
 			//I get the last order added to the list of orders of the user.
 			Order orderAdded = orders.get(orders.size()-1);

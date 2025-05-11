@@ -53,7 +53,7 @@ public class ProductOrderManager implements IProductOrderManager{
     		stmt.setInt(1, order_id);
     		stmt.setInt(2,  product_id);
     		
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			
     			if(resultSet.next()) {
     				
@@ -67,8 +67,6 @@ public class ProductOrderManager implements IProductOrderManager{
     				Product product = cm.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving product order: " + e.getMessage());
@@ -94,7 +92,7 @@ public class ProductOrderManager implements IProductOrderManager{
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);
     		
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			
     			if(resultSet.next()) {
     				
@@ -116,8 +114,6 @@ public class ProductOrderManager implements IProductOrderManager{
     				//Finally, I add the created product order to the list of product orders associated to the received order id.
     				productOrdersOfOrder.add(productOrder);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	}catch(SQLException e) {
     		System.err.println("Error retrieving product orders from an order: " + e.getMessage());
@@ -152,7 +148,6 @@ public class ProductOrderManager implements IProductOrderManager{
 			stmt.setInt(1,  order_id);
 			
 			stmt.executeUpdate();
-			stmt.close();
 		}catch(SQLException e) {
 			System.err.println("Error deleting product orders by their order ID: " + e.getMessage());
             e.printStackTrace();
@@ -184,7 +179,6 @@ public class ProductOrderManager implements IProductOrderManager{
 			stmt.setInt(2, product_id);
 			
 			stmt.executeUpdate();
-			stmt.close();
 		}catch(SQLException e) {
 			System.err.println("Error deleting product orders by the product and order ID: " + e.getMessage());
 		    e.printStackTrace();
@@ -208,7 +202,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param order_id integer that stores the id of the order to which we want to add a product.
 	 */
 	@Override
-	public void createProductOrder(int product_id, int order_id) throws SQLException{
+	public void insertProductOrder(int product_id, int order_id) throws SQLException{
 		//SQL query
 		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, 1, (SELECT price FROM product WHERE product_id = ?))";
 		
@@ -222,7 +216,6 @@ public class ProductOrderManager implements IProductOrderManager{
 			stmt.setInt(3, product_id);
 			
 			stmt.executeUpdate();
-			stmt.close();
 		}catch(SQLException e) {
 			System.err.println("Error adding a product order: " + e.getMessage());
 			e.printStackTrace();

@@ -19,7 +19,7 @@ public interface IOrderManager {
 	 * Method that receives the id of the user and creates an order. 
 	 * @param client
 	 */
-	Order createOrder(Client client) throws SQLException, OrderExceptions;
+	Order insertOrder(Client client) throws SQLException, OrderExceptions;
 	
 	/**
 	 * Method that retrieves a specific order whose id matches the one received as parameter.

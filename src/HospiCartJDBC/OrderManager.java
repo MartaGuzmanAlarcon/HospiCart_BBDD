@@ -44,7 +44,7 @@ public class OrderManager implements IOrderManager {
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
-    public Order createOrder(Client client) throws SQLException, OrderExceptions{
+    public Order insertOrder(Client client) throws SQLException, OrderExceptions{
         Order order = new Order(); //I create the Order object
         
         if(client == null) {
@@ -59,21 +59,20 @@ public class OrderManager implements IOrderManager {
        //I insert the order information that I have up to now
        String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?)";
 
-       //I create the order record and fetch the generated key (the id of the order)
+       //I create the order record and fetch, from the database once the order was inserted in it, the generated key (the id of the order which is automatically generated in the database)
         try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            //TODO see how can I retrieve the id of the user from the db
         	stmt.setInt(1, client.getUserId());
             stmt.setDate(2, Date.valueOf(LocalDate.now())); // we set current date
             stmt.setString(3, Status.ORDERED.name()); // we set the default status (ordered)
-
+            //I execute the INSERT operation making use of the method "executeUpdate" and obtain the amount of rows that were changed when executing the query.
             int affectedRows = stmt.executeUpdate();
+            //If no rows were affected, then it means that the operation failed and I throw an SQL exception specifying what happened.
             if(affectedRows == 0) {
                 throw new SQLException("Creating order failed, no rows affected.");
             }
 
-            //Now, I get the generated order id
+            //Now, I get the generated primary key of order (the order id, which is assigned by the database), making use of the method "getGeneratedKeys"
             try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                //We use VAR because it enables the compiler to infer the type of the variable from the initialization (in this case, VAR represents a result set)
                 if (generatedKeys.next()) {
                     order.setOrderId(generatedKeys.getInt(1));
                 } else {
@@ -81,8 +80,7 @@ public class OrderManager implements IOrderManager {
                 }
             }
             //TODO I think I have to create the objects or ProductOrder, Shipment and Payment also.
-            
-            stmt.close();
+            //I don't have to close the statement nor the result sets because I used "trys-with resources"
             c.commit(); //we do this because we disabled the auto-commit in the connection
         } catch (SQLException e) {
             //We roll back the transaction in case of error.
@@ -137,8 +135,6 @@ public class OrderManager implements IOrderManager {
     				//I throw a personalized exceptions that indicates that was not found an order with the introduced order_id in the database.
     				throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_ID);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving order: " + e.getMessage());
@@ -190,8 +186,6 @@ public class OrderManager implements IOrderManager {
     				//Finally, I add the created order to the list of orders the user made.
     				ordersOfUser.add(order);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	}catch(SQLException e) {
     		System.err.println("Error retrieving orders from user: " + e.getMessage());
@@ -244,8 +238,6 @@ public class OrderManager implements IOrderManager {
     				//Finally, I add the created order to the list of orders the user made.
     				ordersWithSpecifiedDate.add(order);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	}catch(SQLException e) {
     		System.err.println("Error retrieving orders purchased on the specified date: " + e.getMessage());
@@ -300,8 +292,6 @@ public class OrderManager implements IOrderManager {
     				//Finally, I add the created order to the list of orders the user made.
     				ordersWithinDateRange.add(order);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	}catch(SQLException e) {
     		System.err.println("Error retrieving orders between the specified date range: " + e.getMessage());
@@ -332,7 +322,6 @@ public class OrderManager implements IOrderManager {
             } else {
                 System.out.println("Order ID " + order_id + " updated to status: " + newStatus);
             }
-			stmt.close();
     		c.commit();
     	} catch (SQLException e) {
             try {
@@ -386,11 +375,6 @@ public class OrderManager implements IOrderManager {
             } else {
                 System.out.println("Order with ID " + order_id + " deleted successfully.");
             }
-    		stmtProductOrders.close();
-    		stmtPayment.close();
-    		stmtFromShipment.close();
-    		stmtOrder.close();
-    		
     		//I call the method of Product Order that increases the stock of a product.
     		List<ProductOrder> productOrdersOfOrder = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
 			for(int i = 0; i<productOrdersOfOrder.size(); i++) {
@@ -452,8 +436,6 @@ public class OrderManager implements IOrderManager {
     				orders.add(order);
     				
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving orders: " + e.getMessage());
@@ -505,8 +487,6 @@ public class OrderManager implements IOrderManager {
     				//Finally, I add the created order to the list of orders the user made.
     				ordersWithSpecifiedStatus.add(order);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	}catch(SQLException e) {
     		System.err.println("Error retrieving orders purchased on the specified date: " + e.getMessage());

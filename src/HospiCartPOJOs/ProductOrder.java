@@ -7,7 +7,7 @@ public class ProductOrder implements Serializable {
 
 	private static final long serialVersionUID = 1794207772823018743L;
 	private Integer amount;
-	private Float total_price;
+	private Float totalPrice;
 	private Order order; // 1 ProductOrder has 1 Order 
 	private Product product; // 1 ProductOrder has 1 Product 
 
@@ -26,11 +26,11 @@ public class ProductOrder implements Serializable {
 	}
 
 	public Float getTotal_price() {
-		return total_price;
+		return totalPrice;
 	}
 
 	public void setTotal_price(Float total_price) {
-		this.total_price = total_price;
+		this.totalPrice = total_price;
 	}
 
 	public Order getOrder() {
@@ -69,7 +69,7 @@ public class ProductOrder implements Serializable {
 // toString
 	@Override
 	public String toString() {
-		return "ProductOrder [amount=" + amount + ", total_price=" + total_price + ", product=" + product + "]";
+		return "ProductOrder [amount=" + amount + ", total_price=" + totalPrice + ", product=" + product + "]";
 	}
 
 }

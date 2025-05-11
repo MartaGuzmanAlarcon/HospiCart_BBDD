@@ -53,7 +53,7 @@ public interface IProductOrderManager {
 	 * @param product_id integer that stores the id of the product that we want to add to an order.
 	 * @param order_id integer that stores the id of the order to which we want to add a product.
 	 */
-	void createProductOrder(int product_id, int order_id)throws SQLException;
+	void insertProductOrder(int product_id, int order_id)throws SQLException;
 	
 	/**
 	 * Method that receives a product id and an amount and removes that amount of the specified product from the product's stock.
