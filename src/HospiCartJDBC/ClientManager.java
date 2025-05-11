@@ -63,10 +63,10 @@ public class ClientManager implements IClientManager{
 	            
 	            // rs.close(); would be declared here if we don't use the resource declaration in the try clause.
 	            // prep.close(); // Always close the PreparedStatement
-	            
-	            // 5) Commit once everything is done
-	            manager.getConnection().commit(); // Commit everytime we do any change to the database
 	        }
+			
+			// 5) Commit once everything is done
+            manager.getConnection().commit(); // Commit everytime we do any change to the database
 
 		} catch (Exception e) {
 			e.printStackTrace(); // To print where the error comes from
