@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientManagerTest {
 	// Define global variables that are going to be needed in several tests
-	//ConnectionManagerJDBC connectionManager = new ConnectionManagerJDBC();
-    //ClientManager clientManager = new ClientManager(connectionManager);
 	
 	 private static ConnectionManagerJDBC connectionManager;
 	 private static ClientManager clientManager;

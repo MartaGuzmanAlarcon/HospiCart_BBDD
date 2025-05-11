@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import Exceptions.OrderExceptions;
@@ -21,6 +22,8 @@ class OrderManagerTest {
 	//ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
 	//OrderManager om = new OrderManager(cm);
 	//ClientManager clientManager = new ClientManager(cm);
+	
+	
 	
 	@Test
 	/**
@@ -119,7 +122,8 @@ class OrderManagerTest {
 			List<Order> orders = om.getOrdersByUser(client.getUserId());
 			List<Order> allOrders = om.getAllOrders();
 			//I get the last order added to the list of orders of the user.
-			Order orderAdded = orders.get(allOrders.size()-1);
+			Order orderAdded = allOrders.get(allOrders.size()-1);
+			//TODO: THIS DOES NOT WORK BECAUSE SE SOLAPAN LOS TESTSSSSS
 			//I compare the created order and the last one in the retrieved list of orders of the user.
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
 			assertEquals(orderAdded, order);
