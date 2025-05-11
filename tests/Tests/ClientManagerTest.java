@@ -66,4 +66,6 @@ public class ClientManagerTest {
     	assertEquals(expectedClient, actualClient);
     	
     }
+    
+    
 }
