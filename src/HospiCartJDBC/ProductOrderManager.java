@@ -266,7 +266,6 @@ public class ProductOrderManager implements IProductOrderManager{
 			stmt.setInt(4,  product_id);
 							
 			stmt.executeUpdate();
-			stmt.close();
 		}catch(SQLException e) {
 			System.err.println("Error updating the amount of a product in a product order: " + e.getMessage());
 			e.printStackTrace();
@@ -293,12 +292,10 @@ public class ProductOrderManager implements IProductOrderManager{
 					total_price = total_price + rs.getDouble(1);
 				}
 			}
-			stmt.close();
 		} catch(SQLException e) {
 			System.err.println("Error retrieving the total price of an order: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
 		return total_price;
 	}
 
@@ -327,8 +324,6 @@ public class ProductOrderManager implements IProductOrderManager{
 					//I add the order to the list of orders.
 					ordersWithProduct.add(order);
 				}
-				stmt.close();
-				rs.close();
 			}
 		} catch(SQLException e) {
 			System.err.println("Error retrieving the total price of an order: " + e.getMessage());

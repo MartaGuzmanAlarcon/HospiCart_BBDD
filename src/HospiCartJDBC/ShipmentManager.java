@@ -34,7 +34,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return the created shipment.
 	 */
 	@Override
-	public Shipment createShipment(Order order) throws SQLException {
+	public Shipment insertShipment(Order order) throws SQLException {
 
 		Shipment shipment = new Shipment(order); //I create the Order object
 
@@ -55,15 +55,13 @@ public class ShipmentManager implements IShipmentManager{
 	            }
 
 	            //Now, I get the generated shipment id
-	            try(var generatedKeys = stmt.getGeneratedKeys()) {
-	                //We use "var" because it enables the compiler to infer the type of the variable from the initialization (in this case, "var" represents a result set)
+	            try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
 	                if (generatedKeys.next()) {
 	                    shipment.setShipmentId(generatedKeys.getInt(1));
 	                } else {
 	                    throw new SQLException("Creating shipment failed, no ID obtained.");
 	                }
 	            }
-	            stmt.close();
 	            c.commit(); //we do this because we disabled the auto-commit in the connection
 	        } catch (SQLException e) {
 	            //We "rollback" the transaction in case of error.
@@ -94,7 +92,7 @@ public class ShipmentManager implements IShipmentManager{
     	//I create the statement
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, shipment_id);
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				int order_id = resultSet.getInt("order_id");
     				Order order = cm.getOrderManager().getOrderByID(order_id);
@@ -104,8 +102,6 @@ public class ShipmentManager implements IShipmentManager{
     				//I don't set the tracking number because it has already been done by the constructor of Shipment when I created the shipment object and passed order by parameter.
     				
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving shipment: " + e.getMessage());
@@ -130,7 +126,7 @@ public class ShipmentManager implements IShipmentManager{
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, tracking_number);
     		
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				int order_id = resultSet.getInt("order_id");
     				Order order = cm.getOrderManager().getOrderByID(order_id);
@@ -142,8 +138,6 @@ public class ShipmentManager implements IShipmentManager{
     				//TODO what would happen if one constructor of Shipment implemented the other in this case? Because here, the shipment already has an assigned 
     				//shipment number and I don't want to generate another one. Therefore, I only want to use the empty constructor.
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving shipment: " + e.getMessage());
@@ -168,7 +162,7 @@ public class ShipmentManager implements IShipmentManager{
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);
     		
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				Order order = cm.getOrderManager().getOrderByID(order_id);
     				
@@ -177,8 +171,6 @@ public class ShipmentManager implements IShipmentManager{
     				shipment.setTrackingNumber(resultSet.getInt("tracking_number"));
     				shipment.setOrder(order);
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving shipment: " + e.getMessage());
@@ -213,8 +205,6 @@ public class ShipmentManager implements IShipmentManager{
                 System.out.println("Shipment with ID " + shipment_id + " deleted successfully.");
                 setOrderToNull(shipment);
             }
-    		stmtFromShipment.close();
-
             c.commit(); //we commit the transaction
     		
     	}catch (SQLException e) {
@@ -253,8 +243,6 @@ public class ShipmentManager implements IShipmentManager{
                 System.out.println("Shipment with tracking number " + tracking_number + " deleted successfully.");
                 setOrderToNull(shipment);
             }
-    		stmtFromShipment.close();
-
             c.commit(); //we commit the transaction
     		
     	}catch (SQLException e) {
@@ -293,8 +281,6 @@ public class ShipmentManager implements IShipmentManager{
                 System.out.println("Shipment with order ID " + order_id + " deleted successfully.");
                 setOrderToNull(shipment);
             }
-    		stmtFromShipment.close();
-
             c.commit(); //we commit the transaction
     		
     	}catch (SQLException e) {
@@ -329,7 +315,6 @@ public class ShipmentManager implements IShipmentManager{
             } else {
                 System.out.println("The shipment was properly updated.");
             }
-			stmt.close();
     		c.commit();
     	} catch (SQLException e) {
             try {
@@ -369,8 +354,6 @@ public class ShipmentManager implements IShipmentManager{
     				shipments.add(shipment);
     				
     			}
-    			stmt.close();
-    			resultSet.close();
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving shipments: " + e.getMessage());

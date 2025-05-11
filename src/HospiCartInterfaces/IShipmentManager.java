@@ -17,7 +17,7 @@ public interface IShipmentManager {
 	 * @param order object of the class "Order" for which we want to create the shipment.
 	 * @return the created shipment.
 	 */
-	Shipment createShipment(Order order) throws SQLException;
+	Shipment insertShipment(Order order) throws SQLException;
 	
 	/**
 	 * Method that receives a shipment id as parameter and retrieves the shipment associated with the shipment id.
