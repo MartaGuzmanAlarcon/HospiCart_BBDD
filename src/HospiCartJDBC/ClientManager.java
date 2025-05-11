@@ -34,31 +34,38 @@ public class ClientManager implements IClientManager{
 	 * @param c the Client object
 	 */
 	@Override
-	public void insertClient(Client c) {
-		try {
-			String sql = "INSERT INTO client (name, surname, phone_number, email, address, role)" + "VALUES (?,?,?,?,?,?)"; // 6 "?" corresponding to 6 expressions in the SQL sentence
-			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-			
+	public void insertClient(Client c) {	
+		String sql = "INSERT INTO client (name, surname, phone_number, email, address, role)" + "VALUES (?,?,?,?,?,?)"; // 6 "?" corresponding to 6 expressions in the SQL sentence
+	
+		// 1) Prepare statement and request generated keys
+		try (PreparedStatement prep = manager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+			// 2) Bind parameters
 			prep.setString(1, c.getName()); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
 			prep.setString(2, c.getSurname());
 			prep.setInt(3, c.getPhoneNumber());
 			prep.setString(4, c.getEmail());
 			prep.setString(5, c.getAddress());
 			prep.setString(6, c.getRole().name()); // .name() Returns the name of this enum constant, exactly as declared in its enum declaration
-
+			
+			// 3) Execute insert
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
 
-			// Retrieve the generated PK from the DB 
+			// 4) Retrieve the auto-generated PK from the DB 
 			try (ResultSet rs = prep.getGeneratedKeys()) { // try-with-resources!!! (See ResultSet javadoc)
+				// rs is a ResulSet (table) separate from our query parameters with 1 column containing the generated key (id)
 				/* The content within () after the try clause is not a code block, it is the resource declaration.
 				 * Any object we put there that implements AutoCloseable (like ResultSet) will be automatically closed at the end of the try block, even if an exception is thrown.
 				 * If we want to remove this content in () and just put it within try{}, we must also explicitly call rs.close() to avoid leaking cursors or database resources.
 				*/
 	            if (rs.next()) {
-	                c.setUserId(rs.getInt(1));
+	                c.setUserId(rs.getInt(1)); 
 	            }
 	            
 	            // rs.close(); would be declared here if we don't use the resource declaration in the try clause.
+	            // prep.close(); // Always close the PreparedStatement
+	            
+	            // 5) Commit once everything is done
+	            manager.getConnection().commit(); // Commit everytime we do any change to the database
 	        }
 
 		} catch (Exception e) {
@@ -80,7 +87,10 @@ public class ClientManager implements IClientManager{
 			prep.setInt(1, id); // The 1 binds to the first and unique "?"
 
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
-
+			prep.close(); // Always close the PreparedStatement
+			
+			manager.getConnection().commit(); // Commit everytime we do any change to the database
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -230,6 +240,10 @@ public class ClientManager implements IClientManager{
 			prep.setString(1, name); // The 1 binds to the first "?"
 			prep.setInt(2, id); // The 2 binds to the second "?"
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+			prep.close(); // Always close the PreparedStatement
+			
+			manager.getConnection().commit(); // Commit everytime we do any change to the database
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -250,6 +264,9 @@ public class ClientManager implements IClientManager{
 			prep.setString(1, surname); // The 1 binds to the first "?"
 			prep.setInt(2, id); // The 2 binds to the second "?"
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+			prep.close(); // Always close the PreparedStatement
+			
+			manager.getConnection().commit(); // Commit everytime we do any change to the database
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -270,6 +287,9 @@ public class ClientManager implements IClientManager{
 			prep.setInt(1, phoneNumber); // The 1 binds to the first "?"
 			prep.setInt(2, id); // The 2 binds to the second "?"
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+			prep.close(); // Always close the PreparedStatement
+			
+			manager.getConnection().commit(); // Commit everytime we do any change to the database
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -290,6 +310,9 @@ public class ClientManager implements IClientManager{
 			prep.setString(1, address); // The 1 binds to the first "?"
 			prep.setInt(2, id); // The 2 binds to the second "?"
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+			prep.close(); // Always close the PreparedStatement
+			
+			manager.getConnection().commit(); // Commit everytime we do any change to the database
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
@@ -310,6 +333,9 @@ public class ClientManager implements IClientManager{
 			prep.setString(1, email); // The 1 binds to the first "?"
 			prep.setInt(2, id); // The 2 binds to the second "?"
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+			prep.close(); // Always close the PreparedStatement
+			
+			manager.getConnection().commit(); // Commit everytime we do any change to the database
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
