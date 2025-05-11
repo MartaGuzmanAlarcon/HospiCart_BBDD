@@ -60,7 +60,7 @@ public class ClientManagerTest {
     	
     	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
     	int idRetrieved = expectedClient.getUserId();
-    	Client actualClient = clientManager.getClientById(idRetrieved);
+    	Client actualClient = clientManager.getClientByID(idRetrieved);
     	
     	// Compare both clients
     	assertEquals(expectedClient, actualClient);

@@ -38,7 +38,7 @@ public class ClientManager implements IClientManager{
 		String sql = "INSERT INTO client (name, surname, phone_number, email, address, role)" + "VALUES (?,?,?,?,?,?)"; // 6 "?" corresponding to 6 expressions in the SQL sentence
 	
 		// 1) Prepare statement and request generated keys
-		try (PreparedStatement prep = manager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+		try (PreparedStatement prep = manager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){ // Statement.RETURN_GENERATED_KEYS asks the JDBC driver to capture the new key
 			// 2) Bind parameters
 			prep.setString(1, c.getName()); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
 			prep.setString(2, c.getSurname());
@@ -79,7 +79,7 @@ public class ClientManager implements IClientManager{
 	 * @throws Exception if no client exists with the given ID, or if a database error occurs
 	 */
 	@Override
-	public void deleteClientbyId(Integer id) throws Exception {
+	public void deleteClientbyID(Integer id) throws Exception {
 		try {
 			String sql = "DELETE FROM client WHERE id=?";
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
@@ -137,7 +137,7 @@ public class ClientManager implements IClientManager{
 	 * @return the matching Client object, or null if no such client exists.
 	 */
 	@Override
-	public Client getClientById(Integer c_id) {
+	public Client getClientByID(Integer c_id) {
 		Client client = null;
 
 		try {

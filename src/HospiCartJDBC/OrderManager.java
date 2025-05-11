@@ -122,7 +122,7 @@ public class OrderManager implements IOrderManager {
     				order.setPayment(payment);
     				
     				int user_id = resultSet.getInt("user_id");
-    				Client client = cm.getClientManager().getClientById(user_id);
+    				Client client = cm.getClientManager().getClientByID(user_id);
     				order.setClient(client);
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -161,7 +161,7 @@ public class OrderManager implements IOrderManager {
     		stmt.setInt(1, user_id);
     		try(ResultSet resultSet = stmt.executeQuery()){
     			// Get the full Client object from ClientManager
-                Client client = cm.getClientManager().getClientById(user_id);
+                Client client = cm.getClientManager().getClientByID(user_id);
                 //TODO should this be a while???? 
     			if(resultSet.next()) {
     				order = new Order();
@@ -223,7 +223,7 @@ public class OrderManager implements IOrderManager {
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
-    				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
+    				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); 
@@ -277,7 +277,7 @@ public class OrderManager implements IOrderManager {
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
-    				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
+    				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
@@ -423,7 +423,7 @@ public class OrderManager implements IOrderManager {
     				order.setPayment(payment);
     				
     				int user_id = resultSet.getInt("user_id");
-    				Client client = cm.getClientManager().getClientById(user_id);
+    				Client client = cm.getClientManager().getClientByID(user_id);
     				order.setClient(client);
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -472,7 +472,7 @@ public class OrderManager implements IOrderManager {
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
-    				Client client = cm.getClientManager().getClientById(resultSet.getInt("user_id"));
+    				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
