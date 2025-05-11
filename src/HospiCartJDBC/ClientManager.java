@@ -19,6 +19,11 @@ import HospiCartPOJOs.Role;
  * rows in the ResultSet object, it can be used in a while loop to iterate through the result set.
  */
 
+/*
+ * NOTE ABOUT THE USAGE OF TRY-WITH-RESOURCES !!!
+ * Try-with-resources can only be used if the object implements the Interface AutoCloseable.
+ */
+
 
 public class ClientManager implements IClientManager{
 	private ConnectionManagerJDBC manager;
@@ -61,9 +66,9 @@ public class ClientManager implements IClientManager{
 	                c.setUserId(rs.getInt(1)); 
 	            }
 	            
-	            // rs.close(); would be declared here if we don't use the resource declaration in the try clause.
-	            // prep.close(); // Always close the PreparedStatement
+	            // rs.close(); would be declared here if we don't use the resource declaration in the try clause
 	        }
+			// prep.close(); // Always close the PreparedStatement
 			
 			// 5) Commit once everything is done
             manager.getConnection().commit(); // Commit everytime we do any change to the database
@@ -79,19 +84,28 @@ public class ClientManager implements IClientManager{
 	 * @throws Exception if no client exists with the given ID, or if a database error occurs
 	 */
 	@Override
-	public void deleteClientbyID(Integer id) throws Exception {
-		try {
-			String sql = "DELETE FROM client WHERE id=?";
-			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-
+	public void deleteClientbyID(Integer id) throws Exception { //TODO CREATE OUR INVALID ID EXCEPTION 
+		String sql = "DELETE FROM client WHERE id=?";
+		
+		// 1) Prepare statement 
+		try (PreparedStatement prep = manager.getConnection().prepareStatement(sql)){
+			// 2) Bind parameters
 			prep.setInt(1, id); // The 1 binds to the first and unique "?"
 
-			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
-			prep.close(); // Always close the PreparedStatement
+			// 3) Execute delete and throw an exception if no ID was found in the DB
+			int rows = prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+	        if (rows == 0) {
+	            throw new Exception("No client found with id " + id);
+	            // Relaunch this exception because it is not the responsibility of this method to handle it
+	        }
 			
+			//prep.close(); We don't need to do this since we have used a try-with resources
+			
+			// 4) Commit once everything is done
 			manager.getConnection().commit(); // Commit everytime we do any change to the database
 			
-		} catch (Exception e) {
+		} catch (SQLException e) { 
+			// Catch this SQL exception because is the responsibility of this method to handle it 
 			e.printStackTrace();
 		}
 	}

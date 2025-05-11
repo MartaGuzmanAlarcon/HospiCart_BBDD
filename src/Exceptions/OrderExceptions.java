@@ -4,7 +4,7 @@ package Exceptions;
  *  Class that contains personalized exceptions in order to handle with unexpected scenarios regarding the use of the instances
  *  of the "Order" class.
  */
-//TODO LU: crear una already exists excepcion que devuelve nada para que no lance la excepcion de que table already exists.
+
 public class OrderExceptions extends RuntimeException{
 
 	private static final long serialVersionUID = 1L;
