@@ -254,7 +254,8 @@ public class OrderManager implements IOrderManager {
             e.printStackTrace();
     	}
         return ordersOfUser;
-    }
+    } // TODO: It would make sense creating a personalized exception if the method getClientByID is able to return null (when a client is not found with the provided user_id).
+    //WE CAN CREATE A PERSONALIZED EXCEPTION TO BE THROWN IN getUserByID when a user was not found, and re-throw it in this method!!
 
     /**
 	 * Method that retrieves a list containing all the orders that were purchased on the date received as parameter.

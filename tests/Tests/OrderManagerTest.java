@@ -3,8 +3,10 @@ package Tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -34,8 +36,8 @@ class OrderManagerTest {
 	        // Initialize the ConnectionManager (creates tables)
 	        
 	        connectionManager = new ConnectionManagerJDBC();
-	        clientManager = new ClientManager(connectionManager);
 	        orderManager = new OrderManager(connectionManager);
+	        clientManager = new ClientManager(connectionManager);
 	    }
 
 	    @BeforeEach
@@ -50,8 +52,8 @@ class OrderManagerTest {
 	           // s.execute("DELETE FROM product_order");
 	           //s.execute("DELETE FROM payment");
 	           // s.execute("DELETE FROM shipment");
-	            s.execute("DELETE FROM client_order");
 	            s.execute("DELETE FROM client");
+	            s.execute("DELETE FROM client_order");
 	            c.commit();
 	        }
 	    }
@@ -68,7 +70,7 @@ class OrderManagerTest {
 	/**
 	 * Test that checks if the method "createOrder" of "OrderManager" properly works.
 	 */
-	void createOrderTest(){
+	void insertOrderTest(){
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
 		
@@ -104,7 +106,7 @@ class OrderManagerTest {
 	/**
 	 * Test that checks the method "createOrder" of "OrderManager" when the client passed as parameter to the method is null.
 	 */
-	void createOrderWithNullClientTest(){
+	void insertOrderWithNullClientTest(){
 		//I create a client and set it to null.
 		Client expectedClient = null;
 		
@@ -115,6 +117,44 @@ class OrderManagerTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
+	}
+	
+	@Test
+	/**
+	 * Test that checks if the method "deleteOrder" works a desired.
+	 */
+	void deleteOrderTest() {		
+		Client client = new Client("Robert", "Williams", 346667855, "robwilliams@gmail.com", "Calle de Paraguay 20", Role.DOCTOR);
+		
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}			
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+			
+			//I have to obtain the order id of the inserted order
+			
+			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
+			List <Order> ordersBefore = orderManager.getAllOrders();
+			int countTotalOrdersBefore = ordersBefore.size();
+			Order addedOrder = ordersBefore.get(ordersBefore.size()-1);
+			
+			orderManager.deleteOrder(addedOrder.getOrderId());
+			
+			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
+			List <Order> ordersAfter = orderManager.getAllOrders();
+			int countTotalOrdersAfter = ordersAfter.size();
+			
+			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
+		    assertEquals(countTotalOrdersBefore - 1, countTotalOrdersAfter);
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
@@ -152,27 +192,271 @@ class OrderManagerTest {
 			e.printStackTrace();
 		}
 	}
-
 	
-	//@Test
-	/**
-	 * Test that checks if the method "getOrderByID" works as desired. First, I use a method that retrieves all the orders stored in the database 
-	 * and try the "getOrderByI" method passing an invalid ID to it (I pass as parameter the ID of the last order stored in the database plus 5, for instance)
-	 */
-	/*void getOrderByInvalidIDTest() {
+	@Test
+	void getOrderByUserTest() {
+		Client client = new Client("Bobby", "Brown", 343367865, "bobby@gmail.com", "Calle de Ambar 40", Role.NURSE);
+		
 		try {
-			List<Order> orders = om.getAllOrders();
-			//I get the amount of orders stored in the database.
-			int amountOfOrders = orders.size()-1;
-			// I call the method I want to check and pass as parameter an invalid order ID (an ID that is not assigned to any order)
-			assertThrows(OrderExceptions.class, () ->{om.getOrderByID(amountOfOrders+5);});
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+			int amountOfOrdersOfUser = 2;
 			
+			List<Order> orders = orderManager.getOrdersByUser(client.getUserId());
+			int realAmountOfOrdersOfUser = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersOfUser, realAmountOfOrdersOfUser);
+			
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersByOrderDate" works as desired when there is only one order made in the date we are interested in (present date).
+	 */
+	void getOneOrderByOrderDateTest() {
+		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+			int amountOfOrdersMadeToday = 1;
+			
+			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
+			int realAmountOfOrdersMadeToday = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersByOrderDate" works as desired when there are several orders made in the date we are interested in (present date).
+	 */
+	void getSeveralOrdersByOrderDateTest() {
+		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+
+			int amountOfOrdersMadeToday = 3;
+			
+			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
+			int realAmountOfOrdersMadeToday = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersByOrderDate" works as desired when there are 0 orders made in the date we are interested in (present date).
+	 */
+	void getZeroOrderByOrderDateTest() {
+		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+
+			int amountOfOrdersMadeToday = 0;
+			
+			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
+			int realAmountOfOrdersMadeToday = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}*/
-	//TODO: THIS TEST DOES NOT WORK!! SEE HOW I CAN CORRECT IT!
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersWithinDateRange" works as desired when there is only one order made within the dates we are interested in (a past date and the present date).
+	 */
+	void getOneOrderWithinDateRangeTest() {
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+
+			int amountOfOrdersMadeInDateRange = 1;
+			
+			List<Order> orders = orderManager.getOrdersWithinDateRange(Date.valueOf(LocalDate.of(2025, 05, 11)), Date.valueOf(LocalDate.now()));
+			int realAmountOfOrdersMadeInDateRange = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersWithinDateRange" works as desired when there are several orders made within the dates we are interested in (a past date and the present date).
+	 */
+	void getSeveralOrdersWithinDateRangeTest() {
+		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			if(!clientManager.isClientInDatabase(client1.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client1);
+			}
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client1);
+
+			int amountOfOrdersMadeInDateRange = 3;
+			
+			List<Order> orders = orderManager.getOrdersWithinDateRange(Date.valueOf(LocalDate.of(2025, 05, 11)), Date.valueOf(LocalDate.now()));
+			int realAmountOfOrdersMadeInDateRange = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersWithinDateRange" works as desired when there are zero orders made within the dates we are interested in (a past date and the present date).
+	 */
+	void getZeroOrdersWithinDateRangeTest() {
+		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			if(!clientManager.isClientInDatabase(client1.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client1);
+			}
+
+			int amountOfOrdersMadeInDateRange = 0;
+			
+			List<Order> orders = orderManager.getOrdersWithinDateRange(Date.valueOf(LocalDate.of(2025, 05, 11)), Date.valueOf(LocalDate.now()));
+			int realAmountOfOrdersMadeInDateRange = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	/**
+	 * Test that checks if "getOrdersWithinDateRange" works as desired when there are several orders made within the dates we are interested in (a past date and the present date).
+	 */
+	void getAllOrdersTest() {
+		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		try {
+			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
+			if(!clientManager.isClientInDatabase(client.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client);
+			}
+			if(!clientManager.isClientInDatabase(client1.getEmail())) {
+				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+				clientManager.insertClient(client1);
+			}
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client);
+			orderManager.insertOrder(client1);
+			orderManager.insertOrder(client1);
+
+			int amountOfOrdersMade = 6;
+			
+			List<Order> orders = orderManager.getAllOrders();
+			int realAmountOfOrdersMade = orders.size();
+						
+			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
+			assertEquals(amountOfOrdersMade, realAmountOfOrdersMade);
+		} catch(SQLException e) {
+			System.out.println("ERROR: " + e);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
+	//@Test
+		/**
+		 * Test that checks if the method "getOrderByID" works as desired. First, I use a method that retrieves all the orders stored in the database 
+		 * and try the "getOrderByI" method passing an invalid ID to it (I pass as parameter the ID of the last order stored in the database plus 5, for instance)
+		 */
+		/*void getOrderByInvalidIDTest() {
+			try {
+				List<Order> orders = om.getAllOrders();
+				//I get the amount of orders stored in the database.
+				int amountOfOrders = orders.size()-1;
+				// I call the method I want to check and pass as parameter an invalid order ID (an ID that is not assigned to any order)
+				assertThrows(OrderExceptions.class, () ->{om.getOrderByID(amountOfOrders+5);});
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}*/
+		//TODO: THIS TEST DOES NOT WORK!! SEE HOW I CAN CORRECT IT!
 	
 }

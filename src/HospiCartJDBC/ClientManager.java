@@ -149,6 +149,7 @@ public class ClientManager implements IClientManager{
 	 * This method retrieves a single Client by its id.
 	 * @param c_id the unique identifier of the client to retrieve.
 	 * @return the matching Client object, or null if no such client exists.
+	 *TODO: CORRECT THE RETURN SENTENCE ABOVE ^ (this method never returns a null, instead, throws an exception.
 	 */
 	@Override
 	public Client getClientByID(Integer c_id) {
