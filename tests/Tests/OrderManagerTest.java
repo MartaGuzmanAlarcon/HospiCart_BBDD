@@ -20,6 +20,8 @@ import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManager;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
+import HospiCartPOJOs.PaymentMethod;
+import HospiCartPOJOs.PaymentStatus;
 import HospiCartPOJOs.Role;
 
 class OrderManagerTest {	
@@ -73,7 +75,8 @@ class OrderManagerTest {
 	void insertOrderTest(){
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
-		
+		//Payment payment = new Payment(1, order, amount, payment);
+		//Integer paymentId, HospiCartPOJOs.Order order, Integer amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus
 		try {
 			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
 			if(!clientManager.isClientInDatabase(expectedClient.getEmail())) {
@@ -438,6 +441,7 @@ class OrderManagerTest {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	
 	//@Test

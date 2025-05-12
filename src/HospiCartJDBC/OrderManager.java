@@ -8,7 +8,7 @@ import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
-
+import javax.persistence.EntityManager;
 
 import java.sql.Connection;
 import java.sql.Date;
