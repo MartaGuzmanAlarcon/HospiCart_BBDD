@@ -87,13 +87,13 @@ public class Order implements Serializable {
 
 
 
-	public List<ProductOrder> getProducts() {
+	public List<ProductOrder> getProductOrders() {
 		return productOrders;
 	}
 
 
-	public void setProducts(List<ProductOrder> products) {
-		this.productOrders = products;
+	public void setProductOrders(List<ProductOrder> productOrders_) {
+		this.productOrders = productOrders_;
 	}
 
 

@@ -7,6 +7,9 @@ import java.util.List;
 import Exceptions.OrderExceptions;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
+import HospiCartPOJOs.Payment;
+import HospiCartPOJOs.ProductOrder;
+import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
 
 /**
@@ -19,7 +22,7 @@ public interface IOrderManager {
 	 * Method that receives the id of the user and creates an order. 
 	 * @param client
 	 */
-	void insertOrder(Client client) throws SQLException, OrderExceptions;
+	void insertOrder(Client client, Payment payment, Shipment shipment, List<ProductOrder> productOrders) throws SQLException, OrderExceptions;
 	
 	/**
 	 * Method that receives an order's id as parameter and deletes it.

@@ -44,7 +44,7 @@ public class OrderManager implements IOrderManager {
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
-    public void insertOrder(Client client) throws SQLException, OrderExceptions{
+    public void insertOrder(Client client, Payment payment, Shipment shipment, List<ProductOrder> productOrders) throws SQLException, OrderExceptions{
         Order order = new Order(); //I create the Order object
         
         if(client == null) {
@@ -55,6 +55,9 @@ public class OrderManager implements IOrderManager {
        order.setClient(client);
        order.setOrderDate(Date.valueOf(LocalDate.now()));
        order.setStatus(Status.ORDERED);
+       order.setPayment(payment);
+       order.setShipment(shipment);
+       order.setProductOrders(productOrders);
 
        //I insert the order information that I have up to now
        String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?)";
@@ -191,7 +194,7 @@ public class OrderManager implements IOrderManager {
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-    				order.setProducts(productOrders);
+    				order.setProductOrders(productOrders);
     				
     			} else {
     				//I throw a personalized exceptions that indicates that was not found an order with the introduced order_id in the database.
@@ -243,7 +246,7 @@ public class OrderManager implements IOrderManager {
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-    				order.setProducts(productOrders);
+    				order.setProductOrders(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
     				ordersOfUser.add(order);
@@ -296,7 +299,7 @@ public class OrderManager implements IOrderManager {
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-    				order.setProducts(productOrders);
+    				order.setProductOrders(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
     				ordersWithSpecifiedDate.add(order);
@@ -350,7 +353,7 @@ public class OrderManager implements IOrderManager {
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-    				order.setProducts(productOrders);
+    				order.setProductOrders(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
     				ordersWithinDateRange.add(order);
@@ -397,7 +400,7 @@ public class OrderManager implements IOrderManager {
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-    				order.setProducts(productOrders);
+    				order.setProductOrders(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
     				orders.add(order);
@@ -449,7 +452,7 @@ public class OrderManager implements IOrderManager {
     				order.setShipment(shipment);
     				
     				List<ProductOrder> productOrders = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-    				order.setProducts(productOrders);
+    				order.setProductOrders(productOrders);
     				
     				//Finally, I add the created order to the list of orders the user made.
     				ordersWithSpecifiedStatus.add(order);
