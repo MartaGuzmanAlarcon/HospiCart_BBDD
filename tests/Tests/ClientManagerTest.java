@@ -60,7 +60,7 @@ public class ClientManagerTest {
     @Test
     void insertClientTest() {
     	// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
-    	Client expectedClient = new Client("Belen", "Esteban", 656329185, "belenesteban@gmail.com", "Vallekas 3", Role.DOCTOR); 
+    	Client expectedClient = new Client("Belen", "Esteban", 656329185, "belenesteban@gmail.com", "Vallekas 3"); 
     	clientManager.insertClient(expectedClient);
     	
     	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
@@ -74,7 +74,7 @@ public class ClientManagerTest {
     @Test
     void insertClientTest2() {
     	// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
-    	Client expectedClient = new Client("Juan", "Esteban", 656329185, "juanesteban@gmail.com", "Vallekas 3", Role.DOCTOR); 
+    	Client expectedClient = new Client("Juan", "Esteban", 656329185, "juanesteban@gmail.com", "Vallekas 3"); 
     	clientManager.insertClient(expectedClient);
     	
     	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
@@ -89,7 +89,7 @@ public class ClientManagerTest {
     void deleteClientTest() {
     	try {
     		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
-        	Client expectedClient = new Client("Maria", "Martinez", 656329185, "mariamartinez@gmail.com", "Boadilla 2", Role.NURSE); 
+        	Client expectedClient = new Client("Maria", "Martinez", 656329185, "mariamartinez@gmail.com", "Boadilla 2"); 
         	clientManager.insertClient(expectedClient);   
         	
         	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
@@ -111,13 +111,13 @@ public class ClientManagerTest {
     @Test 
     void getListOfClientsTest() { 
     	// Insert several 'incomplete' clients from Java with the constructor of Client that does not admit a user_id
-    	Client client1 = new Client("Client", "One", 656329185, "clientone@gmail.com", "Chong Ching 2", Role.NURSE); 
+    	Client client1 = new Client("Client", "One", 656329185, "clientone@gmail.com", "Chong Ching 2"); 
     	clientManager.insertClient(client1); 
     	
-    	Client client2 = new Client("Client", "Two", 656329185, "clienttwo@gmail.com", "Chong Ching 2", Role.DOCTOR); 
+    	Client client2 = new Client("Client", "Two", 656329185, "clienttwo@gmail.com", "Chong Ching 2"); 
     	clientManager.insertClient(client2); 
     	
-    	Client client3 = new Client("Client", "Three", 656329185, "clientthree@gmail.com", "Chong Ching 2", Role.DOCTOR); 
+    	Client client3 = new Client("Client", "Three", 656329185, "clientthree@gmail.com", "Chong Ching 2"); 
     	clientManager.insertClient(client3); 
     	
     	// Retrieve all the clients 

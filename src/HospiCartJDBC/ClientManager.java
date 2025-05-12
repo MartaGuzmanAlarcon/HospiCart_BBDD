@@ -40,7 +40,7 @@ public class ClientManager implements IClientManager{
 	 */
 	@Override
 	public void insertClient(Client c) {	
-		String sql = "INSERT INTO client (name, surname, phone_number, email, address, role)" + "VALUES (?,?,?,?,?,?)"; // 6 "?" corresponding to 6 expressions in the SQL sentence
+		String sql = "INSERT INTO client (name, surname, phone_number, email, address)" + "VALUES (?,?,?,?,?)"; // 5 "?" corresponding to 5 expressions in the SQL sentence
 	
 		// 1) Prepare statement and request generated keys
 		try (PreparedStatement prep = manager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){ // Statement.RETURN_GENERATED_KEYS asks the JDBC driver to capture the new key
@@ -50,7 +50,7 @@ public class ClientManager implements IClientManager{
 			prep.setInt(3, c.getPhoneNumber());
 			prep.setString(4, c.getEmail());
 			prep.setString(5, c.getAddress());
-			prep.setString(6, c.getRole().name()); // .name() Returns the name of this enum constant, exactly as declared in its enum declaration
+			//prep.setString(6, c.getRole().name()); // .name() Returns the name of this enum constant, exactly as declared in its enum declaration
 			
 			// 3) Execute insert
 			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
@@ -130,9 +130,9 @@ public class ClientManager implements IClientManager{
 				Integer phoneNumber = rs.getInt("phone_number");
 				String email = rs.getString("email");
 				String address = rs.getString("address");
-				Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
+				//Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
 
-				Client client = new Client(id, name, surname, phoneNumber, email, address, role);
+				Client client = new Client(id, name, surname, phoneNumber, email, address);
 				clients.add(client);
 			}
 
@@ -166,9 +166,9 @@ public class ClientManager implements IClientManager{
 			Integer phoneNumber = rs.getInt("phone_number");
 			String email = rs.getString("email");
 			String address = rs.getString("address");
-			Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
+			//Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
 
-			client = new Client(id, name, surname, phoneNumber, email, address, role);
+			client = new Client(id, name, surname, phoneNumber, email, address);
 
 			rs.close();
 			stmt.close();
@@ -201,9 +201,9 @@ public class ClientManager implements IClientManager{
 			Integer phoneNumber = rs.getInt("phone_number");
 			String email = rs.getString("email");
 			String address = rs.getString("address");
-			Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
+			//Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
 
-			client = new Client(id, name, surname, phoneNumber, email, address, role);
+			client = new Client(id, name, surname, phoneNumber, email, address);
 
 			rs.close();
 			stmt.close();

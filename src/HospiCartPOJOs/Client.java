@@ -14,7 +14,7 @@ public class Client implements Serializable {
 	private Integer phoneNumber;
 	private String email; // TODO ASK IF THIS IS THE USERNAME 
 	private String address;
-	private Role role; // "doctor" o "nurse"
+	//private Role role; // "doctor" o "nurse"
 	private List<Order> orders; // 1 Client has many Orders 
 
 	public Client() {
@@ -32,8 +32,7 @@ public class Client implements Serializable {
 	 * @param address
 	 * @param role
 	 */
-	public Client(Integer id, String name, String surname, Integer phoneNumber, String email, String address,
-			Role role) {
+	public Client(Integer id, String name, String surname, Integer phoneNumber, String email, String address) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -41,7 +40,7 @@ public class Client implements Serializable {
 		this.phoneNumber = phoneNumber;
 		this.email = email;
 		this.address = address;
-		this.role = role;
+		//this.role = role;
 	}
 
 	/**
@@ -53,15 +52,14 @@ public class Client implements Serializable {
 	 * @param address
 	 * @param role
 	 */
-	public Client(String name, String surname, Integer phoneNumber, String email, String address,
-			Role role) {
+	public Client(String name, String surname, Integer phoneNumber, String email, String address) {
 		super();
 		this.name = name;
 		this.surname = surname;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
 		this.address = address;
-		this.role = role;
+		
 	}
 
 
@@ -99,13 +97,6 @@ public class Client implements Serializable {
 		this.email = email;
 	}
 
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
 
 	public Integer getPhoneNumber() {
 		return phoneNumber;
@@ -154,7 +145,7 @@ public class Client implements Serializable {
 	public String toString() {
 		return "Client [id =" + this.id + ", name =" + this.name + ", surname =" + this.surname +
 				", phoneNumber =" + this.phoneNumber + ", email =" + this.email + 
-				", address =" + this.address + ", role =" + this.role + "]";
+				", address =" + this.address + "]";
 	}
 
 }

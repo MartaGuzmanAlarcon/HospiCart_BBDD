@@ -1,11 +1,17 @@
 package Tests;
 
 import HospiCartJDBC.ConnectionManagerJDBC;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import HospiCartJDBC.ConnectionManagerJDBC;
 
 public class MainDB {
 
-	public static void main(String[] args) {
-		ConnectionManagerJDBC dbManager = new ConnectionManagerJDBC();
-		dbManager.disconnect();
+	    @Test
+	    void testConnectAndDisconnect() {
+	        ConnectionManagerJDBC dbManager = new ConnectionManagerJDBC();
+	    	dbManager.disconnect();
+	    }
 	}
-}
+
+

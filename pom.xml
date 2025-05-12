@@ -9,7 +9,7 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
   <build>
@@ -34,7 +34,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <release>21</release>
+          <release>17</release>
         </configuration>
       </plugin>
 
@@ -62,6 +62,8 @@
       <version>2.1.1</version>
 	</dependency>-->
 	
+  <!-- EclipseLink JPA Implementation -->
+
 	<dependency>
 	<groupId>org.eclipse.persistence</groupId>
       <artifactId>eclipselink</artifactId>

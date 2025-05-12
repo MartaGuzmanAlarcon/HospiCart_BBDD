@@ -53,7 +53,6 @@ public class ConnectionManagerJDBC {
 							name TEXT NOT NULL,
 							surname TEXT NOT NULL,
 							email TEXT NOT NULL,
-							role TEXT NOT NULL,
 							phone_number INTEGER,
 							address TEXT NOT NULL
 						);
