@@ -1,6 +1,6 @@
 package HospiCartPOJOs;
 
 public enum Role {
-	DOCTOR,NURSE;
+	DOCTOR, NURSE;
 
 }

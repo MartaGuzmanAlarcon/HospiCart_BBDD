@@ -19,7 +19,14 @@ public interface IOrderManager {
 	 * Method that receives the id of the user and creates an order. 
 	 * @param client
 	 */
-	Order insertOrder(Client client) throws SQLException, OrderExceptions;
+	void insertOrder(Client client) throws SQLException, OrderExceptions;
+	
+	/**
+	 * Method that receives an order's id as parameter and deletes it.
+	 * @param order_id integer that stores the id of the order we wish to remove.
+	 */
+	//TODO: this method should throw an exception for the cases in which an order with the introduced id does not exist.
+	void deleteOrder(int order_id);
 	
 	/**
 	 * Method that retrieves a specific order whose id matches the one received as parameter.
@@ -55,27 +62,11 @@ public interface IOrderManager {
 	List<Order> getOrdersWithinDateRange(Date startDate, Date endDate);
 	
 	/**
-	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
-	 * @param order_id integer that stores the id of the order whose status we wish to update.
-	 * @param newStatus variable of type Status that store the status we want the order to have.
-	 */
-	//TODO: this method should re-throw the exception thrown by "get order by id" an order with the introduced id does not exist. CHECK WHEN DO WE HAVE TO CJECK IF THE NEW STATUS IS VALID
-	void updateOrderStatus(int order_id, Status newStatus);
-	
-	/**
-	 * Method that receives an order's id as parameter and deletes it.
-	 * @param order_id integer that stores the id of the order we wish to remove.
-	 */
-	//TODO: this method should throw an exception for the cases in which an order with the introduced id does not exist.
-	void deleteOrder(int order_id);
-	
-	/**
 	 * Method that retrieves a list containing all the orders of HospiCart.
 	 * @return a list with all the orders.
 	 */
 	//TODO: throw an exception in case there are no orders.
 	List<Order> getAllOrders();
-	//TODO ver si es util
 	
 	/**
 	 * Method that retrieves a list that contains all the orders whose status matches the one received as parameter.
@@ -84,4 +75,12 @@ public interface IOrderManager {
 	 */
 	//TODO: should this method throw an exception in case there are no orders with the specified status?
 	List<Order> getOrdersByStatus(Status status);
+	
+	/**
+	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
+	 * @param order_id integer that stores the id of the order whose status we wish to update.
+	 * @param newStatus variable of type Status that store the status we want the order to have.
+	 */
+	//TODO: this method should re-throw the exception thrown by "get order by id" an order with the introduced id does not exist. CHECK WHEN DO WE HAVE TO CJECK IF THE NEW STATUS IS VALID
+	void updateOrderStatus(int order_id, Status newStatus);
 }

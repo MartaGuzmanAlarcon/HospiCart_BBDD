@@ -2,10 +2,14 @@ package Tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import Exceptions.OrderExceptions;
@@ -16,13 +20,48 @@ import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Role;
 
-class OrderManagerTest {
+class OrderManagerTest {	
+	//I define global variables that are going to be needed in several tests
 	
-	//I create the connection manager and use it to create an instance of OrderManager and ClientManager
-	//ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
-	//OrderManager om = new OrderManager(cm);
-	//ClientManager clientManager = new ClientManager(cm);
-	
+		 private static ConnectionManagerJDBC connectionManager;
+		 private static ClientManager clientManager;
+		 private static OrderManager orderManager;
+	    
+	    @BeforeAll 
+	    static void initAll() throws Exception {
+	    	// This annotation is used to signal that the annotated method should be executed before all tests in the current test class.
+	        // In our case, this annotation allows us to create tables once.
+	        // Initialize the ConnectionManager (creates tables)
+	        
+	        connectionManager = new ConnectionManagerJDBC();
+	        clientManager = new ClientManager(connectionManager);
+	        orderManager = new OrderManager(connectionManager);
+	    }
+
+	    @BeforeEach
+	    void cleanTable() throws Exception {
+	    	// This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
+	        // Crucial for wiping or resetting data so tests can’t influence each other.
+	        // Ensure a clean state
+	        
+	        Connection c = connectionManager.getConnection();
+	        try ( Statement s = c.createStatement() ) {
+	        	 // Delete in reverse order of dependencies
+	           // s.execute("DELETE FROM product_order");
+	           //s.execute("DELETE FROM payment");
+	           // s.execute("DELETE FROM shipment");
+	            s.execute("DELETE FROM client_order");
+	            s.execute("DELETE FROM client");
+	            c.commit();
+	        }
+	    }
+
+	    @AfterAll
+	    static void tearDown() {
+	    	// This annotation is used to signal that the annotated method should be executed after all tests in the current test class.
+	        // Tear down shared resources (e.g. close the database connection)
+	        connectionManager.disconnect();
+	    }
 	
 	
 	@Test
@@ -33,38 +72,31 @@ class OrderManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30", Role.DOCTOR);
 		
-		ConnectionManagerJDBC cm = null;
-		OrderManager om = null;
-		ClientManager clientManager = null;
-		
 		try {
-			//I initialize the managers
-			cm = new ConnectionManagerJDBC();
-			om = new OrderManager(cm);
-			clientManager = new ClientManager(cm);
-			
 			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
 			if(!clientManager.isClientInDatabase(expectedClient.getEmail())) {
 				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 				clientManager.insertClient(expectedClient);
 			}
-			//I get the email of the client I created in order to compare it further on.
-			String email = expectedClient.getEmail();
-			//I use the method get client by email from the manager of client in order to obtain the complete client (the client that I created but with the ID that the database assigned to him/her)
-			expectedClient = clientManager.getClientByEmail(email);
+			
+			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
+			List <Order> ordersBefore = orderManager.getAllOrders();
+			int countTotalOrdersBefore = ordersBefore.size();
+			
 			//I create the order with the respective method from OrderManager and pass the complete client as parameter
-			Order order = om.insertOrder(expectedClient);
-			//I store the client assigned to the order to check if the order was properly created or not.
-			Client actualClient = order.getClient();
-			//I check if the emails (which is a unique attribute) of the created client and the client assigned to the order match.
-			assertEquals(expectedClient.getUserId(), actualClient.getUserId());
+			orderManager.insertOrder(expectedClient);
+			
+			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
+			List <Order> ordersAfter = orderManager.getAllOrders();
+			int countTotalOrdersAfter = ordersAfter.size();
+			
+			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
+		    assertEquals(countTotalOrdersBefore + 1, countTotalOrdersAfter);
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
 		}catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			cm.disconnect();
 		}
 	}
 	
@@ -76,19 +108,13 @@ class OrderManagerTest {
 		//I create a client and set it to null.
 		Client expectedClient = null;
 		
-		//I initialize the manager			
-		ConnectionManagerJDBC cm = new ConnectionManagerJDBC();;
-		OrderManager om = new OrderManager(cm);;
-		
 		try {
 			//I call the method I want to check and pass the null client as parameter. I expect the method to throw an exception and check if it really does by using the "assertThrows".
-			assertThrows(OrderExceptions.class, () ->{om.insertOrder(expectedClient);});
+			assertThrows(OrderExceptions.class, () ->{orderManager.insertOrder(expectedClient);});
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			cm.disconnect();
-		}
+		} 
 	}
 	
 	@Test
@@ -101,16 +127,7 @@ class OrderManagerTest {
 	void getOrderByValidIDTest() {
 		Client client = new Client("Serena", "Williams", 346667865, "serewilliams@gmail.com", "Calle de Uruguay 50", Role.NURSE);
 		
-		ConnectionManagerJDBC cm = null;
-		OrderManager om = null;
-		ClientManager clientManager = null;
-		
 		try {
-			//I initialize the managers
-			cm = new ConnectionManagerJDBC();
-			om = new OrderManager(cm);
-			clientManager = new ClientManager(cm);
-			
 			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
 			if(!clientManager.isClientInDatabase(client.getEmail())) {
 				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
@@ -118,24 +135,24 @@ class OrderManagerTest {
 			}
 			client = clientManager.getClientByEmail(client.getEmail());
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			Order order = om.insertOrder(client);
-			List<Order> orders = om.getOrdersByUser(client.getUserId());
-			List<Order> allOrders = om.getAllOrders();
-			//I get the last order added to the list of orders of the user.
-			Order orderAdded = allOrders.get(allOrders.size()-1);
-			//TODO: THIS DOES NOT WORK BECAUSE SE SOLAPAN LOS TESTSSSSS
-			//I compare the created order and the last one in the retrieved list of orders of the user.
+			orderManager.insertOrder(client);
+			
+			List<Order> orders = orderManager.getOrdersByUser(client.getUserId());
+			Order insertedOrder = orders.get(orders.size()-1);
+			
+			Order retrievedOrder = orderManager.getOrderByID(insertedOrder.getOrderId());
+			
+			//I compare the inserted order and the one obtained through the method "getOrderByID".
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
-			assertEquals(orderAdded, order);
+			assertEquals(insertedOrder, retrievedOrder);
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
 		}catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			cm.disconnect();
 		}
 	}
+
 	
 	//@Test
 	/**

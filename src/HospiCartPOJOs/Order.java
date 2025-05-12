@@ -132,8 +132,4 @@ public class Order implements Serializable {
 		return "Order [orderId=" + orderId + ", client=" + client + ", payment=" + payment + ", Shipment=" + Shipment
 				+ ", productOrders=" + productOrders + ", orderDate=" + orderDate + ", status=" + status + "]";
 	}
-
-
-	
-
 }

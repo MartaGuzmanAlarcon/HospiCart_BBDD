@@ -34,7 +34,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return the created shipment.
 	 */
 	@Override
-	public Shipment insertShipment(Order order) throws SQLException {
+	public void insertShipment(Order order) throws SQLException {
 
 		Shipment shipment = new Shipment(order); //I create the Order object
 
@@ -74,111 +74,8 @@ public class ShipmentManager implements IShipmentManager{
 	            }
 	            throw new RuntimeException("Error creating shipment: " + e.getMessage(), e);
 	        }
-	        return shipment;	
 	}
-
-	/**
-	 * Method that receives a shipment id as parameter and retrieves the shipment associated with the shipment id.
-	 * @param shipment_id integer that stores a shipment ID.
-	 * @return the found shipment whose shipment id matches with the received one.
-	 */
-	@Override
-	public Shipment getShipmentByID(int shipment_id) {
-		Shipment shipment = null;
-	    //SQL query
-    	String sql = "SELECT * "
-    			+ "FROM shipment "
-    			+ "WHERE shipment_id = ?";
-    	//I create the statement
-    	try (PreparedStatement stmt = c.prepareStatement(sql)){
-    		stmt.setInt(1, shipment_id);
-    		try(ResultSet resultSet = stmt.executeQuery()){
-    			if(resultSet.next()) {
-    				int order_id = resultSet.getInt("order_id");
-    				Order order = cm.getOrderManager().getOrderByID(order_id);
-    				
-    				shipment = new Shipment(order);
-    				shipment.setShipmentId(resultSet.getInt("shipment_id"));
-    				//I don't set the tracking number because it has already been done by the constructor of Shipment when I created the shipment object and passed order by parameter.
-    				
-    			}
-    		}
-    	} catch(SQLException e) {
-    		System.err.println("Error retrieving shipment: " + e.getMessage());
-            e.printStackTrace();
-    	}
-        return shipment;
-	}
-
-	/**
-	 * Method that receives a tracking number as parameter and retrieves the shipment associated with the tracking number.
-	 * @param tracking_number integer that stores a tracking number.
-	 * @return the found shipment whose tracking number matches with the received one.
-	 */
-	@Override
-	public Shipment getShipmentByTrackingNumber(int tracking_number) {
-		Shipment shipment = null;
-	    //SQL query
-    	String sql = "SELECT * "
-    			+ "FROM shipment "
-    			+ "WHERE tracking_number = ?";
-    	//I create the statement
-    	try (PreparedStatement stmt = c.prepareStatement(sql)){
-    		stmt.setInt(1, tracking_number);
-    		
-    		try(ResultSet resultSet = stmt.executeQuery()){
-    			if(resultSet.next()) {
-    				int order_id = resultSet.getInt("order_id");
-    				Order order = cm.getOrderManager().getOrderByID(order_id);
-    				
-    				shipment = new Shipment();
-    				shipment.setShipmentId(resultSet.getInt("shipment_id"));
-    				shipment.setTrackingNumber(resultSet.getInt("tracking_number")); //I set the tracking number manually
-    				shipment.setOrder(order);
-    				//TODO what would happen if one constructor of Shipment implemented the other in this case? Because here, the shipment already has an assigned 
-    				//shipment number and I don't want to generate another one. Therefore, I only want to use the empty constructor.
-    			}
-    		}
-    	} catch(SQLException e) {
-    		System.err.println("Error retrieving shipment: " + e.getMessage());
-            e.printStackTrace();
-    	}
-        return shipment;
-	}
-
-	/**
-	 * Method that receives an order id as parameter and retrieves the shipment associated with the order id.
-	 * @param order_id integer that stores the id of an order.
-	 * @return the shipment whose order id matches with the received one.
-	 */
-	@Override
-	public Shipment getShipmentByOrderID(int order_id) {
-		Shipment shipment = null;
-	    //SQL query
-    	String sql = "SELECT * "
-    			+ "FROM shipment "
-    			+ "WHERE order_id = ?";
-    	//I create the statement
-    	try (PreparedStatement stmt = c.prepareStatement(sql)){
-    		stmt.setInt(1, order_id);
-    		
-    		try(ResultSet resultSet = stmt.executeQuery()){
-    			if(resultSet.next()) {
-    				Order order = cm.getOrderManager().getOrderByID(order_id);
-    				
-    				shipment = new Shipment();
-    				shipment.setShipmentId(resultSet.getInt("shipment_id"));
-    				shipment.setTrackingNumber(resultSet.getInt("tracking_number"));
-    				shipment.setOrder(order);
-    			}
-    		}
-    	} catch(SQLException e) {
-    		System.err.println("Error retrieving shipment: " + e.getMessage());
-            e.printStackTrace();
-    	}
-        return shipment;
-	}
-
+	
 	/**
 	 * Method that receives a shipment id and removes the shipment whose id matches with the received one.
 	 * @param shipment_id integer that stores the id of the shipment we want to delete.
@@ -292,38 +189,107 @@ public class ShipmentManager implements IShipmentManager{
             throw new RuntimeException("Error deleting shipment: " + e.getMessage(), e);
         }				
 	}
-	
+
 	/**
-	 * Method that receives an object of shipments and sets the order to null. This method is useful for when we delete shipments 
-	 * and we want to set the order associated to the deleted shipments to null.
-	 * @param shipment object of the class "Shipment".
+	 * Method that receives a shipment id as parameter and retrieves the shipment associated with the shipment id.
+	 * @param shipment_id integer that stores a shipment ID.
+	 * @return the found shipment whose shipment id matches with the received one.
 	 */
 	@Override
-	public 	void setOrderToNull(Shipment shipment) {
-		shipment.setOrder(null);
-    	//TODO see what I do with this method
-		//NOT NECESSARY IF WE CHANGE THE TABLE OF THE DB
-    	/*String sql = "UPDATE shipment SET order_id = ? WHERE shipment_id = ?";
-    	
-    	try(PreparedStatement stmt = c.prepareStatement(sql)){
-    		//stmt.setInt(1, ); TODO what should I put here? because I cannot set the order_id to null!!!
-    		stmt.setInt(2, shipment.getShipmentId());
+	public Shipment getShipmentByID(int shipment_id) {
+		Shipment shipment = null;
+	    //SQL query
+    	String sql = "SELECT * "
+    			+ "FROM shipment "
+    			+ "WHERE shipment_id = ?";
+    	//I create the statement
+    	try (PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setInt(1, shipment_id);
+    		try(ResultSet resultSet = stmt.executeQuery()){
+    			if(resultSet.next()) {
+    				int order_id = resultSet.getInt("order_id");
+    				Order order = cm.getOrderManager().getOrderByID(order_id);
+    				
+    				shipment = new Shipment(order);
+    				shipment.setShipmentId(resultSet.getInt("shipment_id"));
+    				//I don't set the tracking number because it has already been done by the constructor of Shipment when I created the shipment object and passed order by parameter.
+    				
+    			}
+    		}
+    	} catch(SQLException e) {
+    		System.err.println("Error retrieving shipment: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return shipment;
+	}
+
+	/**
+	 * Method that receives a tracking number as parameter and retrieves the shipment associated with the tracking number.
+	 * @param tracking_number integer that stores a tracking number.
+	 * @return the found shipment whose tracking number matches with the received one.
+	 */
+	@Override
+	public Shipment getShipmentByTrackingNumber(int tracking_number) {
+		Shipment shipment = null;
+	    //SQL query
+    	String sql = "SELECT * "
+    			+ "FROM shipment "
+    			+ "WHERE tracking_number = ?";
+    	//I create the statement
+    	try (PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setInt(1, tracking_number);
     		
-    		int rowsUpdated = stmt.executeUpdate();
-    		if (rowsUpdated == 0) {
-                System.out.println("No order found associated with the provided shipment.");
-            } else {
-                System.out.println("The shipment was properly updated.");
-            }
-    		c.commit();
-    	} catch (SQLException e) {
-            try {
-                c.rollback();  // Roll back in case of error
-            } catch (SQLException rollbackEx) {
-                System.err.println("Rollback failed: " + rollbackEx.getMessage());
-            }
-            throw new RuntimeException("Error updating the shipment: " + e.getMessage(), e);
-        }*/
+    		try(ResultSet resultSet = stmt.executeQuery()){
+    			if(resultSet.next()) {
+    				int order_id = resultSet.getInt("order_id");
+    				Order order = cm.getOrderManager().getOrderByID(order_id);
+    				
+    				shipment = new Shipment();
+    				shipment.setShipmentId(resultSet.getInt("shipment_id"));
+    				shipment.setTrackingNumber(resultSet.getInt("tracking_number")); //I set the tracking number manually
+    				shipment.setOrder(order);
+    				//TODO what would happen if one constructor of Shipment implemented the other in this case? Because here, the shipment already has an assigned 
+    				//shipment number and I don't want to generate another one. Therefore, I only want to use the empty constructor.
+    			}
+    		}
+    	} catch(SQLException e) {
+    		System.err.println("Error retrieving shipment: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return shipment;
+	}
+
+	/**
+	 * Method that receives an order id as parameter and retrieves the shipment associated with the order id.
+	 * @param order_id integer that stores the id of an order.
+	 * @return the shipment whose order id matches with the received one.
+	 */
+	@Override
+	public Shipment getShipmentByOrderID(int order_id) {
+		Shipment shipment = null;
+	    //SQL query
+    	String sql = "SELECT * "
+    			+ "FROM shipment "
+    			+ "WHERE order_id = ?";
+    	//I create the statement
+    	try (PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setInt(1, order_id);
+    		
+    		try(ResultSet resultSet = stmt.executeQuery()){
+    			if(resultSet.next()) {
+    				Order order = cm.getOrderManager().getOrderByID(order_id);
+    				
+    				shipment = new Shipment();
+    				shipment.setShipmentId(resultSet.getInt("shipment_id"));
+    				shipment.setTrackingNumber(resultSet.getInt("tracking_number"));
+    				shipment.setOrder(order);
+    			}
+    		}
+    	} catch(SQLException e) {
+    		System.err.println("Error retrieving shipment: " + e.getMessage());
+            e.printStackTrace();
+    	}
+        return shipment;
 	}
 
 	/**
@@ -340,7 +306,8 @@ public class ShipmentManager implements IShipmentManager{
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		try(ResultSet resultSet = stmt.executeQuery()){
-    			if(resultSet.next()) {
+                //While loop that iterates through all the result set and retrieves all the shipments.
+    			while(resultSet.next()) {
     				shipment = new Shipment();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -352,7 +319,6 @@ public class ShipmentManager implements IShipmentManager{
     				
     				//Finally, I add the created shipment to the list of shipments.
     				shipments.add(shipment);
-    				
     			}
     		}
     	} catch(SQLException e) {
@@ -361,4 +327,38 @@ public class ShipmentManager implements IShipmentManager{
     	}
         return shipments;
 	}
+	
+	//TODO: SEE IF WE NEED THIS METHOD !!!
+		/**
+		 * Method that receives an object of shipments and sets the order to null. This method is useful for when we delete shipments 
+		 * and we want to set the order associated to the deleted shipments to null.
+		 * @param shipment object of the class "Shipment".
+		 */
+		@Override
+		public 	void setOrderToNull(Shipment shipment) {
+			shipment.setOrder(null);
+	    	//TODO see what I do with this method
+			//NOT NECESSARY IF WE CHANGE THE TABLE OF THE DB
+	    	/*String sql = "UPDATE shipment SET order_id = ? WHERE shipment_id = ?";
+	    	
+	    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+	    		//stmt.setInt(1, ); TODO what should I put here? because I cannot set the order_id to null!!!
+	    		stmt.setInt(2, shipment.getShipmentId());
+	    		
+	    		int rowsUpdated = stmt.executeUpdate();
+	    		if (rowsUpdated == 0) {
+	                System.out.println("No order found associated with the provided shipment.");
+	            } else {
+	                System.out.println("The shipment was properly updated.");
+	            }
+	    		c.commit();
+	    	} catch (SQLException e) {
+	            try {
+	                c.rollback();  // Roll back in case of error
+	            } catch (SQLException rollbackEx) {
+	                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+	            }
+	            throw new RuntimeException("Error updating the shipment: " + e.getMessage(), e);
+	        }*/
+		}
 }

@@ -44,7 +44,7 @@ public class OrderManager implements IOrderManager {
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
-    public Order insertOrder(Client client) throws SQLException, OrderExceptions{
+    public void insertOrder(Client client) throws SQLException, OrderExceptions{
         Order order = new Order(); //I create the Order object
         
         if(client == null) {
@@ -93,7 +93,69 @@ public class OrderManager implements IOrderManager {
             }
             throw new RuntimeException("Error creating order: " + e.getMessage(), e);
         }
-        return order;
+    }
+    
+    /**
+	 * Method that receives an order's id as parameter and deletes it.
+	 * @param order_id integer that stores the id of the order we wish to remove.
+	 */
+    @Override
+    public void deleteOrder(int order_id) {
+    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
+    	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
+    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ?";
+    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ?";
+    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ?";
+    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ?";
+    	
+    	try (
+    			//I create one prepared statement per each SQL sequence created.
+    			PreparedStatement stmtProductOrders = c.prepareStatement(deleteFromProductOrders);
+    			PreparedStatement stmtPayment = c.prepareStatement(deleteFromPayment);
+    			PreparedStatement stmtFromShipment = c.prepareStatement(deleteFromShipment);
+    			PreparedStatement stmtOrder = c.prepareStatement(deleteFromOrder);
+    	){
+    		//Delete from product orders
+    		stmtProductOrders.setInt(1, order_id);
+    		stmtProductOrders.executeUpdate();
+    		
+    		//Delete from payment
+    		stmtPayment.setInt(1, order_id);
+    		stmtPayment.executeUpdate();
+
+    		//Delete from shipment
+    		stmtFromShipment.setInt(1, order_id);
+    		stmtFromShipment.executeUpdate();
+    		
+    		//Delete from client_order
+    		stmtOrder.setInt(1, order_id);
+    		int rowsAffected = stmtOrder.executeUpdate();
+    		
+    		//We check whether a line was or not affected (is yes, then the order was removed)
+    		if (rowsAffected == 0) {
+                System.out.println("No order found with ID: " + order_id);
+            } else {
+                System.out.println("Order with ID " + order_id + " deleted successfully.");
+            }
+    		//I call the method of Product Order that increases the stock of a product.
+    		List<ProductOrder> productOrdersOfOrder = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
+			for(int i = 0; i<productOrdersOfOrder.size(); i++) {
+				
+				ProductOrder productOrder = productOrdersOfOrder.get(i);
+				Product product = productOrder.getProduct();
+				cm.getProductOrderManager().addProductToStockQuantity(product.getProductId(), productOrder.getAmount());
+			}
+
+            c.commit(); //we commit the transaction
+    		
+    	}catch (SQLException e) {
+            try {
+                c.rollback(); // Roll back on failure
+            } catch (SQLException rollbackEx) {
+                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+            }
+            throw new RuntimeException("Error deleting order: " + e.getMessage(), e);
+        }
     }
     
     /**
@@ -162,8 +224,8 @@ public class OrderManager implements IOrderManager {
     		try(ResultSet resultSet = stmt.executeQuery()){
     			// Get the full Client object from ClientManager
                 Client client = cm.getClientManager().getClientByID(user_id);
-                //TODO should this be a while???? 
-    			if(resultSet.next()) {
+                //While loop that iterates through all the result set and retrieves all the orders.
+                while(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -212,8 +274,8 @@ public class OrderManager implements IOrderManager {
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setDate(1, order_date);
     		try(ResultSet resultSet = stmt.executeQuery()){
-    			//TODO should this be a WHILE????
-    			if(resultSet.next()) {
+    			//While loop that runs through all the result set and retrieves all the orders.
+    			while(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -267,7 +329,7 @@ public class OrderManager implements IOrderManager {
 
     		try(ResultSet resultSet = stmt.executeQuery()){
     			
-    			if(resultSet.next()) {
+    			while(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -300,102 +362,6 @@ public class OrderManager implements IOrderManager {
         return ordersWithinDateRange;
     }
     
-    /**
-	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
-	 * @param order_id integer that stores the id of the order whose status we wish to update.
-	 * @param newStatus variable of type Status that store the status we want the order to have.
-	 */
-    @Override
-    public void updateOrderStatus(int order_id, Status newStatus) {
-    	Order order = getOrderByID(order_id);
-    	order.setStatus(newStatus);
-    	
-    	String sql = "UPDATE client_order SET status = ? WHERE order_id = ?";
-    	
-    	try(PreparedStatement stmt = c.prepareStatement(sql)){
-    		stmt.setString(1, newStatus.name());
-    		stmt.setInt(2, order_id);
-    		
-    		int rowsUpdated = stmt.executeUpdate();
-    		if (rowsUpdated == 0) {
-                System.out.println("No order found with ID: " + order_id);
-            } else {
-                System.out.println("Order ID " + order_id + " updated to status: " + newStatus);
-            }
-    		c.commit();
-    	} catch (SQLException e) {
-            try {
-                c.rollback();  // Roll back in case of error
-            } catch (SQLException rollbackEx) {
-                System.err.println("Rollback failed: " + rollbackEx.getMessage());
-            }
-            throw new RuntimeException("Error updating order status: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-	 * Method that receives an order's id as parameter and deletes it.
-	 * @param order_id integer that stores the id of the order we wish to remove.
-	 */
-    @Override
-    public void deleteOrder(int order_id) {
-    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
-    	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
-    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ?";
-    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ?";
-    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ?";
-    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ?";
-    	
-    	try (
-    			//I create one prepared statement per each SQL sequence created.
-    			PreparedStatement stmtProductOrders = c.prepareStatement(deleteFromProductOrders);
-    			PreparedStatement stmtPayment = c.prepareStatement(deleteFromPayment);
-    			PreparedStatement stmtFromShipment = c.prepareStatement(deleteFromShipment);
-    			PreparedStatement stmtOrder = c.prepareStatement(deleteFromOrder);
-    	){
-    		//Delete from product orders
-    		stmtProductOrders.setInt(1, order_id);
-    		stmtProductOrders.executeUpdate();
-    		
-    		//Delete from payment
-    		stmtPayment.setInt(1, order_id);
-    		stmtPayment.executeUpdate();
-
-    		//Delete from shipment
-    		stmtFromShipment.setInt(1, order_id);
-    		stmtFromShipment.executeUpdate();
-    		
-    		//Delete from client_order
-    		stmtOrder.setInt(1, order_id);
-    		int rowsAffected = stmtOrder.executeUpdate();
-    		
-    		//We check whether a line was or not affected (is yes, then the order was removed)
-    		if (rowsAffected == 0) {
-                System.out.println("No order found with ID: " + order_id);
-            } else {
-                System.out.println("Order with ID " + order_id + " deleted successfully.");
-            }
-    		//I call the method of Product Order that increases the stock of a product.
-    		List<ProductOrder> productOrdersOfOrder = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-			for(int i = 0; i<productOrdersOfOrder.size(); i++) {
-				
-				ProductOrder productOrder = productOrdersOfOrder.get(i);
-				Product product = productOrder.getProduct();
-				cm.getProductOrderManager().addProductToStockQuantity(product.getProductId(), productOrder.getAmount());
-			}
-
-            c.commit(); //we commit the transaction
-    		
-    	}catch (SQLException e) {
-            try {
-                c.rollback(); // Roll back on failure
-            } catch (SQLException rollbackEx) {
-                System.err.println("Rollback failed: " + rollbackEx.getMessage());
-            }
-            throw new RuntimeException("Error deleting order: " + e.getMessage(), e);
-        }
-    }
-    
     
     /**
 	 * Method that retrieves a list containing all the orders of HospiCart.
@@ -411,7 +377,7 @@ public class OrderManager implements IOrderManager {
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		try(ResultSet resultSet = stmt.executeQuery()){
-    			if(resultSet.next()) {
+    			while(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -462,7 +428,7 @@ public class OrderManager implements IOrderManager {
     		stmt.setString(1, status.name());
     		try(ResultSet resultSet = stmt.executeQuery()){
     			
-    			if(resultSet.next()) {
+    			while(resultSet.next()) {
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -493,5 +459,38 @@ public class OrderManager implements IOrderManager {
             e.printStackTrace();
     	}
         return ordersWithSpecifiedStatus;    
+    }
+    
+    /**
+	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
+	 * @param order_id integer that stores the id of the order whose status we wish to update.
+	 * @param newStatus variable of type Status that store the status we want the order to have.
+	 */
+    @Override
+    public void updateOrderStatus(int order_id, Status newStatus) {
+    	Order order = getOrderByID(order_id);
+    	order.setStatus(newStatus);
+    	
+    	String sql = "UPDATE client_order SET status = ? WHERE order_id = ?";
+    	
+    	try(PreparedStatement stmt = c.prepareStatement(sql)){
+    		stmt.setString(1, newStatus.name());
+    		stmt.setInt(2, order_id);
+    		
+    		int rowsUpdated = stmt.executeUpdate();
+    		if (rowsUpdated == 0) {
+                System.out.println("No order found with ID: " + order_id);
+            } else {
+                System.out.println("Order ID " + order_id + " updated to status: " + newStatus);
+            }
+    		c.commit();
+    	} catch (SQLException e) {
+            try {
+                c.rollback();  // Roll back in case of error
+            } catch (SQLException rollbackEx) {
+                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+            }
+            throw new RuntimeException("Error updating order status: " + e.getMessage(), e);
+        }
     }
 }

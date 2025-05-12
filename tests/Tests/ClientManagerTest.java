@@ -71,6 +71,20 @@ public class ClientManagerTest {
     }
     
     @Test
+    void insertClientTest2() {
+    	// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+    	Client expectedClient = new Client("Juan", "Esteban", 656329185, "juanesteban@gmail.com", "Vallekas 3", Role.DOCTOR); 
+    	clientManager.insertClient(expectedClient);
+    	
+    	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+    	int idRetrieved = expectedClient.getUserId();
+    	Client actualClient = clientManager.getClientByID(idRetrieved);
+    	
+    	// Compare both clients
+    	assertEquals(expectedClient, actualClient);
+    }
+    
+    @Test
     void deleteClientTest() {
     	try {
     		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
