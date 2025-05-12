@@ -117,11 +117,11 @@ public class ClientManager implements IClientManager{
 	@Override
 	public List<Client> getListOfClients() {
 		List<Client> clients = new ArrayList<Client>();
+		String sql = "SELECT * FROM client";
+		
 		try {
-
-			Statement stmt = manager.getConnection().createStatement();
-			String sql = "SELECT * FROM client";
-			ResultSet rs = stmt.executeQuery(sql);
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			ResultSet rs = prep.executeQuery();
 
 			while (rs.next()) {
 				Integer id = rs.getInt("id");
@@ -136,8 +136,8 @@ public class ClientManager implements IClientManager{
 				clients.add(client);
 			}
 
-			rs.close();
-			stmt.close();
+			rs.close(); // Close the ResulSet manually if we don't use a try-with-resources
+			prep.close(); // Close the PreparedStatement manually if we don't use a try-with-resources 
 
 		} catch (Exception e) {
 			e.printStackTrace();

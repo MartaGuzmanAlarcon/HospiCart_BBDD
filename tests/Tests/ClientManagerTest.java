@@ -9,6 +9,7 @@ import HospiCartJDBC.ConnectionManagerJDBC;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -100,16 +101,34 @@ public class ClientManagerTest {
         	// Remove the client 
             clientManager.deleteClientbyID(idRetrieved);
             
-            /*// Verify the client has been removed 
-            assertNull(clientManager.getClientByID(idRetrieved),
-                    "After deleteClientbyID, getClientById should return null");
-            */
-            
             assertFalse(clientManager.isClientInDatabase(expectedClient.getEmail()),
                     "isClientInDatabase should be false once the client is deleted");
     	} catch (Exception e) {
 			e.printStackTrace();
 		}
+    }
+    
+    @Test 
+    void getListOfClientsTest() { 
+    	// Insert several 'incomplete' clients from Java with the constructor of Client that does not admit a user_id
+    	Client client1 = new Client("Client", "One", 656329185, "clientone@gmail.com", "Chong Ching 2", Role.NURSE); 
+    	clientManager.insertClient(client1); 
+    	
+    	Client client2 = new Client("Client", "Two", 656329185, "clienttwo@gmail.com", "Chong Ching 2", Role.DOCTOR); 
+    	clientManager.insertClient(client2); 
+    	
+    	Client client3 = new Client("Client", "Three", 656329185, "clientthree@gmail.com", "Chong Ching 2", Role.DOCTOR); 
+    	clientManager.insertClient(client3); 
+    	
+    	// Retrieve all the clients 
+    	List<Client> clients = clientManager.getListOfClients();
+    	
+    	// Define parameters to be compared later with assertEquals
+    	int expectedNumberOfClients = 3;
+    	int actualNumberOfClients = clients.size();
+    	
+    	assertEquals(expectedNumberOfClients, actualNumberOfClients);
+    	
     }
     
     
