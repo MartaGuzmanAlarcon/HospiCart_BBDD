@@ -167,7 +167,7 @@ public class ClientManager implements IClientManager{
 	 */
 	@Override
 	public Client getClientByID(Integer c_id) throws ClientException{
-		String sql = "SELECT id, name, surname, phone_number, email, address " +
+		String sql = "SELECT id, name, surname, phone_number, email, address" +
 			      "FROM client WHERE id = ?";
 
 		try{
