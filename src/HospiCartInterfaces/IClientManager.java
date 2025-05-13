@@ -2,6 +2,7 @@ package HospiCartInterfaces;
 
 import java.util.List;
 
+import Exceptions.ClientException;
 import HospiCartPOJOs.Client;
 
 /**
@@ -9,11 +10,11 @@ import HospiCartPOJOs.Client;
  * a few finder helpers.
  */
 public interface IClientManager {
-	public void insertClient (Client c); // Insert a new client in the database.
+	public void insertClient (Client c) throws ClientException; // Insert a new client in the database.
 	public void deleteClientbyID (Integer id) throws Exception;
 	
 	public List<Client> getListOfClients();
-	public Client getClientByID (Integer c_id); // Look up a client by their primary key.
+	public Client getClientByID (Integer c_id) throws ClientException; // Look up a client by their primary key.
 	public Client getClientByEmail (String c_email) throws Exception; // Find a client by email (useful for login & uniqueness checks).
 	boolean isClientInDatabase(String c_email);
 	

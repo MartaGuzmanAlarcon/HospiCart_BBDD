@@ -7,6 +7,7 @@ import java.util.List;
 import HospiCartInterfaces.IClientManager;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Role;
+import Exceptions.*;
 
 /*
  * NOTE: INFO ABOUT ResultSet
@@ -37,16 +38,17 @@ public class ClientManager implements IClientManager{
 	 * This method does NOT provide any methods to input from the keyboard. 
 	 * It only manages the insertion into the database.
 	 * @param c the Client object
+	 * @throws ClientException if the client was already in the database
 	 */
 	@Override
-	public void insertClient(Client c) {	
+	public void insertClient(Client c) throws ClientException {	
 		//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
 		if(!isClientInDatabase(c.getEmail())) {
 			String sql = "INSERT INTO client (name, surname, phone_number, email, address)" + "VALUES (?,?,?,?,?)"; // 5 "?" corresponding to 5 expressions in the SQL sentence
 		
-			// 1) Prepare statement and request generated keys
+			// Prepare statement and request generated keys
 			try (PreparedStatement prep = manager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){ // Statement.RETURN_GENERATED_KEYS asks the JDBC driver to capture the new key
-				// 2) Bind parameters
+				// Bind parameters
 				prep.setString(1, c.getName()); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
 				prep.setString(2, c.getSurname());
 				prep.setInt(3, c.getPhoneNumber());
@@ -54,10 +56,10 @@ public class ClientManager implements IClientManager{
 				prep.setString(5, c.getAddress());
 				//prep.setString(6, c.getRole().name()); // .name() Returns the name of this enum constant, exactly as declared in its enum declaration
 				
-				// 3) Execute insert
+				// Execute insert
 				prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
 	
-				// 4) Retrieve the auto-generated PK from the DB 
+				// Retrieve the auto-generated PK from the DB 
 				try (ResultSet rs = prep.getGeneratedKeys()) { // try-with-resources!!! (See ResultSet javadoc)
 					// rs is a ResulSet (table) separate from our query parameters with 1 column containing the generated key (id)
 					/* The content within () after the try clause is not a code block, it is the resource declaration.
@@ -72,41 +74,43 @@ public class ClientManager implements IClientManager{
 		        }
 				// prep.close(); // Always close the PreparedStatement
 				
-				// 5) Commit once everything is done
+				// Commit once everything is done
 	            manager.getConnection().commit(); // Commit everytime we do any change to the database
 	
 			} catch (Exception e) {
 				e.printStackTrace(); // To print where the error comes from
 			}
 		} else {
-			//TODO THROW A PERSONALISED EXCEPTION
+			throw new ClientException(ClientException.ErrorTypeClient.CLIENT_ALREADY_EXISTS);
 		}
 	}
 	
 	/**
 	 * This method deletes the Client with the id passed by parameter.
 	 * @param  id the unique identifier of the client to delete.
-	 * @throws Exception if no client exists with the given ID, or if a database error occurs
+	 * @throws ClientException if no client exists with the given ID
 	 */
 	@Override
-	public void deleteClientbyID(Integer id) throws Exception { //TODO CREATE OUR INVALID ID EXCEPTION 
+	public void deleteClientbyID(Integer id) throws ClientException { 
 		String sql = "DELETE FROM client WHERE id=?";
 		
-		// 1) Prepare statement 
+		// Prepare statement 
 		try (PreparedStatement prep = manager.getConnection().prepareStatement(sql)){
-			// 2) Bind parameters
+			// Bind parameters
 			prep.setInt(1, id); // The 1 binds to the first and unique "?"
 
-			// 3) Execute delete and throw an exception if no ID was found in the DB
-			int rows = prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
-	        if (rows == 0) {
-	            throw new Exception("No client found with id " + id);
+			// Execute delete
+			int rows = prep.executeUpdate(); // returns either the row count for SQL DML statements or 0 for SQL statements that return nothing, such as a DDL statement
+			
+			// Throw an exception if no ID was found in the DB
+	        if (rows == 0) { // This is true when no changes were made -> nothing deleted -> bad ID
+	        	throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);
 	            // Relaunch this exception because it is not the responsibility of this method to handle it
 	        }
 			
 			//prep.close(); We don't need to do this since we have used a try-with resources
 			
-			// 4) Commit once everything is done
+			// Commit once everything is done
 			manager.getConnection().commit(); // Commit everytime we do any change to the database
 			
 		} catch (SQLException e) { 
@@ -125,9 +129,12 @@ public class ClientManager implements IClientManager{
 		String sql = "SELECT * FROM client";
 		
 		try {
+			// Prepare statement
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			// Retrieve the table of data from the DB
 			ResultSet rs = prep.executeQuery();
-
+			
+			// Construct the client and add it to the list of clients
 			while (rs.next()) {
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
@@ -143,6 +150,8 @@ public class ClientManager implements IClientManager{
 
 			rs.close(); // Close the ResulSet manually if we don't use a try-with-resources
 			prep.close(); // Close the PreparedStatement manually if we don't use a try-with-resources 
+			
+			// NOTE: we don't have to commit here since no changes to the database were made
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -153,36 +162,46 @@ public class ClientManager implements IClientManager{
 	/**
 	 * This method retrieves a single Client by its id.
 	 * @param c_id the unique identifier of the client to retrieve.
-	 * @return the matching Client object, or null if no such client exists.
-	 *TODO: CORRECT THE RETURN SENTENCE ABOVE ^ (this method never returns a null, instead, throws an exception.
+	 * @throws ClientException if no client exists with the given ID
+	 * @return the matching Client object 
 	 */
 	@Override
-	public Client getClientByID(Integer c_id) {
-		Client client = null;
+	public Client getClientByID(Integer c_id) throws ClientException{
+		String sql = "SELECT id, name, surname, phone_number, email, address" +
+			      "FROM client WHERE id = ?";
 
-		try {
-			Statement stmt = manager.getConnection().createStatement();
-			String sql = "SELECT * FROM client WHERE id=" + c_id;
-			ResultSet rs = stmt.executeQuery(sql);
-
+		try{
+			// Prepare statement
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			// Bind the ID parameter
+	        prep.setInt(1, c_id);
+	        
+	        // Execute the query
+	        ResultSet rs = prep.executeQuery();
+	        
+            // Check that the ID is valid
+            if (!rs.next()) {
+                throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);
+            }
+	    
+            // Construct the client to be returned and close PreparedStatement and ResultSet
 			Integer id = rs.getInt("id");
 			String name = rs.getString("name");
 			String surname = rs.getString("surname");
 			Integer phoneNumber = rs.getInt("phone_number");
 			String email = rs.getString("email");
-			String address = rs.getString("address");
-			//Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
-
-			client = new Client(id, name, surname, phoneNumber, email, address);
-
+			String address = rs.getString("address"); 
+			Client client = new Client(id, name, surname, phoneNumber, email, address);
 			rs.close();
-			stmt.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			prep.close();
+			
+			return client;
+	       
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			// Use an unchecked exception so we don’t have to add it to the throws clause or force callers to catch it 
+	        throw new RuntimeException( "Database error fetching client with ID " + c_id, sqle);
 		}
-
-		return client;
 	}
 
 	/**

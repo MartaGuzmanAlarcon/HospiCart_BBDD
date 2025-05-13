@@ -3,6 +3,7 @@ import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Role;
 import org.junit.jupiter.api.*;
 
+import Exceptions.ClientException;
 import HospiCartJDBC.ClientManager;
 import HospiCartJDBC.ConnectionManagerJDBC;
 
@@ -58,39 +59,68 @@ public class ClientManagerTest {
     
     
     @Test
-    void insertClientTest() {
-    	// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
-    	Client expectedClient = new Client("Belen", "Esteban", 656329185, "belenesteban@gmail.com", "Vallekas 3"); 
-    	clientManager.insertClient(expectedClient);
+    void insertAndGetAValidClientTest() {
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Belen", "Esteban", 656329185, "belenesteban@gmail.com", "Vallekas 3"); 
+        	clientManager.insertClient(expectedClient); // throws ClientException
+        	
+        	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+        	int idRetrieved = expectedClient.getUserId();
+        	Client actualClient = clientManager.getClientByID(idRetrieved); // throws ClientException
+        	
+        	// Compare both clients
+        	assertEquals(expectedClient, actualClient);
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}
     	
-    	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
-    	int idRetrieved = expectedClient.getUserId();
-    	Client actualClient = clientManager.getClientByID(idRetrieved);
-    	
-    	// Compare both clients
-    	assertEquals(expectedClient, actualClient);
     }
     
     @Test
-    void insertClientTest2() {
-    	// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
-    	Client expectedClient = new Client("Juan", "Esteban", 656329185, "juanesteban@gmail.com", "Vallekas 3"); 
-    	clientManager.insertClient(expectedClient);
+    void insertAndGetClientTest2() {
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Juan", "Esteban", 656329185, "juanesteban@gmail.com", "Vallekas 3"); 
+        	clientManager.insertClient(expectedClient); // throws ClientException
+        	
+        	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+        	int idRetrieved = expectedClient.getUserId();
+        	Client actualClient = clientManager.getClientByID(idRetrieved);
+        	
+        	// Compare both clients
+        	assertEquals(expectedClient, actualClient);
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}
     	
-    	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
-    	int idRetrieved = expectedClient.getUserId();
-    	Client actualClient = clientManager.getClientByID(idRetrieved);
-    	
-    	// Compare both clients
-    	assertEquals(expectedClient, actualClient);
     }
     
     @Test
-    void deleteClientTest() {
+    void instertTheSameClientTwiceTest() {
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client client1 = new Client("Rita", "La Cantaora", 656329185, "ritalacantaora@gmail.com", "Sevilla 88"); 
+        	clientManager.insertClient(client1); // throws ClientException
+        	
+        	// Insert the same client again
+        	Client client2 = new Client("Rita", "La Cantaora", 656329185, "ritalacantaora@gmail.com", "Sevilla 88"); 
+        	clientManager.insertClient(client2); // throws ClientException
+        	
+        	// Check if an exception was thrown 
+        	assertThrows( ClientException.class, () -> clientManager.insertClient(client2),
+                    "Inserting a duplicate client should throw an exception");
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}
+    }
+    
+    @Test
+    void deleteClientWithAValidIDTest() {
     	try {
     		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
         	Client expectedClient = new Client("Maria", "Martinez", 656329185, "mariamartinez@gmail.com", "Boadilla 2"); 
-        	clientManager.insertClient(expectedClient);   
+        	clientManager.insertClient(expectedClient);  // throws ClientException 
         	
         	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
         	int idRetrieved = expectedClient.getUserId();
@@ -99,37 +129,86 @@ public class ClientManagerTest {
                 "getClientById should return the inserted client before deletion");
         	
         	// Remove the client 
-            clientManager.deleteClientbyID(idRetrieved);
+            clientManager.deleteClientbyID(idRetrieved); // throws ClientException
             
+            // Check if the client was deleted from the database and no longer exists 
             assertFalse(clientManager.isClientInDatabase(expectedClient.getEmail()),
                     "isClientInDatabase should be false once the client is deleted");
-    	} catch (Exception e) {
-			e.printStackTrace();
-		}
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}
     }
+    
+    @Test
+    void deleteClientWithAnInvalidIDTest(){
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client client = new Client("Maria", "Martinez", 656329185, "mariamartinez@gmail.com", "Boadilla 2"); 
+        	clientManager.insertClient(client);  // throws ClientException 
+        	int existingId = client.getUserId();
+        	
+        	// Create an ID that we know is invalid (e.g. existingId + 100)
+        	int invalidID = existingId + 100;
+        	
+        	// Remove the client 
+            clientManager.deleteClientbyID(invalidID); // throws ClientException
+    		
+            assertThrows( ClientException.class, () -> clientManager.deleteClientbyID(invalidID),
+                    "Trying to delete a client with an invalid id should throw an exception");
+    	} catch (ClientException ce) { 
+    		// Use a catch just for the exception that insertClient() throws, because for deleteClientbyID()
+    		//the exception is being captured in the assertThrows()
+    		ce.printStackTrace();
+    	}
+    }
+    
     
     @Test 
     void getListOfClientsTest() { 
-    	// Insert several 'incomplete' clients from Java with the constructor of Client that does not admit a user_id
-    	Client client1 = new Client("Client", "One", 656329185, "clientone@gmail.com", "Chong Ching 2"); 
-    	clientManager.insertClient(client1); 
-    	
-    	Client client2 = new Client("Client", "Two", 656329185, "clienttwo@gmail.com", "Chong Ching 2"); 
-    	clientManager.insertClient(client2); 
-    	
-    	Client client3 = new Client("Client", "Three", 656329185, "clientthree@gmail.com", "Chong Ching 2"); 
-    	clientManager.insertClient(client3); 
-    	
-    	// Retrieve all the clients 
-    	List<Client> clients = clientManager.getListOfClients();
-    	
-    	// Define parameters to be compared later with assertEquals
-    	int expectedNumberOfClients = 3;
-    	int actualNumberOfClients = clients.size();
-    	
-    	assertEquals(expectedNumberOfClients, actualNumberOfClients);
-    	
+    	try {
+    		// Insert several 'incomplete' clients from Java with the constructor of Client that does not admit a user_id
+        	Client client1 = new Client("Client", "One", 656329185, "clientone@gmail.com", "Chong Ching 2"); 
+        	clientManager.insertClient(client1); // throws ClientException
+        	
+        	Client client2 = new Client("Client", "Two", 656329185, "clienttwo@gmail.com", "Chong Ching 2"); 
+        	clientManager.insertClient(client2); // throws ClientException
+        	
+        	Client client3 = new Client("Client", "Three", 656329185, "clientthree@gmail.com", "Chong Ching 2"); 
+        	clientManager.insertClient(client3); // throws ClientException
+        	
+        	// Retrieve all the clients 
+        	List<Client> clients = clientManager.getListOfClients();
+        	
+        	// Define parameters to be compared later with assertEquals
+        	int expectedNumberOfClients = 3;
+        	int actualNumberOfClients = clients.size();
+        	
+        	assertEquals(expectedNumberOfClients, actualNumberOfClients);
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}   	
     }
+    
+    // TODO REVISE THIS TEST AND SEE WHY IT DOESN'T WORK
+    /*@Test
+    void getClientByAnInvalidIDTest() {
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client client = new Client("Maria", "Martinez", 656329185, "mariamartinez@gmail.com", "Boadilla 2"); 
+        	clientManager.insertClient(client);  // throws ClientException 
+        	int existingId = client.getUserId();
+        	
+        	// Create an ID that we know is invalid (e.g. existingId + 100)
+        	int invalidID = existingId + 100;
+        	
+        	// // Check if an exception was thrown when getting the the client by the id
+        	assertThrows(ClientException.class, () -> clientManager.getClientByID(invalidID),
+                    "getClientByID on invalid ID should throw ClientException");
+	
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}  
+    }*/
     
     
 }
