@@ -12,13 +12,22 @@ public class Payment implements Serializable {
 	private PaymentMethod paymentMethod;
 	private PaymentStatus paymentStatus;
 
+	/**
+	 * Empty constructor of Payment.
+	 */
 	public Payment() {
 		super();
 	}
 	
-	
-	public Payment(Integer paymentId, HospiCartPOJOs.Order order, Integer amount, PaymentMethod paymentMethod,
-			PaymentStatus paymentStatus) {
+	/**
+	 * Constructor that initializes all the parameters of "Payment".
+	 * @param paymentId integer that stores the ID of the payment.
+	 * @param order object of Order that stores the order to which the payment is related.
+	 * @param amount integer that stores the amount of money of the payment.
+	 * @param paymentMethod enumerate that represents the way in which the payment was made.
+	 * @param paymentStatus enumerate that represents the current status of the payment.
+	 */
+	public Payment(Integer paymentId, HospiCartPOJOs.Order order, Integer amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus) {
 		super();
 		this.paymentId = paymentId;
 		Order = order;
@@ -26,7 +35,19 @@ public class Payment implements Serializable {
 		this.paymentMethod = paymentMethod;
 		this.paymentStatus = paymentStatus;
 	}
-
+	/**
+	 * Constructor that initializes all the parameters of "Payment" except for its ID (which is assigned by the database; and retrieved from the database when needed)
+	 * and the order object.
+	 * @param amount integer that stores the amount of money of the payment.
+	 * @param paymentMethod enumerate that represents the way in which the payment was made.
+	 * @param paymentStatus enumerate that represents the current status of the payment.
+	 */
+	public Payment(Integer amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus) {
+		super();
+		this.amount = amount;
+		this.paymentMethod = paymentMethod;
+		this.paymentStatus = paymentStatus;
+	}
 
 
 	// getters and setters

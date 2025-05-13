@@ -8,11 +8,15 @@ import HospiCartPOJOs.Product;
 
 public interface IProductManager {
 
+	boolean insertProduct(int supplierId, Product product); // Agregar un nuevo producto
+	
+	boolean deleteProduct(int id); // Eliminar un producto
+	
 	Product getProductById(int id); // Obtener producto por ID
 
 	List<Product> getAllProducts(); // Obtener todos los productos
 
-	List<Product> searchProductsByName(String name);
+	List<Product> getProductsByName(String name);
 
 	List<Product> getProductsByCategory(Category type);
 
@@ -20,12 +24,7 @@ public interface IProductManager {
 
 	List<Product> getLowStockProductsByCategory(Category category);
 
-	boolean addProduct(int supplierId, Product product); // Agregar un nuevo producto
-
 	boolean updateProduct(Product product); // Actualizar producto
 
 	boolean updateProductStockInDB(int productId, int newStock);
-
-	boolean deleteProduct(int id); // Eliminar un producto
-
 }

@@ -44,20 +44,22 @@ public class OrderManager implements IOrderManager {
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
-    public void insertOrder(Client client, Payment payment, Shipment shipment, List<ProductOrder> productOrders) throws SQLException, OrderExceptions{
-        Order order = new Order(); //I create the Order object
-        
+   // public void insertOrder(Client client, Payment payment, Shipment shipment, List<ProductOrder> productOrders) throws SQLException, OrderExceptions{
+      public void insertOrder(Order order) throws SQLException, OrderExceptions{
+    
+    	//Order order = new Order(); //I create the Order object
+        Client client = order.getClient();
         if(client == null) {
         	//We throw a personalized exception
             throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
         }
        //I initialize the order fields
-       order.setClient(client);
-       order.setOrderDate(Date.valueOf(LocalDate.now()));
-       order.setStatus(Status.ORDERED);
-       order.setPayment(payment);
-       order.setShipment(shipment);
-       order.setProductOrders(productOrders);
+       Date orderDate = order.getOrderDate();
+       Status status = order.getStatus();
+       
+       Payment payment = order.getPayment();
+       Shipment shipment = order.getShipment();
+       List<ProductOrder> productOrders = order.getProductOrders();
 
        //I insert the order information that I have up to now
        String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?)";

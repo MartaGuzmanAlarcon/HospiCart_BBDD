@@ -17,16 +17,34 @@ public class Shipment implements Serializable {
 	public Shipment() {
 		super();
 	}
+	//TODO comment this constructor
+	public Shipment(int _shipmentId, Order _order, int _trackingNumber) {
+		super();
+		this.shipmentId = _shipmentId;
+		this.order = _order;
+		this.trackingNumber = _trackingNumber;
+	}
+	
+	/**
+	 * Constructor that initializes the tracking number of Shipment.
+	 * @param trackingNumber integer that stores the tracking number of a shipment.
+	 */
+	public Shipment(int trackingNumber) {
+		super();
+		this.trackingNumber = trackingNumber;
+	}
 
 	/**
 	 * Overloaded constructor that calls the method that generates a tracking number. This constructor will only be used when we want to create a new order.
 	 * @param order object of Order.
 	 */
+	//TODO: SEE IF I NEED THIS CONSTRUCTOR AND THE METHOD THAT GENERATES A UNIQUE TRACKING NUMBER
 	public Shipment(Order order) {
 		super();
 		this.order = order;
 		this.trackingNumber = generateUniqueTrackingNumber();
 	}
+	
 	
 	// getters and setters
 	public Integer getShipmentId() {

@@ -15,7 +15,7 @@ public class Product implements Serializable {
 	private String name;
 	private String description;
 	private Category category;
-	private BigDecimal price;
+	private BigDecimal price; 
 	private Integer stockQuantity;
 	private Boolean needPrescription;
 
@@ -34,6 +34,15 @@ public class Product implements Serializable {
         this.stockQuantity = stockQuantity;     
         this.needPrescription = needPrescription; 
     }
+	//TODO: THINK IF WE HAVE TO INITIALISE THE LIST OF PRODUCT ORDERS
+	public Product(String name, Category category, String description, BigDecimal price, int stockQuantity, boolean needPrescription) {
+        this.name = name;                       
+        this.category = category;                
+        this.description = description;          
+        this.price = price;                      
+        this.stockQuantity = stockQuantity;     
+        this.needPrescription = needPrescription; 
+    }	
 	
 	// getters and setters
 

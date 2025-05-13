@@ -23,6 +23,15 @@ public class Supplier implements Serializable {
 	public Supplier(Manufacturer m) {
 	 this.companyName=m;
 	}
+	
+	public Supplier(int _supplierId, List<Product> _products, Manufacturer _companyName, String _contactPerson, String _address) {
+		super();
+		this.supplierId = _supplierId;
+		this.products = _products;
+		this.companyName = _companyName;
+		this.contactPerson = _contactPerson;
+		this.address = _address;
+	}
 
 	// getters and setters
 	public Integer getSupplierId() {

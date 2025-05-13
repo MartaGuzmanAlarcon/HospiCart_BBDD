@@ -91,6 +91,63 @@ public class ProductManager implements IProductManager {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Adds a new product to the database.
+	 * 
+	 * @param supplierId The supplier's ID for the product.
+	 * @param product    The product to be added.
+	 * @return true if product was added, false otherwise.
+	 */
+	@Override
+	public boolean insertProduct(int supplierId, Product product) {
+		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement stmt = c.prepareStatement(sql)) {
+			// Set parameters for the SQL query
+			stmt.setInt(1, supplierId); // Using the supplierId passed as a parameter
+			stmt.setString(2, product.getName());
+			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
+			stmt.setString(4, product.getDescription());
+			stmt.setBigDecimal(5, Utilities.truncateBigDecimal(product.getPrice(), 2)); // Assuming price comes from the
+																						// Product object
+			stmt.setInt(6, product.getStockQuantity());
+			stmt.setBoolean(7, product.getNeedPrescription());
+
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+			    System.out.println(rowsAffected);
+				c.commit();
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * Deletes a product from the database.
+	 * 
+	 * @param id The ID of the product to be deleted.
+	 * @return true if the product was deleted, false otherwise.
+	 */
+	@Override
+	public boolean deleteProduct(int id) {
+		String sql = "DELETE FROM product WHERE product_id = ?";
+		try (PreparedStatement stmt = c.prepareStatement(sql)) {
+			stmt.setInt(1, id);
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				c.commit();
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 
 	/**
 	 * Retrieves a product by its ID, including supplier information (company name).
@@ -250,7 +307,7 @@ public class ProductManager implements IProductManager {
 	 * @return List of products that match the name.
 	 */
 	@Override
-	public List<Product> searchProductsByName(String name) {
+	public List<Product> getProductsByName(String name) {
 		List<Product> products = new ArrayList<>();
 		String sql = "SELECT p.product_id, p.name, p.category, p.description, p.price, p.stock_quantity, p.need_prescription, "
 				+ "s.supplier_id, s.company_name " + "FROM product p "
@@ -279,6 +336,54 @@ public class ProductManager implements IProductManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return products;
+	}
+	
+	/**
+	 * Retrieves all products of a specific category that are below the stock
+	 * threshold.
+	 *
+	 * @param category the category to filter by
+	 * @return a list of products in that category with stock below the threshold
+	 */
+	@Override
+	public List<Product> getLowStockProductsByCategory(Category category) {
+		int threshold = getThresholdForCategory(category);
+		List<Product> products = new ArrayList<>();
+		String sql = "SELECT p.product_id, p.name, p.category, p.description, p.price, p.stock_quantity, p.need_prescription, "
+				+ "s.supplier_id, s.company_name " + "FROM product p "
+				+ "JOIN supplier s ON p.supplier_id = s.supplier_id " + "WHERE p.stock_quantity < ? AND p.category = ?";
+
+		try (PreparedStatement stmt = c.prepareStatement(sql)) {
+			stmt.setInt(1, threshold);
+			stmt.setString(2, category.name()); // Enum name used as string
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				// Creating a Product object
+				Product product = new Product();
+				product.setProductId(rs.getInt("product_id"));
+				product.setName(rs.getString("name"));
+				product.setCategory(Category.valueOf(rs.getString("category")));
+				product.setDescription(rs.getString("description"));
+				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setStockQuantity(rs.getInt("stock_quantity"));
+				product.setNeedPrescription(rs.getBoolean("need_prescription"));
+
+				// Creating and setting Supplier object
+				Supplier supplier = new Supplier();
+				supplier.setSupplierId(rs.getInt("supplier_id"));
+				supplier.setCompanyName(Manufacturer.valueOf(rs.getString("company_name").toUpperCase())); // Convert
+																											// to
+																											// enum
+				product.setSupplier(supplier);
+
+				products.add(product);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		return products;
 	}
 
@@ -444,109 +549,4 @@ public class ProductManager implements IProductManager {
 			return 10;
 		}
 	}
-
-	/**
-	 * Retrieves all products of a specific category that are below the stock
-	 * threshold.
-	 *
-	 * @param category the category to filter by
-	 * @return a list of products in that category with stock below the threshold
-	 */
-	@Override
-	public List<Product> getLowStockProductsByCategory(Category category) {
-		int threshold = getThresholdForCategory(category);
-		List<Product> products = new ArrayList<>();
-		String sql = "SELECT p.product_id, p.name, p.category, p.description, p.price, p.stock_quantity, p.need_prescription, "
-				+ "s.supplier_id, s.company_name " + "FROM product p "
-				+ "JOIN supplier s ON p.supplier_id = s.supplier_id " + "WHERE p.stock_quantity < ? AND p.category = ?";
-
-		try (PreparedStatement stmt = c.prepareStatement(sql)) {
-			stmt.setInt(1, threshold);
-			stmt.setString(2, category.name()); // Enum name used as string
-			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				// Creating a Product object
-				Product product = new Product();
-				product.setProductId(rs.getInt("product_id"));
-				product.setName(rs.getString("name"));
-				product.setCategory(Category.valueOf(rs.getString("category")));
-				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
-				product.setStockQuantity(rs.getInt("stock_quantity"));
-				product.setNeedPrescription(rs.getBoolean("need_prescription"));
-
-				// Creating and setting Supplier object
-				Supplier supplier = new Supplier();
-				supplier.setSupplierId(rs.getInt("supplier_id"));
-				supplier.setCompanyName(Manufacturer.valueOf(rs.getString("company_name").toUpperCase())); // Convert
-																											// to
-																											// enum
-				product.setSupplier(supplier);
-
-				products.add(product);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return products;
-	}
-
-	/**
-	 * Deletes a product from the database.
-	 * 
-	 * @param id The ID of the product to be deleted.
-	 * @return true if the product was deleted, false otherwise.
-	 */
-	@Override
-	public boolean deleteProduct(int id) {
-		String sql = "DELETE FROM product WHERE product_id = ?";
-		try (PreparedStatement stmt = c.prepareStatement(sql)) {
-			stmt.setInt(1, id);
-			int rowsAffected = stmt.executeUpdate();
-			if (rowsAffected > 0) {
-				c.commit();
-				return true;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	/**
-	 * Adds a new product to the database.
-	 * 
-	 * @param supplierId The supplier's ID for the product.
-	 * @param product    The product to be added.
-	 * @return true if product was added, false otherwise.
-	 */
-	@Override
-	public boolean addProduct(int supplierId, Product product) {
-		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-		try (PreparedStatement stmt = c.prepareStatement(sql)) {
-			// Set parameters for the SQL query
-			stmt.setInt(1, supplierId); // Using the supplierId passed as a parameter
-			stmt.setString(2, product.getName());
-			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
-			stmt.setString(4, product.getDescription());
-			stmt.setBigDecimal(5, Utilities.truncateBigDecimal(product.getPrice(), 2)); // Assuming price comes from the
-																						// Product object
-			stmt.setInt(6, product.getStockQuantity());
-			stmt.setBoolean(7, product.getNeedPrescription());
-
-			int rowsAffected = stmt.executeUpdate();
-			if (rowsAffected > 0) {
-			    System.out.println(rowsAffected);
-				c.commit();
-				return true;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 }

@@ -7,12 +7,41 @@ public class ProductOrder implements Serializable {
 
 	private static final long serialVersionUID = 1794207772823018743L;
 	private Integer amount;
-	private Float totalPrice;
+	private Float totalPrice; //TODO THIS SHOULD ALSO BE A BIG DECIMAL !!! CCHECK HOW IT SHOULD BE IN THE DATABASE
 	private Order order; // 1 ProductOrder has 1 Order 
 	private Product product; // 1 ProductOrder has 1 Product 
 
+	/**
+	 * Empty constructor of ProductOrder.
+	 */
 	public ProductOrder() {
 		super();
+	}
+	
+	public ProductOrder(int amount, float total_price, Order _order, Product _product) {
+		super();
+		this.amount = amount;
+		this.totalPrice = total_price;
+		this.order = _order;
+		this.product = _product;
+	}
+	
+	public ProductOrder(int amount, float total_price, Product _product) {
+		super();
+		this.amount = amount;
+		this.totalPrice = total_price;
+		this.product = _product;
+	}
+	
+	/**
+	 * Constructor of Product Order that initializes the amount of the product order and its total price.
+	 * @param amount integer that stores the amount of a product that is contained in the product order.
+	 * @param total_price floating number that stores the total price of the product order.
+	 */
+	public ProductOrder(int amount, float total_price) {
+		super();
+		this.amount = amount;
+		this.totalPrice = total_price;
 	}
 
 	// Getters and setters

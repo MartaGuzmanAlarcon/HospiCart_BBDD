@@ -13,18 +13,61 @@ public class Order implements Serializable {
 	private Integer orderId;
 	private Client client; // 1 Order has 1 Client 
 	private Payment payment;
-	private Shipment Shipment; // 1 Order has 1 Shipment 
+	private Shipment Shipment; // 1 Order has 1 Shipment TODO: CHANGE THE CAPITAL S OF THE NAME OF THE VARIABLE FOR AN s (lower case S)
 	private List<ProductOrder> productOrders; // 1 Order has many ProductOrders 
 	private Date orderDate;
 	private Status status;
 
-	// Empty constructor 
+	/**
+	 * Empty constructor of "Order" in which the list of product orders is created.
+	 */
 	public Order() {
 		super();
 		this.productOrders = new ArrayList<ProductOrder>();
 
 	}
 	
+	/**
+	 * Constructor of "Order" that receives one parameter per attribute the class has and initializes them.
+	 * @param _orderId integer that stores the ID of the order.
+	 * @param _client object of the class "Client" that stores the client that made the order.
+	 * @param _payment object of the class "Payment" that stores the payment of the order.
+	 * @param _shipment object of the class "Shipment" that stores the shipment of the order.
+	 * @param _productOrders list of objects of the class "ProductOrder" that stores all the product orders associated to the order.
+	 * @param _orderDate variable of type Date that stores the date in which the order was made.
+	 * @param _status variable of the enumerate "Status" that stores the status of the order.
+	 */
+	public Order(int _orderId, Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders, Date _orderDate, Status _status) {
+		super();
+		this.orderId = _orderId;
+		this.client = _client;
+		this.payment = _payment;
+		this.Shipment = _shipment;
+		this.productOrders = _productOrders;
+		this.orderDate = _orderDate;
+
+		this.status = _status;
+	}
+	
+	/**
+	 * Constructor of "Order" that receives one parameter per attribute the class has (except for order ID) and initializes them.
+	 * @param _client object of the class "Client" that stores the client that made the order.
+	 * @param _payment object of the class "Payment" that stores the payment of the order.
+	 * @param _shipment object of the class "Shipment" that stores the shipment of the order.
+	 * @param _productOrders list of objects of the class "ProductOrder" that stores all the product orders associated to the order.
+	 */
+	public Order(Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders) {
+		super();
+		this.client = _client;
+		this.payment = _payment;
+		this.Shipment = _shipment;
+		this.productOrders = _productOrders;
+		//I initialize the order date to the present date.
+		this.orderDate = Date.valueOf(LocalDate.now());
+		//I initialize the status of the order to "ORDERED" which is the 'default' status.
+		this.status = Status.ORDERED;
+
+	}
 
 	// Additional method to use LocalDate objects
 	public void setLocalDateDob(LocalDate ldate) {
