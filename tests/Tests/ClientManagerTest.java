@@ -96,7 +96,6 @@ public class ClientManagerTest {
     	
     }
     
-    // TODO REVISE THIS TEST, NOW IT DOESN'T WORK BUT THIS MORNING YES
     @Test
     void instertTheSameClientTwiceTest() {
     	try {
@@ -140,7 +139,7 @@ public class ClientManagerTest {
     	}
     }
     
-    // TODO REVISE THIS TEST 
+    
     @Test
     void deleteClientWithAnInvalidIDTest(){
     	try {
@@ -192,7 +191,6 @@ public class ClientManagerTest {
     }
     
    
-    // TODO REVISE THIS TEST
     @Test
     void getClientByAnInvalidIDTest() {
     	try {

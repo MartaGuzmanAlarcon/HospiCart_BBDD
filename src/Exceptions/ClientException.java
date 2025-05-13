@@ -1,7 +1,5 @@
 package Exceptions;
 
-package Exceptions;
-
 public class ClientException extends Exception {
 	// Define the values that an error can adopt 
 	public enum ErrorTypeClient{
