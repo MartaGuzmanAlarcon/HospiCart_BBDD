@@ -167,24 +167,24 @@ public class ClientManager implements IClientManager{
 	 */
 	@Override
 	public Client getClientByID(Integer c_id) throws ClientException{
-		String sql = "SELECT id, name, surname, phone_number, email, address" +
+		String sql = "SELECT id, name, surname, phone_number, email, address " +
 			      "FROM client WHERE id = ?";
 
 		try{
 			// Prepare statement
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
 			// Bind the ID parameter
-	        prep.setInt(1, c_id);
+	        prep.setInt(1, c_id); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
 	        
 	        // Execute the query
 	        ResultSet rs = prep.executeQuery();
 	        
-            // Check that the ID is valid
-            if (!rs.next()) {
+            // Check that the ID is is in the database 
+            if (!rs.next()) { // False if there are no more rows -> no client exists for the given id
                 throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);
             }
 	    
-            // Construct the client to be returned and close PreparedStatement and ResultSet
+            // Construct the client to be returned 
 			Integer id = rs.getInt("id");
 			String name = rs.getString("name");
 			String surname = rs.getString("surname");
@@ -192,6 +192,8 @@ public class ClientManager implements IClientManager{
 			String email = rs.getString("email");
 			String address = rs.getString("address"); 
 			Client client = new Client(id, name, surname, phoneNumber, email, address);
+			
+			// Close PreparedStatement and ResultSet
 			rs.close();
 			prep.close();
 			
@@ -208,35 +210,48 @@ public class ClientManager implements IClientManager{
 	 * This method looks up a Client by their unique email address.
 	 * @param c_email the email address to search for.
 	 * @return the matching Client object.
-	 * @throws Exception if no client is found or if a database error occurs.
+	 * @throws ClientException if no client exists with the given email
 	 */
 	@Override
-	public Client getClientByEmail(String c_email) throws Exception {
-		Client client = null;
+	public Client getClientByEmail(String c_email) throws ClientException {
+		String sql = "SELECT id, name, surname, phone_number, email, address " +
+			      "FROM client WHERE email = ?";
 
 		try {
-			Statement stmt = manager.getConnection().createStatement();
-			String sql = "SELECT * FROM client WHERE email = '" + c_email + "'";
-
-			ResultSet rs = stmt.executeQuery(sql);
+			// Prepare statement
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+			// Bind the c_email parameter
+			prep.setString(1, c_email); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
+			
+			// Execute the query
+			ResultSet rs = prep.executeQuery();
+			
+			// Check that the email is in the database 
+			if (!rs.next()) { // False if there are no more rows -> no client exists for the given email
+	            throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_EMAIL);
+	        }
+			
+			// Construct the client to be returned 
 			Integer id = rs.getInt("id");
 			String name = rs.getString("name");
 			String surname = rs.getString("surname");
 			Integer phoneNumber = rs.getInt("phone_number");
 			String email = rs.getString("email");
 			String address = rs.getString("address");
-			//Role role = Role.valueOf(rs.getString("role")); // valueOf() is a function from Enum, not a method.
-
-			client = new Client(id, name, surname, phoneNumber, email, address);
-
+			Client client = new Client(id, name, surname, phoneNumber, email, address);
+			
+			// Close PreparedStatement and ResultSet
 			rs.close();
-			stmt.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			prep.close();
+			
+			return client;
+			
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+			// Use an unchecked exception so we don’t have to add it to the throws clause or force callers to catch it 
+	        throw new RuntimeException( "Database error fetching client with email " + c_email, sqle);
 		}
 		
-		return client;
 	}
 	
 	@Override 

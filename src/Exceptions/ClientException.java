@@ -1,9 +1,11 @@
 package Exceptions;
 
+package Exceptions;
+
 public class ClientException extends Exception {
 	// Define the values that an error can adopt 
 	public enum ErrorTypeClient{
-		INVALID_CLIENT_ID, CLIENT_ALREADY_EXISTS;
+		INVALID_CLIENT_ID, INVALID_CLIENT_EMAIL, CLIENT_ALREADY_EXISTS;
 	}
 	
 	// Attributes 
@@ -21,6 +23,9 @@ public class ClientException extends Exception {
 		case INVALID_CLIENT_ID : {
 			return "Invalid client ID, no client was found";
 		}
+		case INVALID_CLIENT_EMAIL : {
+			return "Invalid client email, no client was found";
+		}
 		case CLIENT_ALREADY_EXISTS : {
 			return "The client already exists";
 		}
@@ -31,3 +36,4 @@ public class ClientException extends Exception {
 	
 
 }
+

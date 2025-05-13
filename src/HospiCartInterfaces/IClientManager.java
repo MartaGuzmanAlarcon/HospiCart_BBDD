@@ -15,7 +15,7 @@ public interface IClientManager {
 	
 	public List<Client> getListOfClients();
 	public Client getClientByID (Integer c_id) throws ClientException; // Look up a client by their primary key.
-	public Client getClientByEmail (String c_email) throws Exception; // Find a client by email (useful for login & uniqueness checks).
+	public Client getClientByEmail (String c_email) throws ClientException; // Find a client by email (useful for login & uniqueness checks).
 	boolean isClientInDatabase(String c_email);
 	
 	// TODO ASK IF NAME, SURNAME AND EMAIL METHODS ARE REDUNDANT 

@@ -96,6 +96,7 @@ public class ClientManagerTest {
     	
     }
     
+    // TODO REVISE THIS TEST, NOW IT DOESN'T WORK BUT THIS MORNING YES
     @Test
     void instertTheSameClientTwiceTest() {
     	try {
@@ -139,6 +140,7 @@ public class ClientManagerTest {
     	}
     }
     
+    // TODO REVISE THIS TEST 
     @Test
     void deleteClientWithAnInvalidIDTest(){
     	try {
@@ -189,8 +191,9 @@ public class ClientManagerTest {
     	}   	
     }
     
-    // TODO REVISE THIS TEST AND SEE WHY IT DOESN'T WORK
-    /*@Test
+   
+    // TODO REVISE THIS TEST
+    @Test
     void getClientByAnInvalidIDTest() {
     	try {
     		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
@@ -208,7 +211,9 @@ public class ClientManagerTest {
     	} catch (ClientException ce) {
     		ce.printStackTrace();
     	}  
-    }*/
+    }
+    
+    
     
     
 }
