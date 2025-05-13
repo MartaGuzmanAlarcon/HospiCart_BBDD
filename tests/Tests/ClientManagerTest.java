@@ -211,6 +211,8 @@ public class ClientManagerTest {
     	}  
     }
     
+    // TODO TEST THE EMAIL METHOD 
+    
     
     
     
