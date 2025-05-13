@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import Exceptions.ClientException;
+import Exceptions.OrderExceptions;
 import HospiCartInterfaces.IPaymentManager;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Payment;
@@ -30,7 +32,6 @@ public class PaymentManager implements IPaymentManager {
 		try {
 			String sql = "INSERT INTO payment (order_id, amount, payment_method, payment_status)" + " VALUES (?,?,?,?)";
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql); 
-			
 			 prep.setInt(1, p.getOrder().getOrderId()); // The 1 binds to the first "?"
 	         prep.setInt(2, p.getAmount()); // The 2 binds to the second "?", etc.
 	         prep.setString(3, p.getPaymentMethod().name()); // name() Returns the name of this enum constant, exactly as declared in its enum declaration
@@ -214,7 +215,7 @@ public class PaymentManager implements IPaymentManager {
 	 * @param order_id integer that stores the id of the order whose payment we want to get.
 	 */
 	@Override
-	public Payment getPaymentByOrderId(int order_id) {
+	public Payment getPaymentByOrderId(int order_id) throws OrderExceptions, ClientException{
 		Payment payment = null;
 	    //SQL query
     	String sql = "SELECT * "

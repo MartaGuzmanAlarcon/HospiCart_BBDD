@@ -13,7 +13,7 @@ public class OrderExceptions extends RuntimeException{
      * Enumerate that contains the different types of exceptions we can find when dealing with instances of the class Order.
      */
     public enum ErrorTypeOrder{
-        INVALID_CLIENT, INVALID_ORDER_ID
+        INVALID_CLIENT, INVALID_ORDER_ID, INVALID_PAYMENT, INVALID_SHIPMENT, INVALID_PRODUCT_ORDER
     }
 
     public ErrorTypeOrder errorTypeOrder;
@@ -40,10 +40,15 @@ public class OrderExceptions extends RuntimeException{
     public String toString() {
         switch (getErrorTypeOrder()) {
             case INVALID_CLIENT:
-                return "The client received as paramenter is null, and therefore it is not valid.";
+                return "The client received as paramenter is null, and therefore it is not valid. The order could not be created";
             case INVALID_ORDER_ID:
-            	return "The receives order ID is not valid.";
-            	
+            	return "The received order ID is not valid.";
+            case INVALID_PAYMENT:
+            	return "The payment of the order is invalid and the order could not be created.";
+            case INVALID_SHIPMENT:
+            	return "The shipment is invalid and the order could not be created.";
+            case INVALID_PRODUCT_ORDER:
+            	return "The list of product orders is empty and, therefore, an order could not be created (because an order must have at least one product order).";
             default:
                 return "An error has occurred.";
         }

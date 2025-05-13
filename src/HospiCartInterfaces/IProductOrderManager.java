@@ -3,6 +3,8 @@ package HospiCartInterfaces;
 import java.sql.SQLException;
 import java.util.List;
 
+import Exceptions.ClientException;
+import Exceptions.OrderExceptions;
 import HospiCartPOJOs.ProductOrder;
 
 import HospiCartPOJOs.Order;
@@ -25,14 +27,14 @@ public interface IProductOrderManager {
 	 * Method that receives an order id and deletes the product orders associated to it.
 	 * @param order_id integer that stores the id of an order.
 	 */
-	void deleteProductOrdersByOrderID(int order_id)throws SQLException;
+	void deleteProductOrdersByOrderID(int order_id) throws SQLException, OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives the id of a product and the id of an order as parameter and deletes the product order whose IDs match with the received ones.
 	 * @param product_id integer that stores the id of a product.
 	 * @param order_id integer that stores the id of an order.
 	 */
-	void deleteProductOrderByIDs(int product_id, int order_id)throws SQLException;
+	void deleteProductOrderByIDs(int product_id, int order_id) throws SQLException, OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives the id of a product and the id of an order and returns the object of Product Order that corresponds with the received IDs.
@@ -40,14 +42,14 @@ public interface IProductOrderManager {
 	 * @param order_id integer that stores the id of an order.
 	 * @return an object of the class product order whose id matches with the received one as parameter.
 	 */
-	ProductOrder getProductOrderByIDs(int product_id, int order_id);
+	ProductOrder getProductOrderByIDs(int product_id, int order_id) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives an order id as parameter and returns a list that contains all the product orders whose order id matches the received one.
 	 * @param order_id integer that stores the id of an order.
 	 * @return a list that contains objects of "ProductOrder".
 	 */
-	List<ProductOrder> getProductOrdersByOrderID(int order_id);
+	List<ProductOrder> getProductOrdersByOrderID(int order_id) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives an order id and returns the total price of the order that corresponds with the receives id.
@@ -61,7 +63,7 @@ public interface IProductOrderManager {
 	 * @param product_id integer that stores the id of the product of interest.
 	 * @return a list containing instances of Order.
 	 */
-	List<Order> getOrdersWithAProduct(int product_id);
+	List<Order> getOrdersWithAProduct(int product_id) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives a product id and an amount and adds that amount of the specified product to the product's stock quantity.

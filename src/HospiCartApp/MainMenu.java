@@ -79,7 +79,7 @@ public class MainMenu {
 
 
         Client doctor = new Client(name, surname, phone, address, email);
-        clientMan.insertClient(doctor);
+       // clientMan.insertClient(doctor);
 
         User user = new User(email, encryptedPassword, email);
         userMan.register(user);
@@ -107,7 +107,7 @@ public class MainMenu {
 
 
         Client nurse = new Client(name, surname, phone, address, email);
-        clientMan.insertClient(nurse);
+       // clientMan.insertClient(nurse);
 
         User user = new User(email, encryptedPassword, email);
         userMan.register(user);

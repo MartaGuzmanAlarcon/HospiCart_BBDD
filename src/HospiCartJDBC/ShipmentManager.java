@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Exceptions.ClientException;
+import Exceptions.OrderExceptions;
 import HospiCartInterfaces.IShipmentManager;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Shipment;
@@ -81,7 +83,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @param shipment_id integer that stores the id of the shipment we want to delete.
 	 */
 	@Override
-	public void deleteShipmentByID(int shipment_id) {
+	public void deleteShipmentByID(int shipment_id) throws OrderExceptions, ClientException{
 		Shipment shipment = getShipmentByID(shipment_id);
 		
 		/*We delete the shipment from the table shipment of the database. However, it is worth saying that we do not delete the order associated to the shipment
@@ -119,7 +121,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @param tracking_number integer that stores the tracking number of the shipment we want to delete.
 	 */
 	@Override
-	public void deleteShipmentByTrackingNumber(int tracking_number) {
+	public void deleteShipmentByTrackingNumber(int tracking_number) throws OrderExceptions, ClientException{
 		Shipment shipment = getShipmentByTrackingNumber(tracking_number);
 		
 		/*We delete the shipment from the table shipment of the database. However, it is worth saying that we do not delete the order associated to the shipment
@@ -157,7 +159,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @param order_id integer that stores the order id of the shipment we want to delete.
 	 */
 	@Override
-	public void deleteShipmentByOrderID(int order_id) {
+	public void deleteShipmentByOrderID(int order_id) throws OrderExceptions, ClientException{
 		Shipment shipment = getShipmentByOrderID(order_id);
 		
 		/*We delete the shipment from the table shipment of the database. However, it is worth saying that we do not delete the order associated to the shipment
@@ -196,7 +198,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return the found shipment whose shipment id matches with the received one.
 	 */
 	@Override
-	public Shipment getShipmentByID(int shipment_id) {
+	public Shipment getShipmentByID(int shipment_id) throws OrderExceptions, ClientException {
 		Shipment shipment = null;
 	    //SQL query
     	String sql = "SELECT * "
@@ -229,7 +231,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return the found shipment whose tracking number matches with the received one.
 	 */
 	@Override
-	public Shipment getShipmentByTrackingNumber(int tracking_number) {
+	public Shipment getShipmentByTrackingNumber(int tracking_number) throws OrderExceptions, ClientException {
 		Shipment shipment = null;
 	    //SQL query
     	String sql = "SELECT * "
@@ -265,7 +267,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return the shipment whose order id matches with the received one.
 	 */
 	@Override
-	public Shipment getShipmentByOrderID(int order_id) {
+	public Shipment getShipmentByOrderID(int order_id) throws OrderExceptions, ClientException {
 		Shipment shipment = null;
 	    //SQL query
     	String sql = "SELECT * "
@@ -297,7 +299,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return a list with objects of "Shipment"
 	 */
 	@Override
-	public List<Shipment> getAllShipments() {
+	public List<Shipment> getAllShipments() throws OrderExceptions, ClientException{
 		Shipment shipment = null;
     	List<Shipment> shipments = new ArrayList<>();
 

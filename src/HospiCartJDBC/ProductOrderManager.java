@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import Exceptions.ClientException;
+import Exceptions.OrderExceptions;
 import HospiCartInterfaces.IProductOrderManager;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Product;
@@ -68,7 +70,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param order_id integer that stores the id of an order.
 	 */
 	@Override
-	public void deleteProductOrdersByOrderID(int order_id) throws SQLException{
+	public void deleteProductOrdersByOrderID(int order_id) throws SQLException, OrderExceptions, ClientException{
 		
 		//SQL query
 		String sql = "DELETE * FROM product_order WHERE order_id = ?";
@@ -99,7 +101,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param order_id integer that stores the id of an order.
 	 */
 	@Override
-	public void deleteProductOrderByIDs(int product_id, int order_id) throws SQLException{
+	public void deleteProductOrderByIDs(int product_id, int order_id) throws SQLException, OrderExceptions, ClientException{
 					
 		//SQL query
 		String sql = "DELETE * FROM product_order WHERE order_id = ? AND product_id = ?";
@@ -131,7 +133,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @return an object of the class product order whose id matches with the received one as parameter.
 	 */
 	@Override
-	public ProductOrder getProductOrderByIDs(int product_id, int order_id) {
+	public ProductOrder getProductOrderByIDs(int product_id, int order_id) throws OrderExceptions, ClientException {
 		ProductOrder productOrder = null;
 	    
     	String sql = "SELECT * "
@@ -170,7 +172,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @return a list that contains objects of "ProductOrder".
 	 */
 	@Override
-	public List<ProductOrder> getProductOrdersByOrderID(int order_id) {
+	public List<ProductOrder> getProductOrdersByOrderID(int order_id) throws OrderExceptions, ClientException {
 		ProductOrder productOrder = null;
     	List<ProductOrder> productOrdersOfOrder = new ArrayList<>();
     	
@@ -244,7 +246,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @return a list containing instances of Order.
 	 */
 	@Override
-	public List<Order> getOrdersWithAProduct(int product_id) {
+	public List<Order> getOrdersWithAProduct(int product_id) throws OrderExceptions, ClientException{
 		//SQL query
 		String sql = "SELECT * FROM product_order WHERE product_id = ?";
 		

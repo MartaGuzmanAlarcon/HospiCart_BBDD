@@ -3,6 +3,8 @@ package HospiCartInterfaces;
 import java.sql.SQLException;
 import java.util.List;
 
+import Exceptions.ClientException;
+import Exceptions.OrderExceptions;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Shipment;
 
@@ -23,46 +25,46 @@ public interface IShipmentManager {
 	 * Method that receives a shipment id and removes the shipment whose id matches with the received one.
 	 * @param shipment_id integer that stores the id of the shipment we want to delete.
 	 */
-	void deleteShipmentByID(int shipment_id);
+	void deleteShipmentByID(int shipment_id) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives a tracking number and removes the shipment whose tracking number matches with the received one.
 	 * @param tracking_number integer that stores the tracking number of the shipment we want to delete.
 	 */
-	void deleteShipmentByTrackingNumber(int tracking_number);
+	void deleteShipmentByTrackingNumber(int tracking_number) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives an order id and removes the shipment whose order id matches with the received one.
 	 * @param order_id integer that stores the order id of the shipment we want to delete.
 	 */
-	void deleteShipmentByOrderID(int order_id);
+	void deleteShipmentByOrderID(int order_id) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives a shipment id as parameter and retrieves the shipment associated with the shipment id.
 	 * @param shipment_id integer that stores a shipment ID.
 	 * @return the found shipment whose shipment id matches with the received one.
 	 */
-	Shipment getShipmentByID(int shipment_id);
+	Shipment getShipmentByID(int shipment_id) throws OrderExceptions, ClientException;
 
 	/**
 	 * Method that receives a tracking number as parameter and retrieves the shipment associated with the tracking number.
 	 * @param tracking_number integer that stores a tracking number.
 	 * @return the found shipment whose tracking number matches with the received one.
 	 */
-	Shipment getShipmentByTrackingNumber(int tracking_number);
+	Shipment getShipmentByTrackingNumber(int tracking_number) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives an order id as parameter and retrieves the shipment associated with the order id.
 	 * @param order_id integer that stores the id of an order.
 	 * @return the shipment whose order id matches with the received one.
 	 */
-	Shipment getShipmentByOrderID(int order_id);
+	Shipment getShipmentByOrderID(int order_id) throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that returns a list of shipments that contains them all.
 	 * @return a list with objects of "Shipment"
 	 */
-	List<Shipment> getAllShipments();
+	List<Shipment> getAllShipments() throws OrderExceptions, ClientException;
 	
 	/**
 	 * Method that receives an object of shipments and sets the order to null. This method is useful for when we delete shipments 
