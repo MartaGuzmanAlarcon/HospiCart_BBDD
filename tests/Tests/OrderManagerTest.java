@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
 import HospiCartJDBC.ClientManager;
 import HospiCartJDBC.ConnectionManagerJDBC;
@@ -94,6 +95,9 @@ class OrderManagerTest {
 	        connectionManager.disconnect();
 	    }
 	
+	    //TODO: check the tables of payment, shipment and product order in the database.
+	    //TODO: delete the methods of the end.
+	    //TODO: think about the exceptions and only use the ones we need.
 	
 	@Test
 	/**
@@ -157,27 +161,13 @@ class OrderManagerTest {
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/*
-	 * @Test
-	/**
-	 * Test that checks the method "createOrder" of "OrderManager" when the client passed as parameter to the method is null.
-	 */
-	void insertOrderWithNullClientTest(){
-		//I create a client and set it to null.
-		Client expectedClient = null;
-		
-		try {
-			//I call the method I want to check and pass the null client as parameter. I expect the method to throw an exception and check if it really does by using the "assertThrows".
-			assertThrows(OrderExceptions.class, () ->{orderManager.insertOrder(expectedClient);});
-			
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 	
 	@Test
@@ -185,35 +175,68 @@ class OrderManagerTest {
 	 * Test that checks if the method "deleteOrder" works a desired.
 	 */
 	void deleteOrderTest() {		
-		Client client = new Client("Robert", "Williams", 346667855, "robwilliams@gmail.com", "Calle de Paraguay 20", Role.DOCTOR);
+		Client client = new Client("Robert", "Williams", 346667855, "robwilliams@gmail.com", "Calle de Paraguay 20");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(123457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+				
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+				
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+				
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
 		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}			
-			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
+			//I call the method that inserts clients after checking if the client was already inserted in the database.
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			productManager.insertProduct(1, product1);
+			productManager.insertProduct(1, product2);
 			
-			//I have to obtain the order id of the inserted order
+			//Now, I create the order
+			Order order = new Order(client, payment, shipment, productOrders);
+			
+			//I create the order with the respective method from OrderManager and pass the complete client as parameter
+			orderManager.insertOrder(order);
 			
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersBefore = orderManager.getAllOrders();
 			int countTotalOrdersBefore = ordersBefore.size();
-			Order addedOrder = ordersBefore.get(ordersBefore.size()-1);
 			
-			orderManager.deleteOrder(addedOrder.getOrderId());
+			//I call the method that deletes the order from the database
+			orderManager.deleteOrder(order.getOrderId());
 			
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersAfter = orderManager.getAllOrders();
 			int countTotalOrdersAfter = ordersAfter.size();
 			
+			//I insert the shipment because it is dependent on the order
+			shipmentManager.insertShipment(order);
+			payment.setOrder(order);
+			paymentManager.insertPayment(payment); //I do the same for payment and the other objects
+
+			
 			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
 		    assertEquals(countTotalOrdersBefore - 1, countTotalOrdersAfter);
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -226,47 +249,99 @@ class OrderManagerTest {
 	 * created order and the last order contained in the list of orders that the user made, which should be the same.
 	 */
 	void getOrderByValidIDTest() {
-		Client client = new Client("Serena", "Williams", 346667865, "serewilliams@gmail.com", "Calle de Uruguay 50", Role.NURSE);
+		Client client = new Client("Serena", "Williams", 346667865, "serewilliams@gmail.com", "Calle de Uruguay 50");
 		
-		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
-			client = clientManager.getClientByEmail(client.getEmail());
-			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
+		//I create a payment, a shipment and 2 products.
+		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(123457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+						
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+						
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+						
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
+				
+		try {				
+			//I call the method that inserts clients after checking if the client was already inserted in the database.
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			productManager.insertProduct(1, product1);
+			productManager.insertProduct(1, product2);
 			
-			List<Order> orders = orderManager.getOrdersByUser(client.getUserId());
-			Order insertedOrder = orders.get(orders.size()-1);
+			//Now, I create the order
+			Order order = new Order(client, payment, shipment, productOrders);
 			
-			Order retrievedOrder = orderManager.getOrderByID(insertedOrder.getOrderId());
+			//I create the order with the respective method from OrderManager and pass the complete client as parameter
+			orderManager.insertOrder(order);
+			
+			Order retrievedOrder = orderManager.getOrderByID(order.getOrderId());
 			
 			//I compare the inserted order and the one obtained through the method "getOrderByID".
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
-			assertEquals(insertedOrder, retrievedOrder);
+			assertEquals(order, retrievedOrder);
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) { //SEE IF WE NEED THIS CATCH
 			e.printStackTrace();
 		}
 	}
 	
 	@Test
 	void getOrderByUserTest() {
-		Client client = new Client("Bobby", "Brown", 343367865, "bobby@gmail.com", "Calle de Ambar 40", Role.NURSE);
+		Client client = new Client("Bobby", "Brown", 343367865, "bobby@gmail.com", "Calle de Ambar 40");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment2 = new Payment(8, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(127457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+								
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+								
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+								
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
 		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
+			//I call the method that inserts clients after checking if the client was already inserted in the database.
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			productManager.insertProduct(1, product1);
+			productManager.insertProduct(1, product2);
+			
+			//Now, I create the orders
+			Order order1 = new Order(client, payment1, shipment, productOrders);
+			Order order2 = new Order(client, payment2, shipment, productOrders);
+			
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
+			orderManager.insertOrder(order1);
+			orderManager.insertOrder(order2);
 			int amountOfOrdersOfUser = 2;
 			
 			List<Order> orders = orderManager.getOrdersByUser(client.getUserId());
@@ -277,7 +352,11 @@ class OrderManagerTest {
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -287,15 +366,42 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersByOrderDate" works as desired when there is only one order made in the date we are interested in (present date).
 	 */
 	void getOneOrderByOrderDateTest() {
-		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(127457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+								
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+								
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+								
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
+
+		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
+			//I call the method that inserts clients after checking if the client was already inserted in the database.
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			productManager.insertProduct(1, product1);
+			productManager.insertProduct(1, product2);
+			
+			//Now, I create the orders
+			Order order1 = new Order(client, payment1, shipment, productOrders);
+			
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
+			orderManager.insertOrder(order1);
 			int amountOfOrdersMadeToday = 1;
 			
 			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
@@ -305,7 +411,11 @@ class OrderManagerTest {
 			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -315,20 +425,49 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersByOrderDate" works as desired when there are several orders made in the date we are interested in (present date).
 	 */
 	void getSeveralOrdersByOrderDateTest() {
-		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment2 = new Payment(6, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment3 = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(127457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+								
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+								
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+								
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
+		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
-			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
-
-			int amountOfOrdersMadeToday = 3;
+			//I call the method that inserts clients after checking if the client was already inserted in the database.
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			productManager.insertProduct(1, product1);
+			productManager.insertProduct(1, product2);
 			
+			//Now, I create the orders
+			Order order1 = new Order(client, payment1, shipment, productOrders);
+			Order order2 = new Order(client, payment2, shipment, productOrders);
+			Order order3 = new Order(client, payment3, shipment, productOrders);
+
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(order1);
+			orderManager.insertOrder(order2);
+			orderManager.insertOrder(order3);
+			int amountOfOrdersMadeToday = 3;
+						
 			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
 			int realAmountOfOrdersMadeToday = orders.size();
 						
@@ -336,7 +475,11 @@ class OrderManagerTest {
 			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -346,13 +489,11 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersByOrderDate" works as desired when there are 0 orders made in the date we are interested in (present date).
 	 */
 	void getZeroOrderByOrderDateTest() {
-		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
+		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
+		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
 
 			int amountOfOrdersMadeToday = 0;
 			
@@ -371,15 +512,37 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersWithinDateRange" works as desired when there is only one order made within the dates we are interested in (a past date and the present date).
 	 */
 	void getOneOrderWithinDateRangeTest() {
-		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(127457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+								
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+								
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+								
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
+		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			
+			Order order = new Order(client, payment1, shipment, productOrders);
+
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
+			orderManager.insertOrder(order);
 
 			int amountOfOrdersMadeInDateRange = 1;
 			
@@ -390,7 +553,11 @@ class OrderManagerTest {
 			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -400,24 +567,45 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersWithinDateRange" works as desired when there are several orders made within the dates we are interested in (a past date and the present date).
 	 */
 	void getSeveralOrdersWithinDateRangeTest() {
-		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
-		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment1 = new Payment(3, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(127457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+								
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+								
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+								
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
+	
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
-			if(!clientManager.isClientInDatabase(client1.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client1);
-			}
-			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client1);
+			//I insert the clients in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			clientManager.insertClient(client1);
 
-			int amountOfOrdersMadeInDateRange = 3;
+			Order order = new Order(client, payment, shipment, productOrders);
+			Order order1 = new Order(client, payment1, shipment, productOrders);
+
+
+			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			orderManager.insertOrder(order);
+			orderManager.insertOrder(order1);
+
+			int amountOfOrdersMadeInDateRange = 2;
 			
 			List<Order> orders = orderManager.getOrdersWithinDateRange(Date.valueOf(LocalDate.of(2025, 05, 11)), Date.valueOf(LocalDate.now()));
 			int realAmountOfOrdersMadeInDateRange = orders.size();
@@ -426,7 +614,11 @@ class OrderManagerTest {
 			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -436,18 +628,14 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersWithinDateRange" works as desired when there are zero orders made within the dates we are interested in (a past date and the present date).
 	 */
 	void getZeroOrdersWithinDateRangeTest() {
-		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
-		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
+		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
-			if(!clientManager.isClientInDatabase(client1.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client1);
-			}
+			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			clientManager.insertClient(client1);
+
 
 			int amountOfOrdersMadeInDateRange = 0;
 			
@@ -466,27 +654,50 @@ class OrderManagerTest {
 	 * Test that checks if "getOrdersWithinDateRange" works as desired when there are several orders made within the dates we are interested in (a past date and the present date).
 	 */
 	void getAllOrdersTest() {
-		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80", Role.DOCTOR);
-		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80", Role.DOCTOR);
+		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
+		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
+		
+		//I create a payment, a shipment and 2 products.
+		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment1 = new Payment(3, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment2 = new Payment(2, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Payment payment3 = new Payment(4, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		Shipment shipment = new Shipment(127457);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", new BigDecimal("5.1"), 320, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", new BigDecimal("3.1"), 220, false);
+								
+		//I create a list of products and add the products I created above.
+		List<Product> products = new ArrayList<Product>();
+		products.add(product1);
+		products.add(product2);
+								
+		//I create the supplier.
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+								
+		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		//I create the list of product orders and add the product orders to the list.
+		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
+		productOrders.add(productOrder1);
+		productOrders.add(productOrder2);
+	
+		
 		try {
-			//I call the method that checks if a client was already inserted in the database. If the method returns a false, then I go ahead inserting the client into the database. If it returns true, I don't insert it again.
-			if(!clientManager.isClientInDatabase(client.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client);
-			}
-			if(!clientManager.isClientInDatabase(client1.getEmail())) {
-				//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
-				clientManager.insertClient(client1);
-			}
-			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client);
-			orderManager.insertOrder(client1);
-			orderManager.insertOrder(client1);
+			//I insert the clients in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			clientManager.insertClient(client);
+			clientManager.insertClient(client1);
 
-			int amountOfOrdersMade = 6;
+			Order order = new Order(client, payment, shipment, productOrders);
+			Order order1 = new Order(client, payment1, shipment, productOrders);
+			Order order2 = new Order(client, payment2, shipment, productOrders);
+			Order order3 = new Order(client, payment3, shipment, productOrders);
+
+			orderManager.insertOrder(order);
+			orderManager.insertOrder(order1);
+			orderManager.insertOrder(order2);
+			orderManager.insertOrder(order3);
+
+			int amountOfOrdersMade = 4;
 			
 			List<Order> orders = orderManager.getAllOrders();
 			int realAmountOfOrdersMade = orders.size();
@@ -495,11 +706,14 @@ class OrderManagerTest {
 			assertEquals(amountOfOrdersMade, realAmountOfOrdersMade);
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
-		}catch (Exception e) {
+		} catch(OrderExceptions oe) {
+			System.out.println("ERROR: " + oe);
+		} catch(ClientException ce) {
+			System.out.println("ERROR: " + ce);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	 */
 	
 	
 	
@@ -522,4 +736,25 @@ class OrderManagerTest {
 		}*/
 		//TODO: THIS TEST DOES NOT WORK!! SEE HOW I CAN CORRECT IT!
 	
+	 /*
+	  * /*
+	 * @Test
+	/**
+	 * Test that checks the method "createOrder" of "OrderManager" when the client passed as parameter to the method is null.
+	 */
+	//TODO CORRECT THIS TEST --> ADD EXCPTIONS IN  THE CONSTRUCTOR!! -->THIS TEST SHOULD GO IN "OrderTest"
+	/*void insertOrderWithNullClientTest(){
+		//I create a client and set it to null.
+		Client expectedClient = null;
+		
+		
+		try {
+			//I call the method I want to check and pass the null client as parameter. I expect the method to throw an exception and check if it really does by using the "assertThrows".
+			//assertThrows(OrderExceptions.class, () ->{orderManager.insertOrder(expectedClient);});
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+	}
+	  */
 }
