@@ -40,7 +40,7 @@ public class OrderManager implements IOrderManager {
 
     /**
      * Method that creates a new order with the client it receives as parameter and setting the current date and the default status to the order.
-     * @param client object of Client that stores the user who made the order.
+     * @param order object of Order that stores the order that we want to inert to the database.
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override

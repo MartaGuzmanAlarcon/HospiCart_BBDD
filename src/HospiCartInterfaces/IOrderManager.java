@@ -20,9 +20,9 @@ import HospiCartPOJOs.Status;
 public interface IOrderManager {
 	/**
 	 * Method that receives the id of the user and creates an order. 
-	 * @param client
+	 * @param order
 	 */
-	void insertOrder(Client client, Payment payment, Shipment shipment, List<ProductOrder> productOrders) throws SQLException, OrderExceptions;
+	void insertOrder(Order order) throws SQLException, OrderExceptions;
 	
 	/**
 	 * Method that receives an order's id as parameter and deletes it.
