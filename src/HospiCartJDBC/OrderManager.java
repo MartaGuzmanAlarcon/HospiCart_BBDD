@@ -49,7 +49,6 @@ public class OrderManager implements IOrderManager {
        //I initialize the order fields and check if they are valid or if I need to throw an exception
        Date orderDate = order.getOrderDate();
        Status status = order.getStatus();
-       //Order order = new Order(); //I create the Order object
        Client client = order.getClient();
        Payment payment = order.getPayment();
        Shipment shipment = order.getShipment();

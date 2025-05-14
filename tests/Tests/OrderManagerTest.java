@@ -118,7 +118,7 @@ class OrderManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(1, products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 6.1f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
