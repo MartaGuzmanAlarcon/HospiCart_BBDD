@@ -99,10 +99,10 @@ public class ProductManager implements IProductManager {
 	 * @return true if product was added, false otherwise.
 	 */
 	@Override
-	public boolean insertProduct(int supplierId, Product product) {
+	public boolean insertProduct(int supplierId, Product product) throws SQLException{
 		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-		try (PreparedStatement stmt = c.prepareStatement(sql)) {
+		try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 			// Set parameters for the SQL query
 			stmt.setInt(1, supplierId); // Using the supplierId passed as a parameter
 			stmt.setString(2, product.getName());
@@ -115,9 +115,17 @@ public class ProductManager implements IProductManager {
 
 			int rowsAffected = stmt.executeUpdate();
 			if (rowsAffected > 0) {
-			    System.out.println(rowsAffected);
+				//Now, I get the generated primary key of order (the order id, which is assigned by the database), making use of the method "getGeneratedKeys"
+	            try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+	                if (generatedKeys.next()) {
+	                    product.setProductId(generatedKeys.getInt(1));
+	                } else {
+	                    throw new SQLException("Inserting product failed, no ID obtained.");
+	                }
+				System.out.println(rowsAffected);
 				c.commit();
 				return true;
+	            }
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

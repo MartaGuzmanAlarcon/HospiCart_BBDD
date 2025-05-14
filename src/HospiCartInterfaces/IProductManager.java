@@ -1,5 +1,6 @@
 package HospiCartInterfaces;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import HospiCartPOJOs.Category;
@@ -8,7 +9,7 @@ import HospiCartPOJOs.Product;
 
 public interface IProductManager {
 
-	boolean insertProduct(int supplierId, Product product); // Agregar un nuevo producto
+	boolean insertProduct(int supplierId, Product product) throws SQLException; // Agregar un nuevo producto
 	
 	boolean deleteProduct(int id); // Eliminar un producto
 	

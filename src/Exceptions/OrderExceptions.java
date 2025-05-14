@@ -13,7 +13,7 @@ public class OrderExceptions extends RuntimeException{
      * Enumerate that contains the different types of exceptions we can find when dealing with instances of the class Order.
      */
     public enum ErrorTypeOrder{
-        INVALID_CLIENT, INVALID_ORDER_ID, INVALID_PAYMENT, INVALID_SHIPMENT, INVALID_PRODUCT_ORDER
+        INVALID_CLIENT, INVALID_ORDER_ID, INVALID_PAYMENT, INVALID_SHIPMENT, INVALID_PRODUCT_ORDER, INVALID_ORDER_DATE_FUTURE, INVALID_STATUS
     }
 
     public ErrorTypeOrder errorTypeOrder;
@@ -49,6 +49,10 @@ public class OrderExceptions extends RuntimeException{
             	return "The shipment is invalid and the order could not be created.";
             case INVALID_PRODUCT_ORDER:
             	return "The list of product orders is empty and, therefore, an order could not be created (because an order must have at least one product order).";
+            case INVALID_ORDER_DATE_FUTURE:
+            	return "The date of the order is invalid. You can't introduce a future date as the date of the order.";
+            case INVALID_STATUS:
+            	return "The status is invalid.";
             default:
                 return "An error has occurred.";
         }

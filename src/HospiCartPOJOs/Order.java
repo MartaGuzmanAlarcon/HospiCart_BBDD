@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import Exceptions.OrderExceptions;
+
 public class Order implements Serializable {
 
 	private static final long serialVersionUID = 5399184169574043556L;
@@ -36,16 +38,44 @@ public class Order implements Serializable {
 	 * @param _productOrders list of objects of the class "ProductOrder" that stores all the product orders associated to the order.
 	 * @param _orderDate variable of type Date that stores the date in which the order was made.
 	 * @param _status variable of the enumerate "Status" that stores the status of the order.
+	 * @throws OrderExceptions if any object received as parameter is null or if the order date is future.
 	 */
-	public Order(int _orderId, Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders, Date _orderDate, Status _status) {
+	public Order(int _orderId, Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders, Date _orderDate, Status _status) throws OrderExceptions{
 		super();
+		
+		//First, I check that the received objects are not null. If any of them is null, I won't be able to create the order and will throw the appropriate exception.
+		if(_client == null || _client.getUserId() == null) {
+			      //We throw a personalized exception
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
+		}
+		if(_payment == null || _payment.getPaymentId() == null) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
+		}
+		if(_shipment == null || _shipment.getShipmentId() == null) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
+		}
+		if(_productOrders.isEmpty()) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
+		} else {
+			for(int i=0; i<_productOrders.size(); i++) {
+				if(_productOrders.get(i) == null || _productOrders.get(i).getProduct().getProductId() == null) {
+					throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
+				}
+			}
+		}
+		if(_orderDate.after(Date.valueOf(LocalDate.now()))){
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_DATE_FUTURE);
+		}
+		if(_status != Status.ORDERED && _status != Status.DELIVERED && _status != Status.CANCELLED) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
+		}
+		//TODO SHOULD I ALSO CHECK IF THE ORDER DATE IS IN THE PAST? i.e. before 2020 or something like that?
 		this.orderId = _orderId;
 		this.client = _client;
 		this.payment = _payment;
 		this.Shipment = _shipment;
 		this.productOrders = _productOrders;
 		this.orderDate = _orderDate;
-
 		this.status = _status;
 	}
 	
@@ -55,10 +85,30 @@ public class Order implements Serializable {
 	 * @param _payment object of the class "Payment" that stores the payment of the order.
 	 * @param _shipment object of the class "Shipment" that stores the shipment of the order.
 	 * @param _productOrders list of objects of the class "ProductOrder" that stores all the product orders associated to the order.
+	 * @throws OrderExceptions if any object received as parameter is null.
 	 */
-	public Order(Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders) {
+	public Order(Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders) throws OrderExceptions{
 		super();
-		this.client = _client;
+		//First, I check that the received objects are not null. If any of them is null, I won't be able to create the order and will throw the appropriate exception.
+		if(_client == null || _client.getUserId() == null) {
+			      //We throw a personalized exception
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
+		}
+		if(_payment == null || _payment.getPaymentId() == null) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
+		}
+		if(_shipment == null || _shipment.getShipmentId() == null) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
+		}
+		if(_productOrders.isEmpty()) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
+		} else {
+			for(int i=0; i<_productOrders.size(); i++) {
+				if(_productOrders.get(i) == null || _productOrders.get(i).getProduct().getProductId() == null) {
+					throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
+				}
+			}
+		}		this.client = _client;
 		this.payment = _payment;
 		this.Shipment = _shipment;
 		this.productOrders = _productOrders;
@@ -70,9 +120,13 @@ public class Order implements Serializable {
 	}
 
 	// Additional method to use LocalDate objects
-	public void setLocalDateDob(LocalDate ldate) {
+	public void setLocalDateDob(LocalDate ldate) throws OrderExceptions {
+		if(ldate.isAfter(LocalDate.now())){
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_DATE_FUTURE);
+		}
 		this.orderDate = Date.valueOf(ldate);
 	}
+	//TODO: SEE IF THIS METHOD SHOULD RECEIVE A LOCAL DATE OR A DATE!!
 
 	// Additional method to use LocalDate objects
 	public LocalDate getLocalDateDob() {
@@ -145,8 +199,10 @@ public class Order implements Serializable {
 	}
 
 
-	public void setStatus(Status status) {
-		//TODO: this method should check if the received status is valid and throw an exception in the case it is not valid.
+	public void setStatus(Status status) throws OrderExceptions{
+		if(status != Status.ORDERED && status != Status.DELIVERED && status != Status.CANCELLED) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
+		}
 		this.status = status;
 	}
 

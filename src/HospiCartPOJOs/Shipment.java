@@ -25,6 +25,12 @@ public class Shipment implements Serializable {
 		this.trackingNumber = _trackingNumber;
 	}
 	
+	public Shipment(int _shipmentId, int _trackingNumber) {
+		super();
+		this.shipmentId = _shipmentId;
+		this.trackingNumber = _trackingNumber;
+	}
+	
 	/**
 	 * Constructor that initializes the tracking number of Shipment.
 	 * @param trackingNumber integer that stores the tracking number of a shipment.

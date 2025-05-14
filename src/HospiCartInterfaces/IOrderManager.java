@@ -6,11 +6,7 @@ import java.util.List;
 
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
-import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.ProductOrder;
-import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
 
 /**
@@ -23,14 +19,14 @@ public interface IOrderManager {
 	 * Method that receives the id of the user and creates an order. 
 	 * @param order
 	 */
-	void insertOrder(Order order) throws SQLException, OrderExceptions, ClientException;
+	void insertOrder(Order order) throws SQLException, ClientException;
 	
 	/**
 	 * Method that receives an order's id as parameter and deletes it.
 	 * @param order_id integer that stores the id of the order we wish to remove.
 	 */
 	//TODO: this method should throw an exception for the cases in which an order with the introduced id does not exist.
-	void deleteOrder(int order_id)  throws OrderExceptions, ClientException;
+	void deleteOrder(int order_id)  throws ClientException;
 	
 	/**
 	 * Method that retrieves a specific order whose id matches the one received as parameter.
@@ -54,7 +50,7 @@ public interface IOrderManager {
 	 * @return the list of orders that were purchased on the date introduced.
 	 */
 	//TODO: throw an exception if either no orders were purchased on the received date or if the date is invalid.
-	List<Order> getOrdersByOrderDate(Date order_date) throws ClientException;
+	List<Order> getOrdersByOrderDate(Date order_date) throws ClientException, OrderExceptions;
 	
 	/**
 	 * Method that receives two dates as parameter, which establish the date range that is of our interest in order to filter the orders and see only the ones that fall within this range.
@@ -63,7 +59,7 @@ public interface IOrderManager {
 	 * @return a list containing all the orders whose order date is between the range.
 	 */
 	//TODO: throw an exception if any of the dates is invalid or if there are no orders in the provided range.
-	List<Order> getOrdersWithinDateRange(Date startDate, Date endDate) throws ClientException;
+	List<Order> getOrdersWithinDateRange(Date startDate, Date endDate) throws ClientException, OrderExceptions;
 	
 	/**
 	 * Method that retrieves a list containing all the orders of HospiCart.
@@ -78,7 +74,7 @@ public interface IOrderManager {
 	 * @return a list that contains the orders with the received status.
 	 */
 	//TODO: should this method throw an exception in case there are no orders with the specified status?
-	List<Order> getOrdersByStatus(Status status) throws ClientException;
+	List<Order> getOrdersByStatus(Status status) throws ClientException, OrderExceptions;
 	
 	/**
 	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.

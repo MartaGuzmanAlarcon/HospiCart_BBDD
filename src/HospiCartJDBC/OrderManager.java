@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,33 +45,18 @@ public class OrderManager implements IOrderManager {
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
      */
     @Override
-   // public void insertOrder(Client client, Payment payment, Shipment shipment, List<ProductOrder> productOrders) throws SQLException, OrderExceptions{
-      public void insertOrder(Order order) throws SQLException, OrderExceptions, ClientException{
-    	//I initialize the order fields and check if they are valid or if I need to throw an exception
-        Date orderDate = order.getOrderDate();
-        Status status = order.getStatus();
-    	//Order order = new Order(); //I create the Order object
-        Client client = order.getClient();
-        if(client == null) {
-        	//We throw a personalized exception
-            throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
-        }
+      public void insertOrder(Order order) throws SQLException, ClientException{
+       //I initialize the order fields and check if they are valid or if I need to throw an exception
+       Date orderDate = order.getOrderDate();
+       Status status = order.getStatus();
+       //Order order = new Order(); //I create the Order object
+       Client client = order.getClient();
        Payment payment = order.getPayment();
-       if(payment == null) {
-    	   throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
-       }
        Shipment shipment = order.getShipment();
-       if(shipment == null) {
-    	   throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
-
-       }
        List<ProductOrder> productOrders = order.getProductOrders();
-       if(productOrders.isEmpty()) {
-    	   throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
-       }
 
        //I insert the order information that I have up to now
-       String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?)";
+       String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?) ";
 
        //I create the order record and fetch, from the database once the order was inserted in it, the generated key (the id of the order which is automatically generated in the database)
         try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -89,7 +75,7 @@ public class OrderManager implements IOrderManager {
                 if (generatedKeys.next()) {
                     order.setOrderId(generatedKeys.getInt(1));
                 } else {
-                    throw new SQLException("Creating order failed, no ID obtained.");
+                    throw new SQLException("Inserting order failed, no ID obtained.");
                 }
             }
             //TODO I think I have to create the objects or ProductOrder, Shipment and Payment also.
@@ -113,13 +99,13 @@ public class OrderManager implements IOrderManager {
 	 * @param order_id integer that stores the id of the order we wish to remove.
 	 */
     @Override
-    public void deleteOrder(int order_id)  throws OrderExceptions, ClientException{
+    public void deleteOrder(int order_id)  throws ClientException{
     	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
     	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
-    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ?";
-    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ?";
-    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ?";
-    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ?";
+    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ? ";
+    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ? ";
+    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ? ";
+    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ? ";
     	
     	try (
     			//I create one prepared statement per each SQL sequence created.
@@ -182,7 +168,7 @@ public class OrderManager implements IOrderManager {
     
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
     			+ "FROM client_order AS o "
-    			+ "WHERE o.order_id = ?";
+    			+ "WHERE o.order_id = ? ";
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);
@@ -207,7 +193,7 @@ public class OrderManager implements IOrderManager {
     				order.setProductOrders(productOrders);
     				
     			} else {
-    				//I throw a personalized exceptions that indicates that was not found an order with the introduced order_id in the database.
+    				//I throw a personalized exception that indicates that it was not found an order with the introduced order_id in the database.
     				throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_ID);
     			}
     		}
@@ -237,6 +223,12 @@ public class OrderManager implements IOrderManager {
     		try(ResultSet resultSet = stmt.executeQuery()){
     			// Get the full Client object from ClientManager
                 Client client = cm.getClientManager().getClientByID(user_id);
+                
+                if(!resultSet.next()) {
+                	//If the result set is empty, I throw a personalized exception that indicates that it was not found a user with the introduced user_id in the database.
+    				throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);                
+    			}
+                
                 //While loop that iterates through all the result set and retrieves all the orders.
                 while(resultSet.next()) {
     				order = new Order();
@@ -274,10 +266,13 @@ public class OrderManager implements IOrderManager {
 	 * Method that retrieves a list containing all the orders that were purchased on the date received as parameter.
 	 * @param order_date variable of date type.
 	 * @return the list of orders that were purchased on the date introduced.
+	 * @throws OrderExceptions a personalized exception is thrown if the received date is invalid (future date)
 	 */
     @Override
-    public List<Order> getOrdersByOrderDate(Date order_date) throws ClientException {
-    	
+    public List<Order> getOrdersByOrderDate(Date order_date) throws ClientException, OrderExceptions {
+    	if(order_date.after(Date.valueOf(LocalDate.now()))){
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_DATE_FUTURE);
+		}
     	Order order = null;
     	List<Order> ordersWithSpecifiedDate = new ArrayList<>();
     	
@@ -327,9 +322,17 @@ public class OrderManager implements IOrderManager {
 	 * @param startDate variable of Date type that stores the start date of the range.
 	 * @param endDate variable of Date type that stores the end date of the range.
 	 * @return a list containing all the orders whose order date is between the range.
+	 * @throws OrderExceptions a personalized exception is thrown if any of the received dates is invalid (future dates)
 	 */
     @Override
-    public List<Order> getOrdersWithinDateRange(Date startDate, Date endDate) throws ClientException {
+    public List<Order> getOrdersWithinDateRange(Date startDate, Date endDate) throws ClientException, OrderExceptions {
+    	if(startDate.after(Date.valueOf(LocalDate.now()))){
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_DATE_FUTURE);
+		}
+    	if(endDate.after(Date.valueOf(LocalDate.now()))){
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_DATE_FUTURE);
+		}
+    	
     	Order order = null;
     	List<Order> ordersWithinDateRange = new ArrayList<>();
     	
@@ -386,8 +389,8 @@ public class OrderManager implements IOrderManager {
     	Order order = null;
     	List<Order> orders = new ArrayList<>();
 
-    	String sql = "SELECT *"
-    			+ "FROM client_order AS o";
+    	String sql = "SELECT * "
+    			+ "FROM client_order AS o ";
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		try(ResultSet resultSet = stmt.executeQuery()){
@@ -428,9 +431,14 @@ public class OrderManager implements IOrderManager {
 	 * Method that retrieves a list that contains all the orders whose status matches the one received as parameter.
 	 * @param status variable of type Status that contains the status we are interested in (in order to see the orders that have this status)
 	 * @return a list that contains the orders with the received status.
+	 * @throws OrderExceptions if the received status is invalid.
 	 */
     @Override
-    public List<Order> getOrdersByStatus(Status status) throws ClientException{
+    public List<Order> getOrdersByStatus(Status status) throws ClientException, OrderExceptions{
+    	if(status != Status.ORDERED && status != Status.DELIVERED && status != Status.CANCELLED) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
+		}
+    	
     	Order order = null;
     	List<Order> ordersWithSpecifiedStatus = new ArrayList<>();
     	
@@ -479,10 +487,12 @@ public class OrderManager implements IOrderManager {
 	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
 	 * @param order_id integer that stores the id of the order whose status we wish to update.
 	 * @param newStatus variable of type Status that store the status we want the order to have.
+	 * @throws OrderExceptions if the received new status is invalid, which produces the setter method of status to throw an OrderException and this method to re-throw it. 
 	 */
     @Override
     public void updateOrderStatus(int order_id, Status newStatus) throws OrderExceptions, ClientException{
     	Order order = getOrderByID(order_id);
+    	//The new status' validity is checked in the setter method of status in Order.
     	order.setStatus(newStatus);
     	
     	String sql = "UPDATE client_order SET status = ? WHERE order_id = ?";

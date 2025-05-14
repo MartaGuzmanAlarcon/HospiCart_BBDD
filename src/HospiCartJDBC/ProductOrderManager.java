@@ -46,7 +46,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	@Override
 	public void insertProductOrder(int product_id, int order_id) throws SQLException{
 		//SQL query
-		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, 1, (SELECT price FROM product WHERE product_id = ?))";
+		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, 1, (SELECT price FROM product WHERE product_id = ?)) ";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -73,7 +73,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	public void deleteProductOrdersByOrderID(int order_id) throws SQLException, OrderExceptions, ClientException{
 		
 		//SQL query
-		String sql = "DELETE * FROM product_order WHERE order_id = ?";
+		String sql = "DELETE * FROM product_order WHERE order_id = ? ";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -104,7 +104,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	public void deleteProductOrderByIDs(int product_id, int order_id) throws SQLException, OrderExceptions, ClientException{
 					
 		//SQL query
-		String sql = "DELETE * FROM product_order WHERE order_id = ? AND product_id = ?";
+		String sql = "DELETE * FROM product_order WHERE order_id = ? AND product_id = ? ";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
@@ -138,7 +138,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	    
     	String sql = "SELECT * "
     			+ "FROM product_order AS po "
-    			+ "WHERE po.order_id = ? AND po.product_id = ?";
+    			+ "WHERE po.order_id = ? AND po.product_id = ? ";
     	
     	try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);
@@ -178,7 +178,7 @@ public class ProductOrderManager implements IProductOrderManager{
     	
     	String sql = "SELECT * "
     			+ "FROM product_order AS po "
-    			+ "WHERE po.order_id = ?";
+    			+ "WHERE po.order_id = ? ";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);
@@ -221,7 +221,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	@Override
 	public double getTotalPriceOfAnOrder(int order_id) {
 		//SQL query
-		String sql = "SELECT SUM(total_price) FROM product_order WHERE order_id = ?";
+		String sql = "SELECT SUM(total_price) FROM product_order WHERE order_id = ? ";
 		//This variable will store the retrieved total price of the order.
 		Double total_price = 0.0d;
 		
@@ -314,7 +314,7 @@ public class ProductOrderManager implements IProductOrderManager{
 		//SQL query
 		String sql = "UPDATE product_order SET amount = ?, total_price = ? "
 				+ "FROM product "
-				+ "WHERE order_id = ? AND product_id = ?";
+				+ "WHERE order_id = ? AND product_id = ? ";
 
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
