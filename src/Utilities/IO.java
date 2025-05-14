@@ -4,14 +4,36 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import HospiCartPOJOs.Client;
+import HospiCartPOJOs.User;
+
 public class IO {
 	
 	 private static final BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+	 
+	 
+	 public static Client gatherClientInfo() throws IOException {
+	        IO.println("Name: ");
+	        String name = IO.readString();
+	        IO.println("Surname: ");
+	        String surname = IO.readString();
+	        IO.println("Phone: ");
+	        Integer phone = IO.readInteger();
+	        IO.println("Address: ");
+	        String address = IO.readString();
+	        IO.println("Email: ");
+	        String email = IO.readString();
 
-	    public static String read(String prompt) {
-	        System.out.print(prompt);
-	        return readString();
+	        return new Client(name, surname, phone, address, email);
 	    }
+
+	    public static User createUser(String email) throws IOException {
+	        IO.println("Password: ");
+	        String password = IO.readString();
+	        String encryptedPassword = Encryption.encryptPasswordMD5(password);
+	        return new User(email, encryptedPassword, email);
+	    }
+	 
 
 	    public static int readInteger() {
 	        int num = 0;

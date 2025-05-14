@@ -3,9 +3,9 @@ package HospiCartApp;
 import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartPOJOs.User;
 
-public class AdminMenu {
+public class SupplierMenu {
 
-	public AdminMenu(ConnectionManagerJDBC conMan, User user) {
+	public SupplierMenu(ConnectionManagerJDBC conMan, User user) {
 		// TODO Auto-generated constructor stub
 	}
 
