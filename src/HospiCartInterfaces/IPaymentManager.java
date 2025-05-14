@@ -23,5 +23,5 @@ public interface IPaymentManager {
 	public void updatePaymentStatus(Integer paymentId, PaymentStatus status) throws Exception;
 	
 	
-	public Payment getPaymentByOrderId(int order_id) throws OrderExceptions, ClientException;
+	public Payment getPaymentByOrderId(int order_id) throws ClientException, OrderExceptions;
 }

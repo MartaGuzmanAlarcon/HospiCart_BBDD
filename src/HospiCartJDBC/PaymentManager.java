@@ -215,17 +215,17 @@ public class PaymentManager implements IPaymentManager {
 	 * @param order_id integer that stores the id of the order whose payment we want to get.
 	 */
 	@Override
-	public Payment getPaymentByOrderId(int order_id) throws OrderExceptions, ClientException{
+	public Payment getPaymentByOrderId(int order_id) throws ClientException, OrderExceptions{
 		Payment payment = null;
 	    //SQL query
     	String sql = "SELECT * "
     			+ "FROM payment "
-    			+ "WHERE order_id = ?";
+    			+ "WHERE order_id = ? ";
     	//I create the statement
     	try (PreparedStatement stmt = manager.getConnection().prepareStatement(sql)){
     		stmt.setInt(1, order_id);
     		
-    		try(var resultSet = stmt.executeQuery()){
+    		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				Order order = manager.getOrderManager().getOrderByID(order_id);
     				//I set the fields of the payment object.
@@ -236,8 +236,9 @@ public class PaymentManager implements IPaymentManager {
     				payment.setPaymentMethod(PaymentMethod.valueOf(resultSet.getString("payment_method")));
     				payment.setPaymentStatus(PaymentStatus.valueOf(resultSet.getString("payment_status")));
     			}
-    			stmt.close();
-    			resultSet.close();
+    			else {
+    				throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_ID);
+    			}
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving the payment: " + e.getMessage());

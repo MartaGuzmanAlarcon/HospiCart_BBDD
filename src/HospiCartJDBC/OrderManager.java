@@ -82,6 +82,7 @@ public class OrderManager implements IOrderManager {
             List<ProductOrder> productOrders = order.getProductOrders();
             for(int i=0; i<productOrders.size(); i++) {
                 ProductOrder productOrder = productOrders.get(i);
+                productOrder.setOrder(order);
             	productOM.insertProductOrder(productOrder);
             }
             // I don't have to close the statement nor the result sets because I used "trys-with resources"
