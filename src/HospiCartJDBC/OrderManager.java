@@ -32,11 +32,13 @@ import Exceptions.OrderExceptions;
 public class OrderManager implements IOrderManager {
     private Connection c;
     private ConnectionManagerJDBC cm;
+    private ProductOrderManager productOM;
 
     //Constructor
     public OrderManager(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
+        productOM = new ProductOrderManager(cm);
     }
 
     /**
@@ -50,9 +52,8 @@ public class OrderManager implements IOrderManager {
        Date orderDate = order.getOrderDate();
        Status status = order.getStatus();
        Client client = order.getClient();
-       Payment payment = order.getPayment();
-       Shipment shipment = order.getShipment();
-       List<ProductOrder> productOrders = order.getProductOrders();
+       //Payment payment = order.getPayment();
+       //Shipment shipment = order.getShipment();
 
        //I insert the order information that I have up to now
        String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?) ";
@@ -77,8 +78,13 @@ public class OrderManager implements IOrderManager {
                     throw new SQLException("Inserting order failed, no ID obtained.");
                 }
             }
-            //TODO I think I have to create the objects or ProductOrder, Shipment and Payment also.
-            //I don't have to close the statement nor the result sets because I used "trys-with resources"
+            
+            List<ProductOrder> productOrders = order.getProductOrders();
+            for(int i=0; i<productOrders.size(); i++) {
+                ProductOrder productOrder = productOrders.get(i);
+            	productOM.insertProductOrder(productOrder);
+            }
+            // I don't have to close the statement nor the result sets because I used "trys-with resources"
             c.commit(); //we do this because we disabled the auto-commit in the connection
         } catch (SQLException e) {
             //We roll back the transaction in case of error.

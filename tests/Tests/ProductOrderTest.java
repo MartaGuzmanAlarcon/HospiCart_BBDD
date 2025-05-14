@@ -12,7 +12,7 @@ import HospiCartPOJOs.ProductOrder;
 
 public class ProductOrderTest {
 	@Test
-	public void insertProductOrderTest(int product_id, int order_id) {
+	public void insertProductOrderTest() {
 		
 	}
 	

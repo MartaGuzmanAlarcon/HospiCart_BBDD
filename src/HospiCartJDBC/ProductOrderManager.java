@@ -40,23 +40,26 @@ public class ProductOrderManager implements IProductOrderManager{
 	/**
 	 * Method that receives a product and an order id by parameter and adds the received product to the order that corresponds with the received order id. i.e: the method creates a new
 	 * product order with the order and product IDs received as parameter.
-	 * @param product_id integer that stores the id of the product that we want to add to an order.
-	 * @param order_id integer that stores the id of the order to which we want to add a product.
+	 * @param productOrder object of the class ProductOrder that store the product order that we want to insert to the database.
 	 */
 	@Override
-	public void insertProductOrder(int product_id, int order_id) throws SQLException{
+	public void insertProductOrder(ProductOrder productOrder) throws SQLException{
+		int product_id = productOrder.getProduct().getProductId();
+		Order order = productOrder.getOrder();
+
 		//SQL query
-		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, 1, (SELECT price FROM product WHERE product_id = ?)) ";
+		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, ?, (SELECT price FROM product WHERE product_id = ?)) ";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
 			removeProductFromStockQuantity(product_id, 1); //I remove the added product from the stock.
 			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
 
-			stmt.setInt(1, order_id);
-			stmt.setInt(2, product_id);
-			stmt.setInt(3, product_id);
-			
+			stmt.setInt(1, order.getOrderId());
+			stmt.setInt(2, productOrder.getProduct().getProductId());
+			stmt.setInt(3, productOrder.getAmount());
+			stmt.setInt(4, productOrder.getProduct().getProductId());
+
 			stmt.executeUpdate();
 		}catch(SQLException e) {
 			System.err.println("Error adding a product order: " + e.getMessage());

@@ -122,6 +122,8 @@ class OrderManagerTest {
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 6.1f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -138,6 +140,7 @@ class OrderManagerTest {
 			
 			//Now, I create the order
 			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersBefore = orderManager.getAllOrders();
 			int countTotalOrdersBefore = ordersBefore.size();
@@ -153,8 +156,11 @@ class OrderManagerTest {
 			shipmentManager.insertShipment(order);
 			payment.setOrder(order);
 			paymentManager.insertPayment(payment);
-			productOrderManager.insertProductOrder(product1.getProductId(), order.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order.getOrderId());
+			
+			productOrder1.setOrder(order);
+			productOrder2.setOrder(order);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
 
 			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
 		    assertEquals(countTotalOrdersBefore + 1, countTotalOrdersAfter);
@@ -193,6 +199,8 @@ class OrderManagerTest {
 				
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -226,8 +234,11 @@ class OrderManagerTest {
 			shipmentManager.insertShipment(order);
 			payment.setOrder(order);
 			paymentManager.insertPayment(payment);
-			productOrderManager.insertProductOrder(product1.getProductId(), order.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order.getOrderId());
+			
+			productOrder1.setOrder(order);
+			productOrder2.setOrder(order);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
 
 			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
 		    assertEquals(countTotalOrdersBefore - 1, countTotalOrdersAfter);
@@ -268,6 +279,8 @@ class OrderManagerTest {
 						
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -292,8 +305,11 @@ class OrderManagerTest {
 			shipmentManager.insertShipment(order);
 			payment.setOrder(order);
 			paymentManager.insertPayment(payment);
-			productOrderManager.insertProductOrder(product1.getProductId(), order.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order.getOrderId());
+			
+			productOrder1.setOrder(order);
+			productOrder2.setOrder(order);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the inserted order and the one obtained through the method "getOrderByID".
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
@@ -404,6 +420,8 @@ class OrderManagerTest {
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -431,8 +449,11 @@ class OrderManagerTest {
 			shipmentManager.insertShipment(order1);
 			payment1.setOrder(order1);
 			paymentManager.insertPayment(payment1);
-			productOrderManager.insertProductOrder(product1.getProductId(), order1.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order1.getOrderId());
+			
+			productOrder1.setOrder(order1);
+			productOrder2.setOrder(order1);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
@@ -472,6 +493,10 @@ class OrderManagerTest {
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		ProductOrder productOrder3 = new ProductOrder(4, 18.6f, product2);
+
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -502,15 +527,21 @@ class OrderManagerTest {
 			shipmentManager.insertShipment(order1);
 			shipmentManager.insertShipment(order2);
 			shipmentManager.insertShipment(order3);
+			
 			payment1.setOrder(order1);
 			payment2.setOrder(order2);
 			payment3.setOrder(order3);
+			
 			paymentManager.insertPayment(payment1);
 			paymentManager.insertPayment(payment2);
 			paymentManager.insertPayment(payment3);
-			productOrderManager.insertProductOrder(product1.getProductId(), order1.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order1.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order3.getOrderId());
+			
+			productOrder1.setOrder(order1);
+			productOrder2.setOrder(order2);
+			productOrder3.setOrder(order3);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
+			productOrderManager.insertProductOrder(productOrder3);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
@@ -571,6 +602,8 @@ class OrderManagerTest {
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -596,8 +629,11 @@ class OrderManagerTest {
 			shipmentManager.insertShipment(order);
 			payment1.setOrder(order);
 			paymentManager.insertPayment(payment1);
-			productOrderManager.insertProductOrder(product1.getProductId(), order.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order.getOrderId());
+			
+			productOrder1.setOrder(order);
+			productOrder2.setOrder(order);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
@@ -637,6 +673,8 @@ class OrderManagerTest {
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -669,8 +707,11 @@ class OrderManagerTest {
 			payment1.setOrder(order1);
 			paymentManager.insertPayment(payment);
 			paymentManager.insertPayment(payment1);
-			productOrderManager.insertProductOrder(product1.getProductId(), order.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order1.getOrderId());
+			
+			productOrder1.setOrder(order1);
+			productOrder2.setOrder(order);
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
@@ -697,7 +738,6 @@ class OrderManagerTest {
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
 			clientManager.insertClient(client1);
-
 
 			int amountOfOrdersMadeInDateRange = 0;
 			
@@ -738,6 +778,12 @@ class OrderManagerTest {
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		ProductOrder productOrder3 = new ProductOrder(2, 18.6f, product2);
+		ProductOrder productOrder = new ProductOrder(9, 18.6f, product1);
+
+
+		productOrder1.setProduct(product1);
+		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -779,10 +825,16 @@ class OrderManagerTest {
 			paymentManager.insertPayment(payment1);
 			paymentManager.insertPayment(payment2);
 			paymentManager.insertPayment(payment3);
-			productOrderManager.insertProductOrder(product1.getProductId(), order.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order1.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order2.getOrderId());
-			productOrderManager.insertProductOrder(product1.getProductId(), order3.getOrderId());
+			
+			productOrder1.setOrder(order1);
+			productOrder2.setOrder(order2);
+			productOrder3.setOrder(order3);
+			productOrder3.setOrder(order);
+
+			productOrderManager.insertProductOrder(productOrder1);
+			productOrderManager.insertProductOrder(productOrder2);
+			productOrderManager.insertProductOrder(productOrder3);
+			productOrderManager.insertProductOrder(productOrder);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMade, realAmountOfOrdersMade);
