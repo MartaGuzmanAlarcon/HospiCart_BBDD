@@ -174,7 +174,7 @@ public class ClientManager implements IClientManager{
 	public Client getClientByID(Integer c_id) throws ClientException{
 		String sql = "SELECT id, name, surname, phone_number, email, address " +
 			      "FROM client WHERE id = ? ";
-
+//TODO: MAKE SURE THAT THIS WORKS!
 		/*
 		 * try (PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, order_id);

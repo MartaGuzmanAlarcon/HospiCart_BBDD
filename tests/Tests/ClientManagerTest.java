@@ -105,7 +105,6 @@ public class ClientManagerTest {
         	
         	// Insert the same client again
         	Client client2 = new Client("Rita", "La Cantaora", 656329185, "ritalacantaora@gmail.com", "Sevilla 88"); 
-        	clientManager.insertClient(client2); // throws ClientException
         	
         	// Check if an exception was thrown 
         	assertThrows( ClientException.class, () -> clientManager.insertClient(client2),
