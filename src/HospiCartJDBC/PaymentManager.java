@@ -250,12 +250,12 @@ public class PaymentManager implements IPaymentManager {
     		
     		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
-    				Order order = manager.getOrderManager().getOrderByID(order_id);
+    				//Order order = manager.getOrderManager().getOrderByID(order_id);
     				//the line above produces a STACK OVERFLOW BECAUSE ORDER HAS ALSO THE MANAGER OF PAYMENT
     				//I set the fields of the payment object.
     				payment = new Payment();
     				payment.setPaymentId(resultSet.getInt("payment_id"));
-    				payment.setOrder(order);
+    				//payment.setOrder(order);
     				payment.setAmount(resultSet.getInt("amount"));
     				payment.setPaymentMethod(PaymentMethod.valueOf(resultSet.getString("payment_method")));
     				payment.setPaymentStatus(PaymentStatus.valueOf(resultSet.getString("payment_status")));

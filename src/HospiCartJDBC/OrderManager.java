@@ -59,8 +59,6 @@ public class OrderManager implements IOrderManager {
        Date orderDate = order.getOrderDate();
        Status status = order.getStatus();
        Client client = order.getClient();
-       Payment payment = order.getPayment();
-       Shipment shipment = order.getShipment();
 
        //I insert the order information that I have up to now
        String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?) ";
@@ -85,6 +83,8 @@ public class OrderManager implements IOrderManager {
                     throw new SQLException("Inserting order failed, no ID obtained.");
                 }
             }
+            Payment payment = order.getPayment();
+            Shipment shipment = order.getShipment();
             
             payment.setOrder(order);
             if(payment.getPaymentId() == null) {
@@ -227,7 +227,9 @@ public class OrderManager implements IOrderManager {
     	} catch(SQLException e) {
     		System.err.println("Error retrieving order: " + e.getMessage());
             e.printStackTrace();
-    	}
+    	} catch(OrderExceptions oe) {
+    		System.out.println("ERROR: " + oe);
+    	} 
         return order;
     }
     
@@ -281,9 +283,11 @@ public class OrderManager implements IOrderManager {
     				ordersOfUser.add(order);
     			}
     		}
-    	}catch(SQLException e) {
+    	} catch(SQLException e) {
     		System.err.println("Error retrieving orders from user: " + e.getMessage());
             e.printStackTrace();
+    	} catch(OrderExceptions oe) {
+    		System.out.println("ERROR: " + oe);
     	}
         return ordersOfUser;
     } // TODO: It would make sense creating a personalized exception if the method getClientByID is able to return null (when a client is not found with the provided user_id).
@@ -305,7 +309,7 @@ public class OrderManager implements IOrderManager {
     	
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
     			+ "FROM client_order AS o "
-    			+ "WHERE o.order_date = ?";
+    			+ "WHERE o.order_date = ? ";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setDate(1, order_date);
@@ -337,9 +341,11 @@ public class OrderManager implements IOrderManager {
     				ordersWithSpecifiedDate.add(order);
     			}
     		}
-    	}catch(SQLException e) {
+    	} catch(SQLException e) {
     		System.err.println("Error retrieving orders purchased on the specified date: " + e.getMessage());
             e.printStackTrace();
+    	} catch(OrderExceptions oe) {
+    		System.out.println("ERROR: " + oe);
     	}
         return ordersWithSpecifiedDate;
     }
@@ -365,7 +371,7 @@ public class OrderManager implements IOrderManager {
     	
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
     			+ "FROM client_order AS o "
-    			+ "WHERE o.order_date BETWEEN ? AND ?";
+    			+ "WHERE o.order_date BETWEEN ? AND ? ";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setDate(1, startDate);
@@ -399,9 +405,11 @@ public class OrderManager implements IOrderManager {
     				ordersWithinDateRange.add(order);
     			}
     		}
-    	}catch(SQLException e) {
+    	} catch(SQLException e) {
     		System.err.println("Error retrieving orders between the specified date range: " + e.getMessage());
             e.printStackTrace();
+    	} catch(OrderExceptions oe) {
+    		System.out.println("ERROR: " + oe);
     	}
         return ordersWithinDateRange;
     }
@@ -450,6 +458,8 @@ public class OrderManager implements IOrderManager {
     	} catch(SQLException e) {
     		System.err.println("Error retrieving orders: " + e.getMessage());
             e.printStackTrace();
+    	} catch(OrderExceptions oe) {
+    		System.out.println("ERROR: " + oe);
     	}
         return orders;
     }
@@ -503,9 +513,11 @@ public class OrderManager implements IOrderManager {
     				ordersWithSpecifiedStatus.add(order);
     			}
     		}
-    	}catch(SQLException e) {
+    	} catch(SQLException e) {
     		System.err.println("Error retrieving orders purchased on the specified date: " + e.getMessage());
             e.printStackTrace();
+    	} catch(OrderExceptions oe) {
+    		System.out.println("ERROR: " + oe);
     	}
         return ordersWithSpecifiedStatus;    
     }

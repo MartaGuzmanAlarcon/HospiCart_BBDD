@@ -136,22 +136,16 @@ public class ProductManager implements IProductManager {
 	public boolean insertProduct(Product product) throws SQLException{
 		Supplier supplier = product.getSupplier();
 		
-		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?) ";
 
 		try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-			
-			/*if(supplier.getSupplierId() == null) {
-				//TODO Call the insert method that inserts the supplier in the database.
-				supplierManager.insertSupplier(supplier);
-			}*/
 			
 			// Set parameters for the SQL query
 			stmt.setInt(1, supplier.getSupplierId()); // Using the supplierId.
 			stmt.setString(2, product.getName());
 			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
 			stmt.setString(4, product.getDescription());
-			stmt.setFloat(5, product.getPrice()); // Assuming price comes from the
-																						// Product object
+			stmt.setFloat(5, product.getPrice()); // Assuming price comes from the																		// Product object
 			stmt.setInt(6, product.getStockQuantity());
 			stmt.setBoolean(7, product.getNeedPrescription());
 
