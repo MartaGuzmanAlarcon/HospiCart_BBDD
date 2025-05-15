@@ -1,6 +1,8 @@
 package Exceptions;
 
 public class ClientException extends Exception {
+	private static final long serialVersionUID = 1L;
+
 	// Define the values that an error can adopt 
 	public enum ErrorTypeClient{
 		INVALID_CLIENT_ID, INVALID_CLIENT_EMAIL, CLIENT_ALREADY_EXISTS;

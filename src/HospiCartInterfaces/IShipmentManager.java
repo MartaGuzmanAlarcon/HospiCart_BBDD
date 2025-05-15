@@ -64,11 +64,4 @@ public interface IShipmentManager {
 	 * @return a list with objects of "Shipment"
 	 */
 	List<Shipment> getAllShipments() throws OrderExceptions, ClientException;
-	
-	/**
-	 * Method that receives an object of shipments and sets the order to null. This method is useful for when we delete shipments 
-	 * and we want to set the order associated to the deleted shipments to null.
-	 * @param shipment object of the class "Shipment".
-	 */
-	void setOrderToNull(Shipment shipment);
 }

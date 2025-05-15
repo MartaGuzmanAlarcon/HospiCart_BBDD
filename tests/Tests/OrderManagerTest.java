@@ -2,7 +2,6 @@ package Tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -21,10 +20,7 @@ import Exceptions.OrderExceptions;
 import HospiCartJDBC.ClientManager;
 import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManager;
-import HospiCartJDBC.PaymentManager;
 import HospiCartJDBC.ProductManager;
-import HospiCartJDBC.ProductOrderManager;
-import HospiCartJDBC.ShipmentManager;
 import HospiCartJDBC.SupplierManager;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
@@ -42,13 +38,11 @@ class OrderManagerTest {
 	//I define global variables that are going to be needed in several tests
 	
 		 private static ConnectionManagerJDBC connectionManager;
-		 private static PaymentManager paymentManager;
-		 private static ShipmentManager shipmentManager;
-		 private static ProductOrderManager productOrderManager;
-		 private static ProductManager productManager;
 		 private static ClientManager clientManager;
 		 private static OrderManager orderManager;
 		 private static SupplierManager supplierManager;
+		 private static ProductManager productManager;
+
 	    
 	    @BeforeAll 
 	    static void initAll() throws Exception {
@@ -59,12 +53,8 @@ class OrderManagerTest {
 	        connectionManager = new ConnectionManagerJDBC();
 	        orderManager = new OrderManager(connectionManager);
 	        clientManager = new ClientManager(connectionManager);
-	        paymentManager = new PaymentManager(connectionManager);
-	        shipmentManager = new ShipmentManager(connectionManager);
-	        productOrderManager = new ProductOrderManager(connectionManager);
-	        productManager = new ProductManager(connectionManager);
 	        supplierManager = new SupplierManager(connectionManager);
-	        
+	        productManager = new ProductManager(connectionManager);
 	    }
 
 	    @BeforeEach
@@ -93,8 +83,6 @@ class OrderManagerTest {
 	        // Tear down shared resources (e.g. close the database connection)
 	        connectionManager.disconnect();
 	    }
-	    //TODO: delete the methods of the end.
-	    //TODO: think about the exceptions and only use the ones we need.
 	
 	@Test
 	/**
@@ -231,7 +219,6 @@ class OrderManagerTest {
 	}
 	
 	@Test
-	//TODO: SEE WHY THIS TEST IS NOT ALWAYS EXCECUTED WHEN I RUN THIS TEST CLASS !!
 	/**
 	 * Test that checks if the method "getOrderByID" works as desired. First, I create a client, I check if  have to insert him/her into the database
 	 * and then I use the created client to create an order. I use a method that retrieves the orders that a client made and make the comparison between the 
@@ -252,12 +239,12 @@ class OrderManagerTest {
 		products.add(product2);
 				
 		//I create the supplier.
-		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(1, products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 				
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
-		productOrder1.setProduct(product1);
-		productOrder2.setProduct(product2);
+		//productOrder1.setProduct(product1);
+		//productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -275,6 +262,12 @@ class OrderManagerTest {
 			//I create the order with the respective method from OrderManager and pass the complete client as parameter
 			orderManager.insertOrder(order);
 			
+			for(int i = 0; i<productOrders.size(); i++) {
+				ProductOrder productOrder = productOrders.get(i);
+				Product product = productOrder.getProduct();
+				product.setStockQuantity(product.getStockQuantity() - productOrder.getAmount());
+			}
+			
 			Order retrievedOrder = orderManager.getOrderByID(order.getOrderId());
 			
 			//I compare the inserted order and the one obtained through the method "getOrderByID".
@@ -287,11 +280,10 @@ class OrderManagerTest {
 			System.out.println("ERROR: " + oe);
 		} catch(ClientException ce) {
 			System.out.println("ERROR: " + ce);
-		} catch (Exception e) { //SEE IF WE NEED THIS CATCH
+		} catch (Exception e) { //TODO SEE IF WE NEED THIS CATCH
 			e.printStackTrace();
 		}
 	}
-	//TODO: THIS TEST DOES NOT WORK, I DON'T KNOW WHY
 	@Test
 	void getOrderByUserTest() {
 		Client client = new Client("Bobby", "Brown", 343367865, "bobby@gmail.com", "Calle de Ambar 40");
@@ -334,13 +326,17 @@ class OrderManagerTest {
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			orderManager.insertOrder(order1);
 			orderManager.insertOrder(order2);
+			List<Order> insertedOrders = new ArrayList<Order>();
+			insertedOrders.add(order1);
+			insertedOrders.add(order2);
+			
 			int amountOfOrdersOfUser = 2;
 			
 			List<Order> orders = orderManager.getOrdersByUser(client.getUserId());
 			int realAmountOfOrdersOfUser = orders.size();
 						
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
-			assertEquals(amountOfOrdersOfUser, realAmountOfOrdersOfUser);
+			assertEquals(insertedOrders, orders);
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
@@ -352,7 +348,6 @@ class OrderManagerTest {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	@Test
 	/**
@@ -377,8 +372,7 @@ class OrderManagerTest {
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
-		productOrder1.setProduct(product1);
-		productOrder2.setProduct(product2);
+
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -431,25 +425,27 @@ class OrderManagerTest {
 		Shipment shipment3 = new Shipment(427457);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
+		Product product3 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
+
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
 		products.add(product1);
 		products.add(product2);
+		products.add(product3);
 								
 		//I create the supplier.
 		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 								
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
-		ProductOrder productOrder3 = new ProductOrder(4, 18.6f, product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
+		ProductOrder productOrder3 = new ProductOrder(4, 200.0f, product3);
 
-		productOrder1.setProduct(product1);
-		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);
+		productOrders.add(productOrder3);
 		
 		try {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
@@ -528,10 +524,9 @@ class OrderManagerTest {
 		//I create the supplier.
 		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 								
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
-		productOrder1.setProduct(product1);
-		productOrder2.setProduct(product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
+
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -540,9 +535,7 @@ class OrderManagerTest {
 		try {
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment);
+			supplierManager.insertSupplier(supplier);
 			
 			Order order = new Order(client, payment1, shipment, productOrders);
 
@@ -553,15 +546,6 @@ class OrderManagerTest {
 			
 			List<Order> orders = orderManager.getOrdersWithinDateRange(Date.valueOf(LocalDate.of(2025, 05, 11)), Date.valueOf(LocalDate.now()));
 			int realAmountOfOrdersMadeInDateRange = orders.size();
-				
-			//I insert the payment and product orders after the order has been created because it is dependent on the order
-			payment1.setOrder(order);
-			paymentManager.insertPayment(payment1);
-			
-			productOrder1.setOrder(order);
-			productOrder2.setOrder(order);
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
@@ -589,8 +573,8 @@ class OrderManagerTest {
 		Payment payment1 = new Payment(3, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		Shipment shipment = new Shipment(127457);
 		Shipment shipment1 = new Shipment(137457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -598,12 +582,11 @@ class OrderManagerTest {
 		products.add(product2);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(1, products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 								
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
-		productOrder1.setProduct(product1);
-		productOrder2.setProduct(product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
+
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
@@ -613,13 +596,10 @@ class OrderManagerTest {
 			//I insert the clients in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
 			clientManager.insertClient(client1);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment);
-			shipmentManager.insertShipment(shipment1);
+			supplierManager.insertSupplier(supplier);
 
 			Order order = new Order(client, payment, shipment, productOrders);
-			Order order1 = new Order(client, payment1, shipment, productOrders);
+			Order order1 = new Order(client, payment1, shipment1, productOrders);
 
 
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
@@ -630,17 +610,6 @@ class OrderManagerTest {
 			
 			List<Order> orders = orderManager.getOrdersWithinDateRange(Date.valueOf(LocalDate.of(2025, 05, 11)), Date.valueOf(LocalDate.now()));
 			int realAmountOfOrdersMadeInDateRange = orders.size();
-					
-			//I insert payment and product orders after the order has been created because it is dependent on the order
-			payment.setOrder(order);
-			payment1.setOrder(order1);
-			paymentManager.insertPayment(payment);
-			paymentManager.insertPayment(payment1);
-			
-			productOrder1.setOrder(order1);
-			productOrder2.setOrder(order);
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeInDateRange, realAmountOfOrdersMadeInDateRange);
@@ -697,46 +666,44 @@ class OrderManagerTest {
 		Shipment shipment2 = new Shipment(127757);
 		Shipment shipment3 = new Shipment(123457);
 		Shipment shipment1 = new Shipment(127557);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Product product = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
+		Product product3 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
+
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
+		products.add(product);
 		products.add(product1);
 		products.add(product2);
+		products.add(product3);
 								
 		//I create the supplier.
 		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 								
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
-		ProductOrder productOrder3 = new ProductOrder(2, 18.6f, product2);
-		ProductOrder productOrder = new ProductOrder(9, 18.6f, product1);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
+		ProductOrder productOrder3 = new ProductOrder(4, 200.0f, product3);
+		ProductOrder productOrder = new ProductOrder(9, 18.6f, product);
 
-
-		productOrder1.setProduct(product1);
-		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);
-	
+		productOrders.add(productOrder3);
+		productOrders.add(productOrder);
 		
 		try {
 			//I insert the clients in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
 			clientManager.insertClient(client1);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment);
-			shipmentManager.insertShipment(shipment1);
-			shipmentManager.insertShipment(shipment2);
-			shipmentManager.insertShipment(shipment3);
+			supplierManager.insertSupplier(supplier);
 
 			Order order = new Order(client, payment, shipment, productOrders);
-			Order order1 = new Order(client, payment1, shipment, productOrders);
-			Order order2 = new Order(client, payment2, shipment, productOrders);
-			Order order3 = new Order(client, payment3, shipment, productOrders);
+			Order order1 = new Order(client, payment1, shipment1, productOrders);
+			Order order2 = new Order(client, payment2, shipment2, productOrders);
+			Order order3 = new Order(client, payment3, shipment3, productOrders);
 
 			orderManager.insertOrder(order);
 			orderManager.insertOrder(order1);
@@ -747,26 +714,6 @@ class OrderManagerTest {
 			
 			List<Order> orders = orderManager.getAllOrders();
 			int realAmountOfOrdersMade = orders.size();
-			
-			//I insert the payment and product orders after the order has been created because it is dependent on the order
-			payment.setOrder(order);
-			payment1.setOrder(order1);
-			payment2.setOrder(order2);
-			payment3.setOrder(order3);
-			paymentManager.insertPayment(payment);
-			paymentManager.insertPayment(payment1);
-			paymentManager.insertPayment(payment2);
-			paymentManager.insertPayment(payment3);
-			
-			productOrder1.setOrder(order1);
-			productOrder2.setOrder(order2);
-			productOrder3.setOrder(order3);
-			productOrder3.setOrder(order);
-
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
-			productOrderManager.insertProductOrder(productOrder3);
-			productOrderManager.insertProductOrder(productOrder);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMade, realAmountOfOrdersMade);
@@ -780,47 +727,4 @@ class OrderManagerTest {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	//@Test
-		/**
-		 * Test that checks if the method "getOrderByID" works as desired. First, I use a method that retrieves all the orders stored in the database 
-		 * and try the "getOrderByI" method passing an invalid ID to it (I pass as parameter the ID of the last order stored in the database plus 5, for instance)
-		 */
-		/*void getOrderByInvalidIDTest() {
-			try {
-				List<Order> orders = om.getAllOrders();
-				//I get the amount of orders stored in the database.
-				int amountOfOrders = orders.size()-1;
-				// I call the method I want to check and pass as parameter an invalid order ID (an ID that is not assigned to any order)
-				assertThrows(OrderExceptions.class, () ->{om.getOrderByID(amountOfOrders+5);});
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}*/
-		//TODO: THIS TEST DOES NOT WORK!! SEE HOW I CAN CORRECT IT!
-	
-	 /*
-	  * /*
-	 * @Test
-	/**
-	 * Test that checks the method "createOrder" of "OrderManager" when the client passed as parameter to the method is null.
-	 */
-	//TODO CORRECT THIS TEST --> ADD EXCPTIONS IN  THE CONSTRUCTOR!! -->THIS TEST SHOULD GO IN "OrderTest"
-	/*void insertOrderWithNullClientTest(){
-		//I create a client and set it to null.
-		Client expectedClient = null;
-		
-		
-		try {
-			//I call the method I want to check and pass the null client as parameter. I expect the method to throw an exception and check if it really does by using the "assertThrows".
-			//assertThrows(OrderExceptions.class, () ->{orderManager.insertOrder(expectedClient);});
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-	}
-	  */
 }

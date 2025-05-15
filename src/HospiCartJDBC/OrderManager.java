@@ -33,7 +33,6 @@ public class OrderManager implements IOrderManager {
     private Connection c;
     private ConnectionManagerJDBC cm;
     private ProductOrderManager productOM;
-    private ProductManager productM;
     private ShipmentManager shipmentManager;
     private PaymentManager paymentManager;
 
@@ -43,7 +42,6 @@ public class OrderManager implements IOrderManager {
         this.cm = cm;
         this.c = cm.getConnection();
         productOM = new ProductOrderManager(cm);
-        productM = new ProductManager(cm);
         shipmentManager = new ShipmentManager(cm);
         paymentManager = new PaymentManager(cm);
     }
@@ -252,7 +250,7 @@ public class OrderManager implements IOrderManager {
     	
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
     			+ "FROM client_order AS o "
-    			+ "WHERE o.user_id = ?"; //TODO CHANGE THE QUERY
+    			+ "WHERE o.user_id = ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, user_id);

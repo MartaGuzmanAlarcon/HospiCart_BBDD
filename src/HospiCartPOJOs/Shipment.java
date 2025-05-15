@@ -44,11 +44,10 @@ public class Shipment implements Serializable {
 	 * Overloaded constructor that calls the method that generates a tracking number. This constructor will only be used when we want to create a new order.
 	 * @param order object of Order.
 	 */
-	//TODO: SEE IF I NEED THIS CONSTRUCTOR AND THE METHOD THAT GENERATES A UNIQUE TRACKING NUMBER
 	public Shipment(Order order) {
 		super();
 		this.order = order;
-		this.trackingNumber = generateUniqueTrackingNumber();
+		this.trackingNumber = generateUniqueTrackingNumber(order.getOrderId());
 	}
 	
 	
@@ -79,12 +78,11 @@ public class Shipment implements Serializable {
 	
 	/**
 	 * Method that generates a unique tracking number for every shipment object that is created.
+	 * @param order_id integer that stores the order ID of the order of the shipment, which is used to create the unique tracking number of the order.
 	 * @return a 10 character long string that is composed solely of numbers.
 	 */
-	private Integer generateUniqueTrackingNumber() {
-		//The number is 10 characters long because is the limit for Integer variables (the tracking_number is an Integer in the database)
-		//String tracking_number = String.format("%010d", shipments_counter);
-		Integer tracking_number = shipments_counter++;
+	private Integer generateUniqueTrackingNumber(int order_id) {
+		Integer tracking_number = 100000 + order_id;
 		return tracking_number;
 		
 		/* TODO
@@ -93,7 +91,6 @@ public class Shipment implements Serializable {
 		 * i.e. we would only be able to create 2,147,483,647 shipments (only 10 digits max) --> ASK RODRIGO IF WE CAN USE THIS ANYWAY, UNDERSTANDING ITS LIMITATIONS.
 		 */
 	}
-	//TODO OVERLOAD CONSTRUCTORS??? one should call the other?
 
 	// hashCode and equals
 	@Override

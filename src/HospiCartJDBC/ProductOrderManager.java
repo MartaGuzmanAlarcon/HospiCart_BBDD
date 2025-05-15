@@ -46,21 +46,21 @@ public class ProductOrderManager implements IProductOrderManager{
 	@Override
 	public void insertProductOrder(ProductOrder productOrder) throws SQLException{
 		Product product = productOrder.getProduct();
-		int product_id = product.getProductId();
+		//int product_id = product.getProductId();
 		float product_price = product.getPrice();
 		Order order = productOrder.getOrder();
 		float total_price = product_price * productOrder.getAmount();
 		
-		if(product.getProductId() == null) {
+		/*if(product.getProductId() == null) {
 			pm.insertProduct(product);
-		}
+		}*/
 
 		//SQL query
 		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, ?, ?) ";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
-			removeProductFromStockQuantity(product_id, productOrder.getAmount()); //I remove the added product from the stock.
+			removeProductFromStockQuantity(productOrder.getProduct().getProductId(), productOrder.getAmount()); //I remove the added product from the stock.
 			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
 
 			stmt.setInt(1, order.getOrderId());

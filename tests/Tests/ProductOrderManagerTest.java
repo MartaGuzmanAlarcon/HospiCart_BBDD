@@ -10,7 +10,7 @@ import Exceptions.OrderExceptions;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.ProductOrder;
 
-public class ProductOrderTest {
+public class ProductOrderManagerTest {
 	@Test
 	public void insertProductOrderTest() {
 		

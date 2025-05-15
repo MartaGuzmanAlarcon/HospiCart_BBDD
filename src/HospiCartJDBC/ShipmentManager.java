@@ -77,7 +77,7 @@ public class ShipmentManager implements IShipmentManager{
 	            throw new RuntimeException("Error creating shipment: " + e.getMessage(), e);
 	        }
 	}*/
-	public void insertShipment(Shipment shipment) throws SQLException { //TODO: CHANGE THIS SO IT RECEIVES THE SHIPMENT?
+	public void insertShipment(Shipment shipment) throws SQLException {
 			Order order = shipment.getOrder();
 	       
 	       //I insert the order information that I have up to now
@@ -101,6 +101,7 @@ public class ShipmentManager implements IShipmentManager{
 	                    throw new SQLException("Creating shipment failed, no ID obtained.");
 	                }
 	            }
+	            System.out.println("\nThe shipment with ID " + shipment.getShipmentId() + " was properly inserted in the database.");
 	            c.commit(); //we do this because we disabled the auto-commit in the connection
 	        } catch (SQLException e) {
 	            //We "rollback" the transaction in case of error.
@@ -120,9 +121,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @param shipment_id integer that stores the id of the shipment we want to delete.
 	 */
 	@Override
-	public void deleteShipmentByID(int shipment_id) throws OrderExceptions, ClientException{
-		Shipment shipment = getShipmentByID(shipment_id);
-		
+	public void deleteShipmentByID(int shipment_id) throws OrderExceptions, ClientException{		
 		/*We delete the shipment from the table shipment of the database. However, it is worth saying that we do not delete the order associated to the shipment
 		because we think that in some scenarios it may be possible wanting to delete a shipment and assigning a new one to the order.
 		*/
@@ -136,10 +135,9 @@ public class ShipmentManager implements IShipmentManager{
     		
     		//We check whether a line was or not affected (is yes, then the order was removed)
     		if (rowsAffected == 0) {
-                System.out.println("No shipment found with ID: " + shipment_id);
+                System.out.println("\nNo shipment found with ID: " + shipment_id);
             } else {
-                System.out.println("Shipment with ID " + shipment_id + " deleted successfully.");
-                setOrderToNull(shipment);
+                System.out.println("\nShipment with ID " + shipment_id + " deleted successfully.");
             }
             c.commit(); //we commit the transaction
     		
@@ -147,7 +145,7 @@ public class ShipmentManager implements IShipmentManager{
             try {
                 c.rollback(); // Roll back on failure
             } catch (SQLException rollbackEx) {
-                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+                System.err.println("\nRollback failed: " + rollbackEx.getMessage());
             }
             throw new RuntimeException("Error deleting shipment: " + e.getMessage(), e);
         }
@@ -158,9 +156,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @param tracking_number integer that stores the tracking number of the shipment we want to delete.
 	 */
 	@Override
-	public void deleteShipmentByTrackingNumber(int tracking_number) throws OrderExceptions, ClientException{
-		Shipment shipment = getShipmentByTrackingNumber(tracking_number);
-		
+	public void deleteShipmentByTrackingNumber(int tracking_number) throws OrderExceptions, ClientException{		
 		/*We delete the shipment from the table shipment of the database. However, it is worth saying that we do not delete the order associated to the shipment
 		because we think that in some scenarios it may be possible wanting to delete a shipment and assigning a new one to the order.
 		*/
@@ -176,8 +172,7 @@ public class ShipmentManager implements IShipmentManager{
     		if (rowsAffected == 0) {
                 System.out.println("No shipment found with tracking number: " + tracking_number);
             } else {
-                System.out.println("Shipment with tracking number " + tracking_number + " deleted successfully.");
-                setOrderToNull(shipment);
+                System.out.println("\nShipment with tracking number " + tracking_number + " deleted successfully.");
             }
             c.commit(); //we commit the transaction
     		
@@ -196,9 +191,7 @@ public class ShipmentManager implements IShipmentManager{
 	 * @param order_id integer that stores the order id of the shipment we want to delete.
 	 */
 	@Override
-	public void deleteShipmentByOrderID(int order_id) throws OrderExceptions, ClientException{
-		Shipment shipment = getShipmentByOrderID(order_id);
-		
+	public void deleteShipmentByOrderID(int order_id) throws OrderExceptions, ClientException{		
 		/*We delete the shipment from the table shipment of the database. However, it is worth saying that we do not delete the order associated to the shipment
 		because we think that in some scenarios it may be possible wanting to delete a shipment and assigning a new one to the order.
 		*/
@@ -215,7 +208,6 @@ public class ShipmentManager implements IShipmentManager{
                 System.out.println("No shipment found with order ID : " + order_id);
             } else {
                 System.out.println("Shipment with order ID " + order_id + " deleted successfully.");
-                setOrderToNull(shipment);
             }
             c.commit(); //we commit the transaction
     		
@@ -366,38 +358,4 @@ public class ShipmentManager implements IShipmentManager{
     	}
         return shipments;
 	}
-	
-	//TODO: SEE IF WE NEED THIS METHOD !!!
-		/**
-		 * Method that receives an object of shipments and sets the order to null. This method is useful for when we delete shipments 
-		 * and we want to set the order associated to the deleted shipments to null.
-		 * @param shipment object of the class "Shipment".
-		 */
-		@Override
-		public 	void setOrderToNull(Shipment shipment) {
-			shipment.setOrder(null);
-	    	//TODO see what I do with this method
-			//NOT NECESSARY IF WE CHANGE THE TABLE OF THE DB
-	    	/*String sql = "UPDATE shipment SET order_id = ? WHERE shipment_id = ?";
-	    	
-	    	try(PreparedStatement stmt = c.prepareStatement(sql)){
-	    		//stmt.setInt(1, ); TODO what should I put here? because I cannot set the order_id to null!!!
-	    		stmt.setInt(2, shipment.getShipmentId());
-	    		
-	    		int rowsUpdated = stmt.executeUpdate();
-	    		if (rowsUpdated == 0) {
-	                System.out.println("No order found associated with the provided shipment.");
-	            } else {
-	                System.out.println("The shipment was properly updated.");
-	            }
-	    		c.commit();
-	    	} catch (SQLException e) {
-	            try {
-	                c.rollback();  // Roll back in case of error
-	            } catch (SQLException rollbackEx) {
-	                System.err.println("Rollback failed: " + rollbackEx.getMessage());
-	            }
-	            throw new RuntimeException("Error updating the shipment: " + e.getMessage(), e);
-	        }*/
-		}
 }

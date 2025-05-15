@@ -24,7 +24,6 @@ public class ProductManager implements IProductManager {
 
 	private Connection c;
 	private ConnectionManagerJDBC cm;
-	//private SupplierManager supplierManager;
 
 	// Threshold limits per category, used for stock control
 	public static final int LIMIT_MEDICATION = 20;
@@ -45,10 +44,8 @@ public class ProductManager implements IProductManager {
 	 *           connection.
 	 */
 	public ProductManager(ConnectionManagerJDBC cm) {
-
 		this.cm = cm;
 		this.c = cm.getConnection();
-		//this.supplierManager = new SupplierManager(cm);
 	}
 
 	/**
@@ -481,13 +478,14 @@ public class ProductManager implements IProductManager {
 			return false;
 		}
 
-		int upDateStock = product.getStockQuantity() - quantity;
+		int updatedStock = product.getStockQuantity() - quantity;
 		//TODO: CHECK IF WE WANT TO PRINT THIS UPDATE STOCK MESSAGE
-		System.out.println("upDateStock " + upDateStock + "\n");
-		product.setStockQuantity(upDateStock);
+		System.out.println("upDateStock " + updatedStock + "\n");
+		product.setStockQuantity(updatedStock);
 
-		if (updateProductStockInDB(productId, upDateStock)) {
+		if (updateProductStockInDB(productId, updatedStock)) {
 			c.commit();
+			product.setStockQuantity(updatedStock);
 			checkLowStockAlert(product);
 			return true;
 		}
@@ -517,6 +515,7 @@ public class ProductManager implements IProductManager {
 		try {
 			if (updateProductStockInDB(productId, updatedStock)) {
 				c.commit(); // Solo commit
+				product.setStockQuantity(updatedStock);
 				System.out.println("Stock increased successfully.");
 				return true;
 			}
@@ -541,6 +540,7 @@ public class ProductManager implements IProductManager {
 			stmt.setInt(1, newStock);
 			stmt.setInt(2, productId);
 			int rowsAffected = stmt.executeUpdate();
+			stmt.close();
 			return rowsAffected > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
