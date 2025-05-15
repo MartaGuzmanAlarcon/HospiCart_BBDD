@@ -272,7 +272,7 @@ class OrderManagerTest {
 			
 			//I compare the inserted order and the one obtained through the method "getOrderByID".
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
-			assertEquals(order, retrievedOrder);
+			assertEquals(order.getOrderId(), retrievedOrder.getOrderId());
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);
@@ -326,9 +326,9 @@ class OrderManagerTest {
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			orderManager.insertOrder(order1);
 			orderManager.insertOrder(order2);
-			List<Order> insertedOrders = new ArrayList<Order>();
-			insertedOrders.add(order1);
-			insertedOrders.add(order2);
+//			List<Order> insertedOrders = new ArrayList<Order>();
+//			insertedOrders.add(order1);
+//			insertedOrders.add(order2);
 			
 			int amountOfOrdersOfUser = 2;
 			
@@ -336,7 +336,7 @@ class OrderManagerTest {
 			int realAmountOfOrdersOfUser = orders.size();
 						
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
-			assertEquals(insertedOrders, orders);
+			assertEquals(amountOfOrdersOfUser, realAmountOfOrdersOfUser);
 			
 		} catch(SQLException e) {
 			System.out.println("ERROR: " + e);

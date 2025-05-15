@@ -216,12 +216,12 @@ public class Order implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+			return true;}
+		if (obj == null) {
+			return false;}
+		if (getClass() != obj.getClass()) {
+			return false;}
 		Order other = (Order) obj;
 		return orderId == other.orderId;
 	}
