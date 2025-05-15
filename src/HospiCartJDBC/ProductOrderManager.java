@@ -206,9 +206,9 @@ public class ProductOrderManager implements IProductOrderManager{
     				productOrder.setTotal_price(resultSet.getFloat("total_price"));
     				
     				// Get the full Order object from OrderManager
-    				Order order = cm.getOrderManager().getOrderByID(order_id);
-    				productOrder.setOrder(order);
-    				
+    				//Order order = cm.getOrderManager().getOrderByID(order_id);
+    				///productOrder.setOrder(order);
+    				//TODO THE LINES ABOVE GENERATE STACK OVERFLOW
     				int product_id = resultSet.getInt("product_id");
     				Product product = cm.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);

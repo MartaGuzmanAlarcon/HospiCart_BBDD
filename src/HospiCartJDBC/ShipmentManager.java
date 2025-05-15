@@ -316,12 +316,12 @@ public class ShipmentManager implements IShipmentManager{
     		
     		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
-    				Order order = cm.getOrderManager().getOrderByID(order_id);
-    				
+    				//Order order = cm.getOrderManager().getOrderByID(order_id);
+    				//TODO THE COMMENTED LINES GENERATE STACK OVERFLOW IN THE TESTS OF ORDER MANAGER BECAUSE ORDER ALSO HAS A SHIPMENT MANAGER
     				shipment = new Shipment();
     				shipment.setShipmentId(resultSet.getInt("shipment_id"));
     				shipment.setTrackingNumber(resultSet.getInt("tracking_number"));
-    				shipment.setOrder(order);
+    				//shipment.setOrder(order);
     			}
     		}
     	} catch(SQLException e) {
