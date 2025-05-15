@@ -30,8 +30,8 @@ public class OrderTest {
 		//I create a payment, a shipment and 2 products.
 		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		Shipment shipment = new Shipment(123456);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", new BigDecimal("2.1"), 300, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", new BigDecimal("3.1"), 200, false);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", 3.1f, 200, false);
 				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -59,8 +59,8 @@ public class OrderTest {
 		//I create a payment, a shipment and 2 products.
 		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		Shipment shipment = new Shipment(123456);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", new BigDecimal("2.1"), 300, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", new BigDecimal("3.1"), 200, false);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", 3.1f, 200, false);
 				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -89,8 +89,8 @@ public class OrderTest {
 		//I create a payment with a payment ID so that the payment is valid to create the order.
 		Payment payment = new Payment(1, 5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		Shipment shipment = new Shipment(123456);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", new BigDecimal("2.1"), 300, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", new BigDecimal("3.1"), 200, false);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks",3.1f, 200, false);
 				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -120,8 +120,8 @@ public class OrderTest {
 		Payment payment = new Payment(1, 5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		//I create a shipment with a shipment ID so that the shipment is valid to create the order.
 		Shipment shipment = new Shipment(1, 123456);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", new BigDecimal("2.1"), 300, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", new BigDecimal("3.1"), 200, false);
+		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
+		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", 3.1f, 200, false);
 				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -151,8 +151,8 @@ public class OrderTest {
 		Payment payment = new Payment(1, 5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		//I create a shipment with a shipment ID so that the shipment is valid to create the order.
 		Shipment shipment = new Shipment(1, 123456);
-		Product product1 = new Product(1, "Gloves", Category.DISPOSABLES, "Latex pink gloves", new BigDecimal("2.1"), 300, false);
-		Product product2 = new Product(2, "Masks", Category.DISPOSABLES, "Blue Masks", new BigDecimal("3.1"), 200, false);
+		Product product1 = new Product(1, "Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
+		Product product2 = new Product(2, "Masks", Category.DISPOSABLES, "Blue Masks", 3.1f, 200, false);
 				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();

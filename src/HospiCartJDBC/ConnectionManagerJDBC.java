@@ -94,7 +94,7 @@ public class ConnectionManagerJDBC {
 							order_id INTEGER REFERENCES client_order(order_id) ON DELETE SET NULL,
 							product_id INTEGER REFERENCES product(product_id) ON DELETE SET NULL,
 							amount INTEGER NOT NULL,
-							total_price INTEGER NOT NULL,
+							total_price NUMERIC(10, 2),
 							PRIMARY KEY (order_id, product_id)
 						);
 						""",

@@ -36,12 +36,49 @@ public class ShipmentManager implements IShipmentManager{
 	 * @return the created shipment.
 	 */
 	@Override
-	public void insertShipment(Order order) throws SQLException {
+	/*public void insertShipment(Order order) throws SQLException { //TODO: CHANGE THIS SO IT RECEIVES THE SHIPMENT?
 
 		Shipment shipment = new Shipment(order); //I create the Order object
 
 	       //I initialize the order of the shipment to the received one.
 	       shipment.setOrder(order);
+	       
+	       //I insert the order information that I have up to now
+	       String sql = "INSERT INTO shipment (order_id, tracking_number) VALUES (?, ?)";
+
+	       //I create the shipment record and fetch the generated keys (the id of the shipment)
+	        try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+	            stmt.setInt(1, order.getOrderId());
+	            stmt.setInt(2, shipment.getTrackingNumber());
+
+	            int affectedRows = stmt.executeUpdate();
+	            if(affectedRows == 0) {
+	                throw new SQLException("Creating shipment failed, no rows affected.");
+	            }
+
+	            //Now, I get the generated shipment id
+	            try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+	                if (generatedKeys.next()) {
+	                    shipment.setShipmentId(generatedKeys.getInt(1));
+	                } else {
+	                    throw new SQLException("Creating shipment failed, no ID obtained.");
+	                }
+	            }
+	            c.commit(); //we do this because we disabled the auto-commit in the connection
+	        } catch (SQLException e) {
+	            //We "rollback" the transaction in case of error.
+	            if(c != null){ //We make sure that c is not null as an error would be thrown when trying to roll back over a null object
+	                try{
+	                    c.rollback();
+	                } catch(SQLException ex){
+	                    throw new SQLException("Error during rollback: " + ex.getMessage(), ex);
+	                }
+	            }
+	            throw new RuntimeException("Error creating shipment: " + e.getMessage(), e);
+	        }
+	}*/
+	public void insertShipment(Shipment shipment) throws SQLException { //TODO: CHANGE THIS SO IT RECEIVES THE SHIPMENT?
+			Order order = shipment.getOrder();
 	       
 	       //I insert the order information that I have up to now
 	       String sql = "INSERT INTO shipment (order_id, tracking_number) VALUES (?, ?)";

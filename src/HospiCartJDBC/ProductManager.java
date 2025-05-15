@@ -24,6 +24,7 @@ public class ProductManager implements IProductManager {
 
 	private Connection c;
 	private ConnectionManagerJDBC cm;
+	//private SupplierManager supplierManager;
 
 	// Threshold limits per category, used for stock control
 	public static final int LIMIT_MEDICATION = 20;
@@ -47,6 +48,7 @@ public class ProductManager implements IProductManager {
 
 		this.cm = cm;
 		this.c = cm.getConnection();
+		//this.supplierManager = new SupplierManager(cm);
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class ProductManager implements IProductManager {
 	 * @return true if product was added, false otherwise.
 	 */
 	@Override
-	public boolean insertProduct(int supplierId, Product product) throws SQLException{
+	/*public boolean insertProduct(int supplierId, Product product) throws SQLException{
 		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 		try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -108,7 +110,7 @@ public class ProductManager implements IProductManager {
 			stmt.setString(2, product.getName());
 			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
 			stmt.setString(4, product.getDescription());
-			stmt.setBigDecimal(5, Utilities.truncateBigDecimal(product.getPrice(), 2)); // Assuming price comes from the
+			stmt.setFloat(5, product.getPrice()); // Assuming price comes from the
 																						// Product object
 			stmt.setInt(6, product.getStockQuantity());
 			stmt.setBoolean(7, product.getNeedPrescription());
@@ -122,7 +124,46 @@ public class ProductManager implements IProductManager {
 	                } else {
 	                    throw new SQLException("Inserting product failed, no ID obtained.");
 	                }
-				System.out.println(rowsAffected);
+				c.commit();
+				return true;
+	            }
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}*/
+	public boolean insertProduct(Product product) throws SQLException{
+		Supplier supplier = product.getSupplier();
+		
+		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+			
+			/*if(supplier.getSupplierId() == null) {
+				//TODO Call the insert method that inserts the supplier in the database.
+				supplierManager.insertSupplier(supplier);
+			}*/
+			
+			// Set parameters for the SQL query
+			stmt.setInt(1, supplier.getSupplierId()); // Using the supplierId.
+			stmt.setString(2, product.getName());
+			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
+			stmt.setString(4, product.getDescription());
+			stmt.setFloat(5, product.getPrice()); // Assuming price comes from the
+																						// Product object
+			stmt.setInt(6, product.getStockQuantity());
+			stmt.setBoolean(7, product.getNeedPrescription());
+
+			int rowsAffected = stmt.executeUpdate();
+			if (rowsAffected > 0) {
+				//Now, I get the generated primary key of order (the order id, which is assigned by the database), making use of the method "getGeneratedKeys"
+	            try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+	                if (generatedKeys.next()) {
+	                    product.setProductId(generatedKeys.getInt(1));
+	                } else {
+	                    throw new SQLException("Inserting product failed, no ID obtained.");
+	                }
 				c.commit();
 				return true;
 	            }
@@ -178,7 +219,7 @@ public class ProductManager implements IProductManager {
 				product.setName(rs.getString("product_name"));
 				product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
 				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setPrice(rs.getFloat("price"));
 				product.setStockQuantity(rs.getInt("stock_quantity"));
 				product.setNeedPrescription(rs.getBoolean("need_prescription"));
 
@@ -215,7 +256,7 @@ public class ProductManager implements IProductManager {
 				product.setCategory(Category.valueOf(rs.getString("category").toUpperCase())); // Convertir a enum
 																								// Category
 				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setPrice(rs.getFloat("price"));
 				product.setStockQuantity(rs.getInt("stock_quantity"));
 				product.setNeedPrescription(rs.getBoolean("need_prescription"));
 
@@ -254,7 +295,7 @@ public class ProductManager implements IProductManager {
 				product.setName(rs.getString("name"));
 				product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
 				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setPrice(rs.getFloat("price"));
 				product.setStockQuantity(rs.getInt("stock_quantity"));
 				product.setNeedPrescription(rs.getBoolean("need_prescription"));
 
@@ -290,7 +331,7 @@ public class ProductManager implements IProductManager {
 				product.setName(rs.getString("name"));
 				product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
 				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setPrice(rs.getFloat("price"));
 				product.setStockQuantity(rs.getInt("stock_quantity"));
 				product.setNeedPrescription(rs.getBoolean("need_prescription"));
 
@@ -329,7 +370,7 @@ public class ProductManager implements IProductManager {
 				product.setName(rs.getString("name"));
 				product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
 				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setPrice(rs.getFloat("price"));
 				product.setStockQuantity(rs.getInt("stock_quantity"));
 				product.setNeedPrescription(rs.getBoolean("need_prescription"));
 
@@ -373,7 +414,7 @@ public class ProductManager implements IProductManager {
 				product.setName(rs.getString("name"));
 				product.setCategory(Category.valueOf(rs.getString("category")));
 				product.setDescription(rs.getString("description"));
-				product.setPrice(Utilities.truncateBigDecimal(rs.getBigDecimal("price"), 2));
+				product.setPrice(rs.getFloat("price"));
 				product.setStockQuantity(rs.getInt("stock_quantity"));
 				product.setNeedPrescription(rs.getBoolean("need_prescription"));
 
@@ -407,7 +448,7 @@ public class ProductManager implements IProductManager {
 			stmt.setString(1, product.getName());
 			stmt.setString(2, product.getCategory().name()); // Convertir el enum Category a String
 			stmt.setString(3, product.getDescription());
-			stmt.setBigDecimal(4, Utilities.truncateBigDecimal(product.getPrice(), 2));
+			stmt.setFloat(4, product.getPrice());
 			stmt.setInt(5, product.getStockQuantity());
 			stmt.setBoolean(6, product.getNeedPrescription());
 			stmt.setInt(7, product.getProductId());

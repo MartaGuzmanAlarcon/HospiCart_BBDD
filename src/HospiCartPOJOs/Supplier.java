@@ -32,6 +32,21 @@ public class Supplier implements Serializable {
 		this.contactPerson = _contactPerson;
 		this.address = _address;
 	}
+	
+	public Supplier(List<Product> _products, Manufacturer _companyName, String _contactPerson, String _address) {
+		super();
+		this.products = _products;
+		this.companyName = _companyName;
+		this.contactPerson = _contactPerson;
+		this.address = _address;
+	}
+	
+	public Supplier(Manufacturer _companyName, String _contactPerson, String _address) {
+		super();
+		this.companyName = _companyName;
+		this.contactPerson = _contactPerson;
+		this.address = _address;
+	}
 
 	// getters and setters
 	public Integer getSupplierId() {
@@ -105,10 +120,4 @@ public class Supplier implements Serializable {
 		return "Supplier [supplierId=" + supplierId + ", companyName=" + companyName + ", contactPerson="
 				+ contactPerson + ", address=" + address + "]";
 	}
-    
-
-
-    
-    
-
 }

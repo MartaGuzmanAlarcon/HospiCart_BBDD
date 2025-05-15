@@ -9,7 +9,8 @@ import HospiCartPOJOs.Product;
 
 public interface IProductManager {
 
-	boolean insertProduct(int supplierId, Product product) throws SQLException; // Agregar un nuevo producto
+	//boolean insertProduct(int supplierId, Product product) throws SQLException; // Agregar un nuevo producto
+	boolean insertProduct(Product product) throws SQLException; // Agregar un nuevo producto
 	
 	boolean deleteProduct(int id); // Eliminar un producto
 	

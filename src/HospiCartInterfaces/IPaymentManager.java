@@ -1,4 +1,5 @@
 package HospiCartInterfaces;
+import java.sql.SQLException;
 import java.util.List;
 
 import Exceptions.ClientException;
@@ -11,7 +12,7 @@ import HospiCartPOJOs.PaymentStatus;
  * The interface IPaymentManager includes all CRUD operations and business methods for Payment entities.
  */
 public interface IPaymentManager {
-	public void insertPayment(Payment p);
+	public void insertPayment(Payment p) throws SQLException;
 	public void deletePaymentById(Integer paymentId) throws Exception;
 	
 	public List<Payment> getListOfPayments();

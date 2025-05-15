@@ -15,7 +15,7 @@ public class Product implements Serializable {
 	private String name;
 	private String description;
 	private Category category;
-	private BigDecimal price; 
+	private Float price; 
 	private Integer stockQuantity;
 	private Boolean needPrescription;
 
@@ -25,7 +25,7 @@ public class Product implements Serializable {
 
 	}
 
-	public Product(int productId, String name, Category category, String description, BigDecimal price, int stockQuantity, boolean needPrescription) {
+	public Product(int productId, String name, Category category, String description, Float price, int stockQuantity, boolean needPrescription) {
         this.productId = productId;          
         this.name = name;                       
         this.category = category;                
@@ -35,7 +35,7 @@ public class Product implements Serializable {
         this.needPrescription = needPrescription; 
     }
 	//TODO: THINK IF WE HAVE TO INITIALISE THE LIST OF PRODUCT ORDERS
-	public Product(String name, Category category, String description, BigDecimal price, int stockQuantity, boolean needPrescription) {
+	public Product(String name, Category category, String description, Float price, int stockQuantity, boolean needPrescription) {
         this.name = name;                       
         this.category = category;                
         this.description = description;          
@@ -95,11 +95,11 @@ public class Product implements Serializable {
 		this.category = category;
 	}
 
-	public BigDecimal getPrice() {
+	public Float getPrice() {
 		return price;
 	}
 
-	public void setPrice(BigDecimal price) {
+	public void setPrice(Float price) {
 		this.price = price;
 	}
 

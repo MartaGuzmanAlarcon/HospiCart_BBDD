@@ -108,7 +108,8 @@ public class Order implements Serializable {
 					throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
 				}
 			}
-		}		this.client = _client;
+		}		
+		this.client = _client;
 		this.payment = _payment;
 		this.Shipment = _shipment;
 		this.productOrders = _productOrders;

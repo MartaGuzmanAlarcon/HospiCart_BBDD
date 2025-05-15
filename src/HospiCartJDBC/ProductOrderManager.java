@@ -1,6 +1,5 @@
 package HospiCartJDBC;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +26,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	
     private Connection c;
 	private ConnectionManagerJDBC cm;
+	private ProductManager pm;
 
 	/**
 	 * Constructor
@@ -35,6 +35,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	public ProductOrderManager(ConnectionManagerJDBC cm) {
 		this.cm = cm;
 		this.c = cm.getConnection();
+		this.pm = new ProductManager(cm);
 	}
 
 	/**
@@ -44,21 +45,28 @@ public class ProductOrderManager implements IProductOrderManager{
 	 */
 	@Override
 	public void insertProductOrder(ProductOrder productOrder) throws SQLException{
-		int product_id = productOrder.getProduct().getProductId();
+		Product product = productOrder.getProduct();
+		int product_id = product.getProductId();
+		float product_price = product.getPrice();
 		Order order = productOrder.getOrder();
+		float total_price = product_price * productOrder.getAmount();
+		
+		if(product.getProductId() == null) {
+			pm.insertProduct(product);
+		}
 
 		//SQL query
-		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, ?, (SELECT price FROM product WHERE product_id = ?)) ";
+		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, ?, ?) ";
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
-			removeProductFromStockQuantity(product_id, 1); //I remove the added product from the stock.
+			removeProductFromStockQuantity(product_id, productOrder.getAmount()); //I remove the added product from the stock.
 			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
 
 			stmt.setInt(1, order.getOrderId());
 			stmt.setInt(2, productOrder.getProduct().getProductId());
 			stmt.setInt(3, productOrder.getAmount());
-			stmt.setInt(4, productOrder.getProduct().getProductId());
+			stmt.setFloat(4, total_price);
 
 			stmt.executeUpdate();
 		}catch(SQLException e) {
@@ -310,9 +318,9 @@ public class ProductOrderManager implements IProductOrderManager{
 	public void updateProductAmountInAnOrder(int product_id, int order_id, int product_amount) throws SQLException {
 		//I get the product out of its ID
 		Product product = cm.getProductManager().getProductById(product_id);
-		BigDecimal product_price = product.getPrice();
+		Float product_price = product.getPrice();
 		//I update the total price of the product order by multiplying the price of the product by the amount ordered.
-		BigDecimal updated_price = product_price.multiply(BigDecimal.valueOf(product_amount));
+		Float updated_price = ((float) product_price * product_amount);
 		
 		//SQL query
 		String sql = "UPDATE product_order SET amount = ?, total_price = ? "
@@ -325,7 +333,7 @@ public class ProductOrderManager implements IProductOrderManager{
 			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
 
 			stmt.setInt(1,  product_amount);
-			stmt.setBigDecimal(2, updated_price);
+			stmt.setFloat(2, updated_price);
 			stmt.setInt(3,  order_id);
 			stmt.setInt(4,  product_id);
 							

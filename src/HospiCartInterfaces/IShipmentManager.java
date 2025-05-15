@@ -5,7 +5,6 @@ import java.util.List;
 
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
-import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Shipment;
 
 /**
@@ -19,7 +18,7 @@ public interface IShipmentManager {
 	 * @param order object of the class "Order" for which we want to create the shipment.
 	 * @return the created shipment.
 	 */
-	void insertShipment(Order order) throws SQLException;
+	void insertShipment(Shipment shipment) throws SQLException;
 	
 	/**
 	 * Method that receives a shipment id and removes the shipment whose id matches with the received one.

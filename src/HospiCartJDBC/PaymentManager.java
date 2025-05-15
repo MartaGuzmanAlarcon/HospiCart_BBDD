@@ -28,21 +28,44 @@ public class PaymentManager implements IPaymentManager {
      * @param p the Payment to insert.
      */
 	@Override
-	public void insertPayment(Payment p) {
+	public void insertPayment(Payment p) throws SQLException{
+		String sql = "INSERT INTO payment (order_id, amount, payment_method, payment_status) " + " VALUES (?,?,?,?) ";
 		try {
-			String sql = "INSERT INTO payment (order_id, amount, payment_method, payment_status)" + " VALUES (?,?,?,?)";
-			PreparedStatement prep = manager.getConnection().prepareStatement(sql); 
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); 
 			 prep.setInt(1, p.getOrder().getOrderId()); // The 1 binds to the first "?"
 	         prep.setInt(2, p.getAmount()); // The 2 binds to the second "?", etc.
 	         prep.setString(3, p.getPaymentMethod().name()); // name() Returns the name of this enum constant, exactly as declared in its enum declaration
 	         prep.setString(4, p.getPaymentStatus().name()); // The 4 binds to the fourth "?"
 	         
-	         prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
-	         
-		} catch(Exception e){ // All the previous methods throw an exception that is generally caught here in the form of Exception 
-			e.printStackTrace(); // To print where the error comes from
-		}
-		
+	         // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
+	         int affectedRows = prep.executeUpdate();
+	            if(affectedRows == 0) {
+	                throw new SQLException("Creating payment failed, no rows affected.");
+	            }
+
+	            //Now, I get the generated shipment id
+	            try(ResultSet generatedKeys = prep.getGeneratedKeys()) {
+	                if (generatedKeys.next()) {
+	                    p.setPaymentId(generatedKeys.getInt(1));
+	                } else {
+	                    throw new SQLException("Creating payment failed, no ID obtained.");
+	                }
+	            }
+	         prep.close();
+	         manager.getConnection().commit();
+		//} catch(Exception e){ // All the previous methods throw an exception that is generally caught here in the form of Exception 
+			//e.printStackTrace(); // To print where the error comes from
+		}catch (SQLException e) {
+            //We "rollback" the transaction in case of error.
+            if(manager.getConnection() != null){ //We make sure that c is not null as an error would be thrown when trying to roll back over a null object
+                try{
+                	manager.getConnection().rollback();
+                } catch(SQLException ex){
+                    throw new SQLException("Error during rollback: " + ex.getMessage(), ex);
+                }
+            }
+            throw new RuntimeException("Error creating shipment: " + e.getMessage(), e);
+        }
 	}
 
 	/**
@@ -228,6 +251,7 @@ public class PaymentManager implements IPaymentManager {
     		try(ResultSet resultSet = stmt.executeQuery()){
     			if(resultSet.next()) {
     				Order order = manager.getOrderManager().getOrderByID(order_id);
+    				//the line above produces a STACK OVERFLOW BECAUSE ORDER HAS ALSO THE MANAGER OF PAYMENT
     				//I set the fields of the payment object.
     				payment = new Payment();
     				payment.setPaymentId(resultSet.getInt("payment_id"));

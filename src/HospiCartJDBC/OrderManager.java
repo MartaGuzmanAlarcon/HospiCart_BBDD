@@ -33,12 +33,19 @@ public class OrderManager implements IOrderManager {
     private Connection c;
     private ConnectionManagerJDBC cm;
     private ProductOrderManager productOM;
+    private ProductManager productM;
+    private ShipmentManager shipmentManager;
+    private PaymentManager paymentManager;
+
 
     //Constructor
     public OrderManager(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
         productOM = new ProductOrderManager(cm);
+        productM = new ProductManager(cm);
+        shipmentManager = new ShipmentManager(cm);
+        paymentManager = new PaymentManager(cm);
     }
 
     /**
@@ -52,8 +59,8 @@ public class OrderManager implements IOrderManager {
        Date orderDate = order.getOrderDate();
        Status status = order.getStatus();
        Client client = order.getClient();
-       //Payment payment = order.getPayment();
-       //Shipment shipment = order.getShipment();
+       Payment payment = order.getPayment();
+       Shipment shipment = order.getShipment();
 
        //I insert the order information that I have up to now
        String sql = "INSERT INTO client_order (user_id, order_date, status) VALUES (?, ?, ?) ";
@@ -79,9 +86,23 @@ public class OrderManager implements IOrderManager {
                 }
             }
             
+            payment.setOrder(order);
+            if(payment.getPaymentId() == null) {
+            	paymentManager.insertPayment(payment);
+            }
+            
+            shipment.setOrder(order);
+            if(shipment.getShipmentId() == null) {
+            	shipmentManager.insertShipment(shipment);
+            }
+            
             List<ProductOrder> productOrders = order.getProductOrders();
             for(int i=0; i<productOrders.size(); i++) {
                 ProductOrder productOrder = productOrders.get(i);
+                Product product = productOrder.getProduct();
+                if(product.getProductId() == null) {
+                	productM.insertProduct(product);
+                }
                 productOrder.setOrder(order);
             	productOM.insertProductOrder(productOrder);
             }
