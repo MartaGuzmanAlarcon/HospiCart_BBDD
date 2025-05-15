@@ -291,16 +291,16 @@ public class ClientManager implements IClientManager{
 	 * @return true if the client is found in the database or false otherwise.
 	 */
 	public boolean isClientInDatabase(String c_email) {
+		String sql = "SELECT * FROM client WHERE email = '" + c_email + "'";
 		try {
-			Statement stmt = manager.getConnection().createStatement();
-			String sql = "SELECT * FROM client WHERE email = '" + c_email + "'";
+			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
 
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = prep.executeQuery();
 			if(rs.next()) {
 				return true;
 			}
 			rs.close();
-			stmt.close();
+			prep.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -313,10 +313,10 @@ public class ClientManager implements IClientManager{
 	 * This method updates the name field of the Client with the given ID.
 	 * @param id the unique identifier of the client to update.
 	 * @param name the new name to assign.
-	 * @throws Exception if no client exists with the given ID, or if a database error occurs.
+	 * @throws SQLException or if a database error occurs.
 	 */
 	@Override
-	public void updateName(Integer id, String name) throws Exception {
+	public void updateName(Integer id, String name) throws SQLException {
 		try {
 			String sql = "UPDATE client SET name = ? WHERE id = ?";
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
@@ -328,7 +328,7 @@ public class ClientManager implements IClientManager{
 			
 			manager.getConnection().commit(); // Commit everytime we do any change to the database
 		
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -337,10 +337,10 @@ public class ClientManager implements IClientManager{
 	 * This method updates the surname field of the Client with the given ID.
 	 * @param id the unique identifier of the client to update.
 	 * @param surname the new surname to assign.
-	 * @throws Exception if no client exists with the given ID, or if a database error occurs.
+	 * @throws SQLException if a database error occurs.
 	 */
 	@Override
-	public void updateSurname(Integer id, String surname) throws Exception {
+	public void updateSurname(Integer id, String surname) throws SQLException {
 		try {
 			String sql = "UPDATE client SET surname = ? WHERE id = ?";
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
@@ -351,7 +351,7 @@ public class ClientManager implements IClientManager{
 			prep.close(); // Always close the PreparedStatement
 			
 			manager.getConnection().commit(); // Commit everytime we do any change to the database
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -360,10 +360,10 @@ public class ClientManager implements IClientManager{
 	 * This method updates the phone number field of the Client with the given ID.
 	 * @param id the unique identifier of the client to update.
 	 * @param phoneNumber the new phone number to assign.
-	 * @throws Exception if no client exists with the given ID, or if a database error occurs.
+	 * @throws SQLException if a database error occurs.
 	 */
 	@Override
-	public void updatePhoneNumber(Integer id, Integer phoneNumber) throws Exception {
+	public void updatePhoneNumber(Integer id, Integer phoneNumber) throws SQLException {
 		try {
 			String sql = "UPDATE client SET phone_number = ? WHERE id = ?";
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
@@ -374,7 +374,7 @@ public class ClientManager implements IClientManager{
 			prep.close(); // Always close the PreparedStatement
 			
 			manager.getConnection().commit(); // Commit everytime we do any change to the database
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -383,10 +383,10 @@ public class ClientManager implements IClientManager{
 	 * This method updates the address field of the Client with the given ID.
 	 * @param id the unique identifier of the client to update.
 	 * @param address the new address to assign.
-	 * @throws Exception if no client exists with the given ID, or if a database error occurs.
+	 * @throws SQLException if a database error occurs.
 	 */
 	@Override
-	public void updateAddress(Integer id, String address) throws Exception {
+	public void updateAddress(Integer id, String address) throws SQLException {
 		try {
 			String sql = "UPDATE client SET address = ? WHERE id = ?";
 			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
@@ -397,31 +397,10 @@ public class ClientManager implements IClientManager{
 			prep.close(); // Always close the PreparedStatement
 			
 			manager.getConnection().commit(); // Commit everytime we do any change to the database
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
 	}
 
-	/**
-	 * This method updates the email field of the Client with the given ID.
-	 * @param id the unique identifier of the client to update.
-	 * @param email the new email address to assign.
-	 * @throws Exception if no client exists with the given ID, or if a database error occurs.
-	 */
-	@Override
-	public void updateEmail(Integer id, String email) throws Exception {
-		try {
-			String sql = "UPDATE client SET email = ? WHERE id = ?";
-			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-
-			prep.setString(1, email); // The 1 binds to the first "?"
-			prep.setInt(2, id); // The 2 binds to the second "?"
-			prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
-			prep.close(); // Always close the PreparedStatement
-			
-			manager.getConnection().commit(); // Commit everytime we do any change to the database
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 }

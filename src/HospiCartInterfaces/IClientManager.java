@@ -1,5 +1,6 @@
 package HospiCartInterfaces;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import Exceptions.ClientException;
@@ -19,9 +20,8 @@ public interface IClientManager {
 	boolean isClientInDatabase(String c_email);
 	
 	// TODO ASK IF NAME, SURNAME AND EMAIL METHODS ARE REDUNDANT 
-	public void updateName (Integer id, String name) throws Exception;
-	public void updateSurname (Integer id, String surname) throws Exception;
-	public void updatePhoneNumber (Integer id, Integer phone_number) throws Exception;
-	public void updateAddress (Integer id,String address) throws Exception;
-	public void updateEmail(Integer id, String email) throws Exception;
+	public void updateName (Integer id, String name) throws SQLException;
+	public void updateSurname (Integer id, String surname) throws SQLException;
+	public void updatePhoneNumber (Integer id, Integer phone_number) throws SQLException;
+	public void updateAddress (Integer id,String address) throws SQLException;
 }

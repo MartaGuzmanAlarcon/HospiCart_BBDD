@@ -209,8 +209,122 @@ public class ClientManagerTest {
     		ce.printStackTrace();
     	}  
     }
+     
+    @Test 
+    void getClientByAValidEmailTest() {
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Maria", "Martinez", 656329185, "mariamartinez@gmail.com", "Boadilla 2"); 
+        	clientManager.insertClient(expectedClient);  // throws ClientException 
+        	
+
+            // Retrieve the client from the DB using the email
+            Client actualClient = clientManager.getClientByEmail("mariamartinez@gmail.com");
+
+            // Check if the clients are equal (ID too)
+            assertEquals(expectedClient, actualClient);
+            assertEquals(expectedClient.getUserId(), actualClient.getUserId());
+        	
+        	
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}  
+    }
     
-    // TODO TEST THE EMAIL METHOD 
+    @Test
+    void updateNameTest() { // Useful if a mistake when inserting the name was made 
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Pepa", "La Loca", 656329185, "juanalaloca@gmail.com", "Castilla 1500"); 
+        	clientManager.insertClient(expectedClient);  // throws ClientException
+        	
+        	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+        	int idRetrieved = expectedClient.getUserId();
+        	
+        	// Update the client's name 
+        	clientManager.updateName(idRetrieved, "Juana");
+        	
+        	// Go to DB brpwser and check if Juana La Loca appears in the DB -> yes, it does 
+        	
+        	// TODO DECIDE IF THE UPDATE METHOD ONLY UPDATES THE DB OR IF IT ALSO SETS THE JAVA OBJECT
+        	// NOW IT ONLY UPDATES THE DB SO:
+        	// assertEquals("Juana", clientToUpdate.getName()); WOULD NOT WORK
+        	        	
+    	}  catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}  catch (SQLException sqle) {
+    		sqle.printStackTrace();
+    	}
+    	
+    }
+    
+    @Test
+    void updateSurnameTest() { // Useful when a woman's surname changes due to marriage 
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Ana María", "La Loca", 656329185, "anamarialajusticia@gmail.com", "Málaga 23"); 
+        	clientManager.insertClient(expectedClient);  // throws ClientException
+        	
+        	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+        	int idRetrieved = expectedClient.getUserId();
+        	
+        	// Update the client's surname
+        	clientManager.updateSurname(idRetrieved, "La Justicia");
+        	
+        	// Go to DB brpwser and check if Ana Maria La Justicia appears in the DB -> yes, it does 
+    		
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}  catch (SQLException sqle) {
+    		sqle.printStackTrace();
+    	}
+    }
+    
+    @Test 
+    void updatePhoneNumberTest() {
+    	try {
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Paco", "Pozo", 0000, "pacopozo@gmail.com", "Villanueva de la Cañada"); 
+        	clientManager.insertClient(expectedClient);  // throws ClientException
+        	
+        	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+        	int idRetrieved = expectedClient.getUserId();
+        	
+        	// Update the client's phone number 
+        	clientManager.updatePhoneNumber(idRetrieved, 683764339);
+        	
+        	// Go to DB brpwser and check if the new phone number appears in the DB -> yes, it does 
+        	
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}  catch (SQLException sqle) {
+    		sqle.printStackTrace();
+    	}
+    }
+    
+    @Test
+    void updateAdressTest() {
+    	try{
+    		// Insert an 'incomplete' client from Java with the constructor of Client that does not admit a user_id
+        	Client expectedClient = new Client("Juanjo", "Arroyo", 683764339, "juanjoarroyo@gmail.com", "Camino del Real"); 
+        	clientManager.insertClient(expectedClient);  // throws ClientException
+        	
+        	// Retrieve the client id from the database once it has been assigned with AUTOINCREMENT
+        	int idRetrieved = expectedClient.getUserId();
+        	
+        	// Updates the client's address
+        	clientManager.updateAddress(idRetrieved, "Alcalá Meco");
+        	
+        	// Go to DB brpwser and check if the new address appears in the DB -> yes, it does 
+        	
+    	} catch (ClientException ce) {
+    		ce.printStackTrace();
+    	}  catch (SQLException sqle) {
+    		sqle.printStackTrace();
+    	}
+    	
+    }
+    
     
     
     
