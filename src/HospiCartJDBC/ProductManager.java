@@ -469,7 +469,7 @@ public class ProductManager implements IProductManager {
 	 */
 	public boolean reduceStock(int productId, int quantity) throws SQLException {
 		Product product = getProductById(productId);
-		System.out.println("product" + product);
+		System.out.println(" " + product);
 
 		if (product == null) {
 			System.out.println("Product not found.");
@@ -482,7 +482,8 @@ public class ProductManager implements IProductManager {
 		}
 
 		int upDateStock = product.getStockQuantity() - quantity;
-		System.out.println("upDateStock" + upDateStock);
+		//TODO: CHECK IF WE WANT TO PRINT THIS UPDATE STOCK MESSAGE
+		System.out.println("upDateStock " + upDateStock + "\n");
 		product.setStockQuantity(upDateStock);
 
 		if (updateProductStockInDB(productId, upDateStock)) {

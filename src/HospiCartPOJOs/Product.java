@@ -1,7 +1,6 @@
 package HospiCartPOJOs;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -140,15 +139,15 @@ public class Product implements Serializable {
 	// toString
 	@Override
 	public String toString() {
-	    return "-Product-" + "\n" +
-	           "  productId: " + productId + "\n" +
-	           "  supplier: " + supplier.getCompanyName() + "\n" +
-	           "  name: " + name + "\n" +
-	           "  description: " + description + "\n" +
-	           "  category: " + category + "\n" +
-	           "  price: " + price + "\n" +
-	           "  stockQuantity: " + stockQuantity + "\n" +
-	           "  needPrescription: " + needPrescription + "\n\n";  
+	    return "\n-----Product-----" + "\n" +
+	           "  - Product ID: " + productId + "\n" +
+	           "  - Supplier: " + supplier.getCompanyName() + "\n" +
+	           "  - Product name: " + name + "\n" +
+	           "  - Description: " + description + "\n" +
+	           "  - Category: " + category + "\n" +
+	           "  - Price: " + price + "\n" +
+	           "  - Amount in stock: " + stockQuantity + "\n" +
+	           "  - Need prescription: " + needPrescription + "\n\n";  
 	}
 
 }

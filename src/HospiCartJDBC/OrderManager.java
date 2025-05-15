@@ -101,11 +101,18 @@ public class OrderManager implements IOrderManager {
                 ProductOrder productOrder = productOrders.get(i);
                 Product product = productOrder.getProduct();
                 if(product.getProductId() == null) {
-                	productM.insertProduct(product);
+                	//productM.insertProduct(product);
+                	//TODO: I THINK I SHOULD THROW AN EXCEPTION BECAUSE THE SUPPLIER IS THE ONE IN CHARGE OF INSERTING THE PRODUCTS
                 }
                 productOrder.setOrder(order);
             	productOM.insertProductOrder(productOrder);
             }
+            //I print success messages
+            System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
+            System.out.println("\n- Payment ID of order with ID " + order.getOrderId() + ": " + payment.getPaymentId());
+            System.out.println("\n- Shipment ID of order with ID " + order.getOrderId() + ": " + shipment.getShipmentId());
+            System.out.println("\n- Tracking number of order with ID " + order.getOrderId() + ": " + shipment.getTrackingNumber());
+
             // I don't have to close the statement nor the result sets because I used "trys-with resources"
             c.commit(); //we do this because we disabled the auto-commit in the connection
         } catch (SQLException e) {
@@ -161,7 +168,7 @@ public class OrderManager implements IOrderManager {
     		if (rowsAffected == 0) {
                 System.out.println("No order found with ID: " + order_id);
             } else {
-                System.out.println("Order with ID " + order_id + " deleted successfully.");
+                System.out.println("\nOrder with ID " + order_id + " deleted successfully.");
             }
     		//I call the method of Product Order that increases the stock of a product.
     		List<ProductOrder> productOrdersOfOrder = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
@@ -245,7 +252,7 @@ public class OrderManager implements IOrderManager {
     	
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
     			+ "FROM client_order AS o "
-    			+ "WHERE o.user_id = ?";
+    			+ "WHERE o.user_id = ?"; //TODO CHANGE THE QUERY
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setInt(1, user_id);
@@ -253,13 +260,12 @@ public class OrderManager implements IOrderManager {
     			// Get the full Client object from ClientManager
                 Client client = cm.getClientManager().getClientByID(user_id);
                 
-                if(!resultSet.next()) {
-                	//If the result set is empty, I throw a personalized exception that indicates that it was not found a user with the introduced user_id in the database.
-    				throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);                
-    			}
-                
+                //I create this variable to check if the result set has rows or not, case in which a personalized exception will be thrown.
+                boolean hasRows = false;
                 //While loop that iterates through all the result set and retrieves all the orders.
                 while(resultSet.next()) {
+                	hasRows = true;
+                	
     				order = new Order();
     				//I create a variable called order id and store the id of the order in it.
     				int order_id = resultSet.getInt("order_id");
@@ -282,6 +288,10 @@ public class OrderManager implements IOrderManager {
     				//Finally, I add the created order to the list of orders the user made.
     				ordersOfUser.add(order);
     			}
+                if(!hasRows) {
+                	//If the result set is empty, I throw a personalized exception that indicates that it was not found a user with the introduced user_id in the database.
+    				throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);                
+                }
     		}
     	} catch(SQLException e) {
     		System.err.println("Error retrieving orders from user: " + e.getMessage());
@@ -290,9 +300,8 @@ public class OrderManager implements IOrderManager {
     		System.out.println("ERROR: " + oe);
     	}
         return ordersOfUser;
-    } // TODO: It would make sense creating a personalized exception if the method getClientByID is able to return null (when a client is not found with the provided user_id).
-    //WE CAN CREATE A PERSONALIZED EXCEPTION TO BE THROWN IN getUserByID when a user was not found, and re-throw it in this method!!
-
+    }
+    
     /**
 	 * Method that retrieves a list containing all the orders that were purchased on the date received as parameter.
 	 * @param order_date variable of date type.

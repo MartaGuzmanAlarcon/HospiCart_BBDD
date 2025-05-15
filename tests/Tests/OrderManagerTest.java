@@ -93,14 +93,12 @@ class OrderManagerTest {
 	        // Tear down shared resources (e.g. close the database connection)
 	        connectionManager.disconnect();
 	    }
-	
-	    //TODO: check the tables of payment, shipment and product order in the database.
 	    //TODO: delete the methods of the end.
 	    //TODO: think about the exceptions and only use the ones we need.
 	
 	@Test
 	/**
-	 * Test that checks if the method "createOrder" of "OrderManager" properly works.
+	 * Test that checks if the method "insertOrder" of "OrderManager" properly works.
 	 */
 	void insertOrderTest(){
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
@@ -120,8 +118,8 @@ class OrderManagerTest {
 		//I create the supplier.
 		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 		
-		ProductOrder productOrder1 = new ProductOrder(4, 6.1f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
 		productOrder1.setProduct(product1);
 		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
@@ -129,15 +127,12 @@ class OrderManagerTest {
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);
 		
-		//TODO CHECK IF I HAVE TO DO THIS BEFORE OR AFTER INSERTING THE CREATED INSTANCES TO THEIR TABLES IN THE DB
-
 		try {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
-			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
+			//I insert the client in the client table of the database, which automatically assigns an ID to the incomplete client I created before.
 			clientManager.insertClient(expectedClient);
+			//I insert the created supplier in the database, method in which the products will also be inserted.
 			supplierManager.insertSupplier(supplier);
-			//productManager.insertProduct(product1); TODO DELETE THESE 2 LINES
-			//productManager.insertProduct(product2);
 			
 			//Now, I create the order
 			Order order = new Order(expectedClient, payment, shipment, productOrders);
@@ -152,17 +147,6 @@ class OrderManagerTest {
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersAfter = orderManager.getAllOrders();
 			int countTotalOrdersAfter = ordersAfter.size();
-			
-			//I insert the shipment, payment and product orders after the order has been created because it is dependent on the order
-			//payment.setOrder(order);
-			//paymentManager.insertPayment(payment);
-			//shipment.setOrder(order);
-			//shipmentManager.insertShipment(shipment);
-
-			//productOrder1.setOrder(order);
-			//productOrder2.setOrder(order);
-			//productOrderManager.insertProductOrder(productOrder1);
-			//productOrderManager.insertProductOrder(productOrder2);
 
 			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
 		    assertEquals(countTotalOrdersBefore + 1, countTotalOrdersAfter);
@@ -180,16 +164,16 @@ class OrderManagerTest {
 	
 	@Test
 	/**
-	 * Test that checks if the method "deleteOrder" works a desired.
+	 * Test that checks if the method "deleteOrder" works as desired.
 	 */
 	void deleteOrderTest() {		
 		Client client = new Client("Robert", "Williams", 346667855, "robwilliams@gmail.com", "Calle de Paraguay 20");
 		
 		//I create a payment, a shipment and 2 products.
 		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Shipment shipment = new Shipment(123457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Shipment shipment = new Shipment(123451);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -197,10 +181,10 @@ class OrderManagerTest {
 		products.add(product2);
 				
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 				
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
 		productOrder1.setProduct(product1);
 		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
@@ -212,15 +196,15 @@ class OrderManagerTest {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment);
+			//I insert the created supplier in the database, method in which the products will also be inserted.
+			supplierManager.insertSupplier(supplier);
 
 			//Now, I create the order
 			Order order = new Order(client, payment, shipment, productOrders);
 			
 			//I create the order with the respective method from OrderManager and pass the complete client as parameter
 			orderManager.insertOrder(order);
+			//After inserting the order, payment, shipment and the product orders will already be inserted in the database.
 			
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersBefore = orderManager.getAllOrders();
@@ -232,15 +216,6 @@ class OrderManagerTest {
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersAfter = orderManager.getAllOrders();
 			int countTotalOrdersAfter = ordersAfter.size();
-			
-			//I insert the payment and product orders after the order has been created because it is dependent on the order
-			payment.setOrder(order);
-			paymentManager.insertPayment(payment);
-			
-			productOrder1.setOrder(order);
-			productOrder2.setOrder(order);
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
 
 			//I check that the list that contains all the orders has been increased by 1 (which ensures that the order was properly created)
 		    assertEquals(countTotalOrdersBefore - 1, countTotalOrdersAfter);
@@ -267,51 +242,40 @@ class OrderManagerTest {
 		
 		//I create a payment, a shipment and 2 products.
 		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Shipment shipment = new Shipment(123457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
-						
+		Shipment shipment = new Shipment(123437);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
+				
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
 		products.add(product1);
 		products.add(product2);
-						
+				
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
-						
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+				
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
 		productOrder1.setProduct(product1);
 		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);
-				
-		try {				
+		
+		try {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment);
-			
+			//I insert the created supplier in the database, method in which the products will also be inserted.
+			supplierManager.insertSupplier(supplier);
+
 			//Now, I create the order
 			Order order = new Order(client, payment, shipment, productOrders);
-			
 			//I create the order with the respective method from OrderManager and pass the complete client as parameter
 			orderManager.insertOrder(order);
 			
 			Order retrievedOrder = orderManager.getOrderByID(order.getOrderId());
-			
-			//I insert the payment and product orders after the order has been created because it is dependent on the order
-			payment.setOrder(order);
-			paymentManager.insertPayment(payment);
-			
-			productOrder1.setOrder(order);
-			productOrder2.setOrder(order);
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the inserted order and the one obtained through the method "getOrderByID".
 			//This works because in the method "createOrder", I retrieve the key that the database generated for the order!
@@ -328,16 +292,17 @@ class OrderManagerTest {
 		}
 	}
 	//TODO: THIS TEST DOES NOT WORK, I DON'T KNOW WHY
-	//@Test
-	/*void getOrderByUserTest() {
+	@Test
+	void getOrderByUserTest() {
 		Client client = new Client("Bobby", "Brown", 343367865, "bobby@gmail.com", "Calle de Ambar 40");
 		
 		//I create a payment, a shipment and 2 products.
 		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		Payment payment2 = new Payment(8, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Shipment shipment = new Shipment(127457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Shipment shipment1 = new Shipment(127452);
+		Shipment shipment2 = new Shipment(123452);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -347,8 +312,8 @@ class OrderManagerTest {
 		//I create the supplier.
 		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 								
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders1 = new ArrayList<ProductOrder>();
 		List<ProductOrder> productOrders2 = new ArrayList<ProductOrder>();
@@ -359,12 +324,12 @@ class OrderManagerTest {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
-			productManager.insertProduct(1, product1);
-			productManager.insertProduct(1, product2);
+			//I insert the created supplier in the database, method in which the products will also be inserted.
+			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the orders
-			Order order1 = new Order(client, payment1, shipment, productOrders1);
-			Order order2 = new Order(client, payment2, shipment, productOrders2);
+			Order order1 = new Order(client, payment1, shipment1, productOrders1);
+			Order order2 = new Order(client, payment2, shipment2, productOrders2);
 			
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			orderManager.insertOrder(order1);
@@ -373,16 +338,6 @@ class OrderManagerTest {
 			
 			List<Order> orders = orderManager.getOrdersByUser(client.getUserId());
 			int realAmountOfOrdersOfUser = orders.size();
-			
-			//I insert the shipment, payment and product orders after the order has been created because it is dependent on the order
-			shipmentManager.insertShipment(order1);
-			shipmentManager.insertShipment(order2);
-			payment1.setOrder(order1);
-			payment2.setOrder(order2);
-			paymentManager.insertPayment(payment1);
-			paymentManager.insertPayment(payment2);
-			productOrderManager.insertProductOrder(product1.getProductId(), order1.getOrderId());
-			productOrderManager.insertProductOrder(product2.getProductId(), order2.getOrderId());
 						
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersOfUser, realAmountOfOrdersOfUser);
@@ -397,7 +352,7 @@ class OrderManagerTest {
 			e.printStackTrace();
 		}
 	}
-	*/
+	
 	
 	@Test
 	/**
@@ -408,9 +363,9 @@ class OrderManagerTest {
 		
 		//I create a payment, a shipment and 2 products.
 		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Shipment shipment = new Shipment(127457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Shipment shipment = new Shipment(127497);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -420,8 +375,8 @@ class OrderManagerTest {
 		//I create the supplier.
 		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
 								
-		ProductOrder productOrder1 = new ProductOrder(4, 20.4f, product1);
-		ProductOrder productOrder2 = new ProductOrder(6, 18.6f, product2);
+		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
+		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
 		productOrder1.setProduct(product1);
 		productOrder2.setProduct(product2);
 		//I create the list of product orders and add the product orders to the list.
@@ -434,9 +389,8 @@ class OrderManagerTest {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment);
+			//I insert the created supplier in the database, method in which the products will also be inserted.
+			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the orders
 			Order order1 = new Order(client, payment1, shipment, productOrders);
@@ -447,15 +401,6 @@ class OrderManagerTest {
 			
 			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
 			int realAmountOfOrdersMadeToday = orders.size();
-				
-			//I insert the payment and product orders after the order has been created because it is dependent on the order
-			payment1.setOrder(order1);
-			paymentManager.insertPayment(payment1);
-			
-			productOrder1.setOrder(order1);
-			productOrder2.setOrder(order1);
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
 			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
@@ -484,8 +429,8 @@ class OrderManagerTest {
 		Shipment shipment1 = new Shipment(127457);
 		Shipment shipment2 = new Shipment(327457);
 		Shipment shipment3 = new Shipment(427457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
@@ -510,11 +455,7 @@ class OrderManagerTest {
 			//I call the method that inserts clients after checking if the client was already inserted in the database.
 			//I insert the client in the client table of the database, which automatically assigns an id to the incomplete client I created before.
 			clientManager.insertClient(client);
-			productManager.insertProduct(product1);
-			productManager.insertProduct(product2);
-			shipmentManager.insertShipment(shipment1);
-			shipmentManager.insertShipment(shipment2);
-			shipmentManager.insertShipment(shipment3);
+			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the orders
 			Order order1 = new Order(client, payment1, shipment1, productOrders);
@@ -530,22 +471,6 @@ class OrderManagerTest {
 			List<Order> orders = orderManager.getOrdersByOrderDate(Date.valueOf(LocalDate.now()));
 			int realAmountOfOrdersMadeToday = orders.size();
 					
-			//I insert the payment and product orders after the order has been created because it is dependent on the order
-			payment1.setOrder(order1);
-			payment2.setOrder(order2);
-			payment3.setOrder(order3);
-			
-			paymentManager.insertPayment(payment1);
-			paymentManager.insertPayment(payment2);
-			paymentManager.insertPayment(payment3);
-			
-			productOrder1.setOrder(order1);
-			productOrder2.setOrder(order2);
-			productOrder3.setOrder(order3);
-			productOrderManager.insertProductOrder(productOrder1);
-			productOrderManager.insertProductOrder(productOrder2);
-			productOrderManager.insertProductOrder(productOrder3);
-			
 			//I compare the amount of orders the user has and the amount that I expected (according to the amount of orders I introduced in the database).
 			assertEquals(amountOfOrdersMadeToday, realAmountOfOrdersMadeToday);
 		} catch(SQLException e) {
@@ -592,8 +517,8 @@ class OrderManagerTest {
 		//I create a payment, a shipment and 2 products.
 		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
 		Shipment shipment = new Shipment(127457);
-		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex blue gloves", 5.1f, 320, false);
-		Product product2 = new Product("Masks", Category.DISPOSABLES, "Pink Masks", 3.1f, 220, false);
+		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
+		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
