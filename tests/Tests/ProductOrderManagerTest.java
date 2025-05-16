@@ -107,7 +107,7 @@ public class ProductOrderManagerTest {
     		products.add(product1);
     		products.add(product2);
     		
-			Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+			Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34"); 
 			supplierManager.insertSupplier(supplier); // throws SQLException
 			
 			// Create and insert the order 
@@ -122,9 +122,10 @@ public class ProductOrderManagerTest {
 			
 			// Check the product order 
 			List<ProductOrder> lines = productOrderManager.getProductOrdersByOrderID(order.getOrderId());
+			ProductOrder actualProductOrder1 = lines.get(0);
+			
 			assertEquals(1, lines.size(), "One line‐item should be present");
 
-			ProductOrder actualProductOrder1 = lines.get(0);
 			assertEquals(expectedProductOrder1, actualProductOrder1);
 			
 			// Verify stock was reduced

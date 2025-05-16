@@ -87,7 +87,7 @@ public class ProductOrder implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(order, product);
+		return Objects.hash(order.getOrderId(), product.getProductId());
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class ProductOrder implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ProductOrder other = (ProductOrder) obj;
-		return Objects.equals(order, other.order) && Objects.equals(product, other.product);
+		return Objects.equals(order.getOrderId(), other.order.getOrderId()) && Objects.equals(product.getProductId(), other.product.getProductId());
 	}
 
 // toString
