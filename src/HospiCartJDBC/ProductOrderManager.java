@@ -11,9 +11,13 @@ import java.util.List;
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
 import HospiCartInterfaces.IProductOrderManager;
+import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
+import HospiCartPOJOs.Payment;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
+import HospiCartPOJOs.Shipment;
+import HospiCartPOJOs.Status;
 
 /**
  * This class is the responsible for handling all the operations related product orders.

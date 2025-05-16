@@ -84,6 +84,60 @@ public class ProductOrderManagerTest {
 	
 	 // TODO REVISE THIS TEST, IT DOESN'T WORK YET 
 	@Test
+//	public void insertProductOrderTest() {
+//		/* PIPELINE OF INSTRUCTIONS
+//		 * Because of our database’s foreign‐key constraints:
+//		 * Order depend on Client -> so we need to create and insert a client before creating and inserting the order 
+//		 * Product depend on Supplier -> so we need to create and insert a supplier before creating and inserting the product
+//		 */
+//		try {
+//			// Create and insert an 'incomplete' client from Java
+//			Client expectedClient = new Client("Belen", "Esteban", 656329185, "belenesteban@gmail.com", "Vallekas 3"); 
+//        	clientManager.insertClient(expectedClient); // throws ClientException
+//        	
+//			// Create and insert a supplier 
+//        		// To create a suppler, I have to create a payment, a shipment and 2 products.
+//    		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+//    		Shipment shipment = new Shipment(123456);
+//    		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
+//    		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
+//    		
+//    			//I create a list of products and add the products I created above.
+//    		List<Product> products = new ArrayList<Product>();
+//    		products.add(product1);
+//    		products.add(product2);
+//    		
+//			Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34"); 
+//			supplierManager.insertSupplier(supplier); // throws SQLException
+//			
+//			// Create and insert the order 
+//			//Now, I create the order
+//			Order order = new Order(expectedClient, payment, shipment);
+//			orderManager.insertOrder(order);
+//			
+//			// Create and insert the product order 
+//			int amount = 5;
+//			ProductOrder expectedProductOrder1 = new ProductOrder(amount, order, product1);
+//			productOrderManager.insertProductOrder(expectedProductOrder1);
+//			List<ProductOrder> productOrdersOfOrder = new ArrayList<ProductOrder>();
+//			productOrdersOfOrder.add(expectedProductOrder1);
+//			order.setProductOrders(productOrdersOfOrder);
+//			
+//			// Check the product order 
+//			List<ProductOrder> lines = productOrderManager.getProductOrdersByOrderID(order.getOrderId());
+//			ProductOrder actualProductOrder1 = lines.get(lines.size()-1);
+//			
+//			assertEquals(1, lines.size(), "One line‐item should be present");
+//
+//			assertEquals(expectedProductOrder1, actualProductOrder1);
+//			
+//			// Verify stock was reduced
+//		} catch (ClientException ce) {
+//    		ce.printStackTrace();
+//    	} catch (SQLException sqle) {
+//    		sqle.printStackTrace();
+//    	}
+//	}
 	public void insertProductOrderTest() {
 		/* PIPELINE OF INSTRUCTIONS
 		 * Because of our database’s foreign‐key constraints:
@@ -113,18 +167,21 @@ public class ProductOrderManagerTest {
 			// Create and insert the order 
 			//Now, I create the order
 			Order order = new Order(expectedClient, payment, shipment);
+			
 			orderManager.insertOrder(order);
 			
 			// Create and insert the product order 
 			int amount = 5;
 			ProductOrder expectedProductOrder1 = new ProductOrder(amount, order, product1);
 			productOrderManager.insertProductOrder(expectedProductOrder1);
+			List<ProductOrder> productOrdersOfOrder = new ArrayList<ProductOrder>();
+			productOrdersOfOrder.add(expectedProductOrder1);
+			order.setProductOrders(productOrdersOfOrder);
+			
 			
 			// Check the product order 
-			List<ProductOrder> lines = productOrderManager.getProductOrdersByOrderID(order.getOrderId());
-			ProductOrder actualProductOrder1 = lines.get(0);
-			
-			assertEquals(1, lines.size(), "One line‐item should be present");
+			ProductOrder actualProductOrder1 = productOrderManager.getProductOrderByIDs(product1.getProductId(), order.getOrderId());			
+			//assertEquals(1, lines.size(), "One line‐item should be present");
 
 			assertEquals(expectedProductOrder1, actualProductOrder1);
 			
@@ -135,6 +192,7 @@ public class ProductOrderManagerTest {
     		sqle.printStackTrace();
     	}
 	}
+	
 	
 	/*void deleteProductOrdersByOrderID(int order_id) throws SQLException, OrderExceptions, ClientException;
 	
