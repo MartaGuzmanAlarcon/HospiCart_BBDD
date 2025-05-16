@@ -11,7 +11,7 @@ public class Supplier implements Serializable {
 	private Integer supplierId;
 	private List<Product> products;
     private Manufacturer companyName;
-    private String contactPerson;
+    private Integer contactNumber;
     private String address;
     
     
@@ -24,27 +24,27 @@ public class Supplier implements Serializable {
 	 this.companyName=m;
 	}
 	
-	public Supplier(int _supplierId, List<Product> _products, Manufacturer _companyName, String _contactPerson, String _address) {
+	public Supplier(int _supplierId, List<Product> _products, Manufacturer _companyName, Integer _contactNumber, String _address) {
 		super();
 		this.supplierId = _supplierId;
 		this.products = _products;
 		this.companyName = _companyName;
-		this.contactPerson = _contactPerson;
+		this.contactNumber = _contactNumber;
 		this.address = _address;
 	}
 	
-	public Supplier(List<Product> _products, Manufacturer _companyName, String _contactPerson, String _address) {
+	public Supplier(List<Product> _products, Manufacturer _companyName, Integer _contactNumber, String _address) {
 		super();
 		this.products = _products;
 		this.companyName = _companyName;
-		this.contactPerson = _contactPerson;
+		this.contactNumber = _contactNumber;
 		this.address = _address;
 	}
 	
-	public Supplier(Manufacturer _companyName, String _contactPerson, String _address) {
+	public Supplier(Manufacturer _companyName, Integer _contactNumber, String _address) {
 		super();
 		this.companyName = _companyName;
-		this.contactPerson = _contactPerson;
+		this.contactNumber = _contactNumber;
 		this.address = _address;
 	}
 
@@ -78,13 +78,13 @@ public class Supplier implements Serializable {
 	}
 
 
-	public String getContactPerson() {
-		return contactPerson;
+	public Integer getContactNumber() {
+		return contactNumber;
 	}
 
 
-	public void setContactPerson(String contactPerson) {
-		this.contactPerson = contactPerson;
+	public void setContactPerson(Integer _contactNumber) {
+		this.contactNumber = _contactNumber;
 	}
 
 
@@ -117,7 +117,7 @@ public class Supplier implements Serializable {
 	//toString
 	@Override
 	public String toString() {
-		return "Supplier [supplierId=" + supplierId + ", companyName=" + companyName + ", contactPerson="
-				+ contactPerson + ", address=" + address + "]";
+		return "Supplier [supplierId=" + supplierId + ", companyName=" + companyName + ", contact number="
+				+ contactNumber + ", address=" + address + "]";
 	}
 }

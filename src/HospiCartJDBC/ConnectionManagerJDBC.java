@@ -71,7 +71,7 @@ public class ConnectionManagerJDBC {
 						CREATE TABLE supplier (
 							supplier_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							company_name TEXT NOT NULL,
-							contact_person INTEGER NOT NULL,
+							contact_number INTEGER NOT NULL,
 							address TEXT NOT NULL
 						);
 						""",

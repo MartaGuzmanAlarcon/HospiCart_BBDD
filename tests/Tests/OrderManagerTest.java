@@ -41,7 +41,7 @@ class OrderManagerTest {
 	 private static ClientManager clientManager;
 	 private static OrderManager orderManager;
 	 private static SupplierManager supplierManager;
-	 private static ProductManager productManager;
+	// private static ProductManager productManager;
 
     
     @BeforeAll 
@@ -54,7 +54,7 @@ class OrderManagerTest {
         orderManager = new OrderManager(connectionManager);
         clientManager = new ClientManager(connectionManager);
         supplierManager = new SupplierManager(connectionManager);
-        productManager = new ProductManager(connectionManager);
+       // productManager = new ProductManager(connectionManager);
     }
 
     @BeforeEach
@@ -104,7 +104,7 @@ class OrderManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -169,7 +169,7 @@ class OrderManagerTest {
 		products.add(product2);
 				
 		//I create the supplier.
-		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 				
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -239,7 +239,7 @@ class OrderManagerTest {
 		products.add(product2);
 				
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 				
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -302,7 +302,7 @@ class OrderManagerTest {
 		products.add(product2);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -368,7 +368,7 @@ class OrderManagerTest {
 		products.add(product2);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -435,7 +435,7 @@ class OrderManagerTest {
 		products.add(product3);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -522,7 +522,7 @@ class OrderManagerTest {
 		products.add(product2);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -582,7 +582,7 @@ class OrderManagerTest {
 		products.add(product2);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
@@ -680,7 +680,7 @@ class OrderManagerTest {
 		products.add(product3);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products ,Manufacturer.THERMO_FISHER, 12343543, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);

@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
-import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Product;
-import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Supplier;
 
 /**
@@ -45,54 +43,54 @@ public class SupplierManager {
 	 * @param filePath The path to the CSV file containing supplier data.
 	 */
 
-	public void insertSuppliersFromCSV(String filePath) {
-		String line;
-		String csvSplitBy = ",";
-
-		String sql = "INSERT INTO supplier (company_name, contact_person, address) VALUES (?, ?, ?)";
-
-		try (PreparedStatement stmt = c.prepareStatement(sql);
-				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-
-			// Saltar la cabecera
-			br.readLine();
-
-			while ((line = br.readLine()) != null) {
-				String[] data = line.split(csvSplitBy);
-
-				if (data.length < 3) {
-					System.out.println("Skipping invalid row: " + line);
-					continue;
-				}
-
-				String companyName = data[0].trim(); // .trim(): elimina espacios en blanco
-				String contactPerson = data[1].trim();
-				String address = data[2].trim();
-
-				stmt.setString(1, companyName);
-				stmt.setString(2, contactPerson);
-				stmt.setString(3, address);
-
-				stmt.executeUpdate();
-			}
-
-			c.commit();
-			System.out.println("Suppliers inserted correctly from the CSV.");
-
-		} catch (IOException | SQLException e) {
-			e.printStackTrace();
-		}
-	}
+//	public void insertSuppliersFromCSV(String filePath) {
+//		String line;
+//		String csvSplitBy = ",";
+//
+//		String sql = "INSERT INTO supplier (company_name, contact_person, address) VALUES (?, ?, ?)";
+//
+//		try (PreparedStatement stmt = c.prepareStatement(sql);
+//				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+//
+//			// Saltar la cabecera
+//			br.readLine();
+//
+//			while ((line = br.readLine()) != null) {
+//				String[] data = line.split(csvSplitBy);
+//
+//				if (data.length < 3) {
+//					System.out.println("Skipping invalid row: " + line);
+//					continue;
+//				}
+//
+//				String companyName = data[0].trim(); // .trim(): elimina espacios en blanco
+//				String contactPerson = data[1].trim();
+//				String address = data[2].trim();
+//
+//				stmt.setString(1, companyName);
+//				stmt.setString(2, contactPerson);
+//				stmt.setString(3, address);
+//
+//				stmt.executeUpdate();
+//			}
+//
+//			c.commit();
+//			System.out.println("Suppliers inserted correctly from the CSV.");
+//
+//		} catch (IOException | SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public void insertSupplier(Supplier supplier) throws SQLException {
        
        //I insert the order information that I have up to now
-       String sql = "INSERT INTO supplier (company_name, contact_person, address) VALUES (?, ?, ?) ";
+       String sql = "INSERT INTO supplier (company_name, contact_number, address) VALUES (?, ?, ?) ";
 
        //I create the shipment record and fetch the generated keys (the id of the shipment)
         try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, supplier.getCompanyName().name());
-            stmt.setString(2, supplier.getContactPerson());
+            stmt.setInt(2, supplier.getContactNumber());
             stmt.setString(3, supplier.getAddress());
 
 
