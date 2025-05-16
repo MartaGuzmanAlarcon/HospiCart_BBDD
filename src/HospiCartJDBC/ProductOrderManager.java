@@ -25,31 +25,48 @@ import HospiCartPOJOs.ProductOrder;
 public class ProductOrderManager implements IProductOrderManager{
 	
     private Connection c;
-	private ConnectionManagerJDBC cm;
-	private ProductManager pm;
-
+	private ConnectionManagerJDBC connectionManager;
+	private ProductManager productManager;
+	//private OrderManager orderManager;
 	/**
 	 * Constructor
 	 * @param cm object of "ConnectionManagerJDBC"
 	 */
 	public ProductOrderManager(ConnectionManagerJDBC cm) {
-		this.cm = cm;
+		this.connectionManager = cm;
 		this.c = cm.getConnection();
-		this.pm = new ProductManager(cm);
+		this.productManager = new ProductManager(cm);
+		//this.orderManager = new OrderManager(cm);
+		
 	}
-
+	
 	/**
 	 * Method that receives a product and an order id by parameter and adds the received product to the order that corresponds with the received order id. i.e: the method creates a new
 	 * product order with the order and product IDs received as parameter.
 	 * @param productOrder object of the class ProductOrder that store the product order that we want to insert to the database.
+	 * @throws ClientException 
 	 */
 	@Override
-	public void insertProductOrder(ProductOrder productOrder) throws SQLException{
+	public void insertProductOrder(ProductOrder productOrder) throws SQLException, ClientException{
+		// Retrieve the product and order from the productOrder
 		Product product = productOrder.getProduct();
-		//int product_id = product.getProductId();
-		float product_price = product.getPrice();
 		Order order = productOrder.getOrder();
-		float total_price = product_price * productOrder.getAmount();
+		
+		// Check that product and order exist in the DB
+//		if (order.getOrderId() == null) {
+//            orderManager.insertOrder(order);
+//        }
+		
+		if (product.getProductId() == null) {
+            productManager.insertProduct(product);
+        }
+		
+		// Compute the total price TODO REVISE THIS, WHY CAN WE OBTAIN DIRECTLY THE TOTAL PRICE WITH productOrder.getTotalPrice()?
+		int amount = productOrder.getAmount();
+		float totalPrice = productOrder.getTotalPrice();
+		
+		// Reduce the stock 
+		productManager.reduceStock(product.getProductId(), amount);
 		
 		/*if(product.getProductId() == null) {
 			pm.insertProduct(product);
@@ -58,17 +75,19 @@ public class ProductOrderManager implements IProductOrderManager{
 		//SQL query
 		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, ?, ?) ";
 		
-		//I create the statement in the try catch block
-		try(PreparedStatement stmt = c.prepareStatement(sql)){
-			removeProductFromStockQuantity(productOrder.getProduct().getProductId(), productOrder.getAmount()); //I remove the added product from the stock.
+		// Prepare the statement in the try catch block
+		try(PreparedStatement prep = c.prepareStatement(sql)){
+			//removeProductFromStockQuantity(productOrder.getProduct().getProductId(), productOrder.getAmount()); //I remove the added product from the stock.
 			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
 
-			stmt.setInt(1, order.getOrderId());
-			stmt.setInt(2, productOrder.getProduct().getProductId());
-			stmt.setInt(3, productOrder.getAmount());
-			stmt.setFloat(4, total_price);
-
-			stmt.executeUpdate();
+			// Bind parameters
+			prep.setInt(1, order.getOrderId());
+			prep.setInt(2, productOrder.getProduct().getProductId());
+			prep.setInt(3, productOrder.getAmount());
+			prep.setFloat(4, totalPrice);
+			
+			// Execute insert
+			prep.executeUpdate();
 		}catch(SQLException e) {
 			System.err.println("Error adding a product order: " + e.getMessage());
 			e.printStackTrace();
@@ -161,12 +180,12 @@ public class ProductOrderManager implements IProductOrderManager{
     				
     				productOrder = new ProductOrder();
     				productOrder.setAmount(resultSet.getInt("amount"));
-    				productOrder.setTotal_price(resultSet.getFloat("total_price"));
+    				productOrder.setTotalPrice(resultSet.getFloat("total_price"));
     				
-    				Order order = cm.getOrderManager().getOrderByID(order_id);
+    				Order order = connectionManager.getOrderManager().getOrderByID(order_id);
     				productOrder.setOrder(order);
     				
-    				Product product = cm.getProductManager().getProductById(product_id);
+    				Product product = connectionManager.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);
     			}
     		}
@@ -203,14 +222,14 @@ public class ProductOrderManager implements IProductOrderManager{
     				//I set the fields of the product order object.
     				productOrder = new ProductOrder();
     				productOrder.setAmount(resultSet.getInt("amount"));
-    				productOrder.setTotal_price(resultSet.getFloat("total_price"));
+    				productOrder.setTotalPrice(resultSet.getFloat("total_price"));
     				
     				// Get the full Order object from OrderManager
     				//Order order = cm.getOrderManager().getOrderByID(order_id);
     				///productOrder.setOrder(order);
     				//TODO THE LINES ABOVE GENERATE STACK OVERFLOW
     				int product_id = resultSet.getInt("product_id");
-    				Product product = cm.getProductManager().getProductById(product_id);
+    				Product product = connectionManager.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);
     				
     				//Finally, I add the created product order to the list of product orders associated to the received order id.
@@ -273,7 +292,7 @@ public class ProductOrderManager implements IProductOrderManager{
 					//I store the order id ina variable of type integer.
 					int order_id = rs.getInt("order_id");
 					//I retrieve the order that corresponds with the obtained order id using the respective method generated in "OrderManager"
-					Order order = cm.getOrderManager().getOrderByID(order_id);
+					Order order = connectionManager.getOrderManager().getOrderByID(order_id);
 					//I add the order to the list of orders.
 					ordersWithProduct.add(order);
 				}
@@ -292,7 +311,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 */
 	@Override
 	public void addProductToStockQuantity(int product_id, int amount) throws SQLException{
-		cm.getProductManager().increaseStock(product_id, amount);
+		connectionManager.getProductManager().increaseStock(product_id, amount);
 	}
 	
 	/**
@@ -302,7 +321,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	 */
 	@Override
 	public void removeProductFromStockQuantity(int product_id, int amount) throws SQLException{
-		boolean removed = cm.getProductManager().reduceStock(product_id, amount);
+		boolean removed = connectionManager.getProductManager().reduceStock(product_id, amount);
 		if (!removed) {
 			//TODO throw an exception
 		}
@@ -317,7 +336,7 @@ public class ProductOrderManager implements IProductOrderManager{
 	@Override
 	public void updateProductAmountInAnOrder(int product_id, int order_id, int product_amount) throws SQLException {
 		//I get the product out of its ID
-		Product product = cm.getProductManager().getProductById(product_id);
+		Product product = connectionManager.getProductManager().getProductById(product_id);
 		Float product_price = product.getPrice();
 		//I update the total price of the product order by multiplying the price of the product by the amount ordered.
 		Float updated_price = ((float) product_price * product_amount);

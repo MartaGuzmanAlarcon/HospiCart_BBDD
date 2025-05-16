@@ -57,9 +57,9 @@ public class ConnectionManagerJDBC {
 							address TEXT NOT NULL
 						);
 						""",
-				// client_order
+				// client_order: we had to put this name in this table because just “order” was a reserved word in SQLite
 				"""
-						CREATE TABLE client_order (
+						CREATE TABLE client_order ( 
 							order_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							user_id INTEGER NOT NULL,
 							order_date DATE NOT NULL,

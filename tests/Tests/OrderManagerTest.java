@@ -37,52 +37,52 @@ import HospiCartPOJOs.Supplier;
 class OrderManagerTest {	
 	//I define global variables that are going to be needed in several tests
 	
-		 private static ConnectionManagerJDBC connectionManager;
-		 private static ClientManager clientManager;
-		 private static OrderManager orderManager;
-		 private static SupplierManager supplierManager;
-		 private static ProductManager productManager;
+	 private static ConnectionManagerJDBC connectionManager;
+	 private static ClientManager clientManager;
+	 private static OrderManager orderManager;
+	 private static SupplierManager supplierManager;
+	 private static ProductManager productManager;
 
-	    
-	    @BeforeAll 
-	    static void initAll() throws Exception {
-	    	// This annotation is used to signal that the annotated method should be executed before all tests in the current test class.
-	        // In our case, this annotation allows us to create tables once.
-	        // Initialize the ConnectionManager (creates tables)
-	        
-	        connectionManager = new ConnectionManagerJDBC();
-	        orderManager = new OrderManager(connectionManager);
-	        clientManager = new ClientManager(connectionManager);
-	        supplierManager = new SupplierManager(connectionManager);
-	        productManager = new ProductManager(connectionManager);
-	    }
+    
+    @BeforeAll 
+    static void initAll() throws Exception {
+    	// This annotation is used to signal that the annotated method should be executed before all tests in the current test class.
+        // In our case, this annotation allows us to create tables once.
+        // Initialize the ConnectionManager (creates tables)
+        
+        connectionManager = new ConnectionManagerJDBC();
+        orderManager = new OrderManager(connectionManager);
+        clientManager = new ClientManager(connectionManager);
+        supplierManager = new SupplierManager(connectionManager);
+        productManager = new ProductManager(connectionManager);
+    }
 
-	    @BeforeEach
-	    void cleanTable() throws Exception {
-	    	// This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
-	        // Crucial for wiping or resetting data so tests can’t influence each other.
-	        // Ensure a clean state
-	        
-	        Connection c = connectionManager.getConnection();
-	        try ( Statement s = c.createStatement() ) {
-	        	// Delete in reverse order of dependencies
-	            s.execute("DELETE FROM supplier");
-	        	s.execute("DELETE FROM product");
-	        	s.execute("DELETE FROM product_order");
-	            s.execute("DELETE FROM payment");
-	            s.execute("DELETE FROM shipment");
-	            s.execute("DELETE FROM client");
-	            s.execute("DELETE FROM client_order");
-	            c.commit();
-	        }
-	    }
+    @BeforeEach
+    void cleanTable() throws Exception {
+    	// This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
+        // Crucial for wiping or resetting data so tests can’t influence each other.
+        // Ensure a clean state
+        
+        Connection c = connectionManager.getConnection();
+        try ( Statement s = c.createStatement() ) {
+        	// Delete in reverse order of dependencies
+            s.execute("DELETE FROM supplier");
+        	s.execute("DELETE FROM product");
+        	s.execute("DELETE FROM product_order");
+            s.execute("DELETE FROM payment");
+            s.execute("DELETE FROM shipment");
+            s.execute("DELETE FROM client");
+            s.execute("DELETE FROM client_order");
+            c.commit();
+        }
+    }
 
-	    @AfterAll
-	    static void tearDown() {
-	    	// This annotation is used to signal that the annotated method should be executed after all tests in the current test class.
-	        // Tear down shared resources (e.g. close the database connection)
-	        connectionManager.disconnect();
-	    }
+    @AfterAll
+    static void tearDown() {
+    	// This annotation is used to signal that the annotated method should be executed after all tests in the current test class.
+        // Tear down shared resources (e.g. close the database connection)
+        connectionManager.disconnect();
+    }
 	
 	@Test
 	/**

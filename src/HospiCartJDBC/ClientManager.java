@@ -51,7 +51,7 @@ public class ClientManager implements IClientManager{
 		if(!isClientInDatabase(c.getEmail())) {
 			String sql = "INSERT INTO client (name, surname, phone_number, email, address)" + "VALUES (?,?,?,?,?)"; // 5 "?" corresponding to 5 expressions in the SQL sentence
 		
-			// Prepare statement and request generated keys
+			// Prepare statement and request generated keys with Statement.RETURN_GENERATED_KEYS
 			try (PreparedStatement prep = manager.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){ // Statement.RETURN_GENERATED_KEYS asks the JDBC driver to capture the new key
 				// Bind parameters
 				prep.setString(1, c.getName()); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
@@ -59,8 +59,7 @@ public class ClientManager implements IClientManager{
 				prep.setInt(3, c.getPhoneNumber());
 				prep.setString(4, c.getEmail());
 				prep.setString(5, c.getAddress());
-				//prep.setString(6, c.getRole().name()); // .name() Returns the name of this enum constant, exactly as declared in its enum declaration
-				
+		
 				// Execute insert
 				prep.executeUpdate(); // Executes the SQL statement in this PreparedStatement object, which must be an SQL DML statement; or an SQL DDL statement (which returns nothing)
 	

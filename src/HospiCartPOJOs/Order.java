@@ -94,10 +94,10 @@ public class Order implements Serializable {
 			      //We throw a personalized exception
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
 		}
-		if(_payment == null) {
+		if(_payment == null || _payment.getPaymentId() == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
 		}
-		if(_shipment == null) {
+		if(_shipment == null || _shipment.getShipmentId() == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
 		}
 		if(_productOrders.isEmpty()) {
@@ -108,8 +108,7 @@ public class Order implements Serializable {
 					throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
 				}
 			}
-		}		
-		this.client = _client;
+		}		this.client = _client;
 		this.payment = _payment;
 		this.Shipment = _shipment;
 		this.productOrders = _productOrders;
@@ -118,6 +117,29 @@ public class Order implements Serializable {
 		//I initialize the status of the order to "ORDERED" which is the 'default' status.
 		this.status = Status.ORDERED;
 
+	}
+	
+	
+
+	/**
+	 * Constructor of "Order" that receives one parameter per attribute the class has 
+	 * (except for order ID, order date, order status and the list of product orders) and initializes them.
+	 * @param client object of the class "Client" that stores the client that made the order.
+	 * @param payment object of the class "Payment" that stores the payment of the order.
+	 * @param shipment shipment object of the class "Shipment" that stores the shipment of the order.
+	 * @param orderDate
+	 * @param status
+	 */
+	public Order(Client client, Payment payment, Shipment shipment) {
+		super();
+		this.client = client;
+		this.payment = payment;
+		Shipment = shipment;
+		this.productOrders = new ArrayList<ProductOrder>();
+		//I initialize the order date to the present date.
+		this.orderDate = Date.valueOf(LocalDate.now());
+		//I initialize the status of the order to "ORDERED" which is the 'default' status.
+		this.status = Status.ORDERED;
 	}
 
 	// Additional method to use LocalDate objects
@@ -216,12 +238,12 @@ public class Order implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;}
-		if (obj == null) {
-			return false;}
-		if (getClass() != obj.getClass()) {
-			return false;}
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
 		Order other = (Order) obj;
 		return orderId == other.orderId;
 	}

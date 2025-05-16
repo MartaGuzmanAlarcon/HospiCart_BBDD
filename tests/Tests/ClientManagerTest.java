@@ -15,15 +15,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO REVISE THIS WHOLE CLASS AND FINISH IT 
-
 public class ClientManagerTest {
 	// Define global variables that are going to be needed in several tests
-	
 	 private static ConnectionManagerJDBC connectionManager;
 	 private static ClientManager clientManager;
-
-    // TODO REVIEW THIS ANNOTATIONS AND MAKE THEM WORK!
     
     @BeforeAll 
     static void initAll() throws Exception {
