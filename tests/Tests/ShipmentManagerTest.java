@@ -101,7 +101,7 @@ public class ShipmentManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -160,7 +160,7 @@ public class ShipmentManagerTest {
 			products.add(product2);
 			
 			//I create the supplier.
-			Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+			Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 			
 			ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 			ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -222,7 +222,7 @@ public class ShipmentManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -284,7 +284,7 @@ public class ShipmentManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -346,7 +346,7 @@ public class ShipmentManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -399,7 +399,7 @@ public class ShipmentManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -452,7 +452,7 @@ public class ShipmentManagerTest {
 		products.add(product2);
 		
 		//I create the supplier.
-		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(products, Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 		
 		ProductOrder productOrder1 = new ProductOrder(4, 200.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 90.0f, product2);
@@ -518,7 +518,7 @@ public class ShipmentManagerTest {
 		products.add(product3);
 								
 		//I create the supplier.
-		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, "Fabio Lopez", "Calle de Lisboa 34");
+		Supplier supplier = new Supplier(1, products ,Manufacturer.THERMO_FISHER, 1234, "Calle de Lisboa 34");
 								
 		ProductOrder productOrder1 = new ProductOrder(4, 20.0f, product1);
 		ProductOrder productOrder2 = new ProductOrder(6, 1800.0f, product2);
