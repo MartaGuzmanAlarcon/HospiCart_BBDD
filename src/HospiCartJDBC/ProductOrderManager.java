@@ -64,10 +64,7 @@ public class ProductOrderManager implements IProductOrderManager{
 		// Compute the total price TODO REVISE THIS, WHY CAN WE OBTAIN DIRECTLY THE TOTAL PRICE WITH productOrder.getTotalPrice()?
 		int amount = productOrder.getAmount();
 		float totalPrice = productOrder.getTotalPrice();
-		
-		// Reduce the stock 
-		productManager.reduceStock(product.getProductId(), amount);
-		
+				
 		/*if(product.getProductId() == null) {
 			pm.insertProduct(product);
 		}*/
@@ -87,7 +84,13 @@ public class ProductOrderManager implements IProductOrderManager{
 			prep.setFloat(4, totalPrice);
 			
 			// Execute insert
-			prep.executeUpdate();
+			int rowsAffected = prep.executeUpdate();
+			if(rowsAffected > 0 ) {
+				productManager.updateProductStock(product, productOrder.getAmount(), false);
+			} else {
+				throw new RuntimeException("An error occurred when updating the product order in the database.");
+			}
+			c.commit();
 		}catch(SQLException e) {
 			System.err.println("Error adding a product order: " + e.getMessage());
 			e.printStackTrace();
@@ -113,12 +116,17 @@ public class ProductOrderManager implements IProductOrderManager{
 			for(int i = 0; i < productOrdersOfOrder.size(); i++) {
 				ProductOrder productOrder = productOrdersOfOrder.get(i);
 				Product product = productOrder.getProduct();
-				addProductToStockQuantity(product.getProductId(), productOrder.getAmount());
+				productManager.updateProductStock(product, productOrder.getAmount(), true);
 			}
 			
 			stmt.setInt(1,  order_id);
 			
-			stmt.executeUpdate();
+			int rowsAffected = stmt.executeUpdate();
+			if(rowsAffected == 0) {
+				throw new RuntimeException("An error occurred when updating the product order in the database.");
+			}
+			//TODO HERE WE ARE NOT TAKING INTO ACCOUNT WHAT HAPPENS IF THE EXCECUTE UPDATE FAILS --> IF IT FAILS, WE WILL HAVE ALREADY MODIFIED THE STOCK
+			c.commit();
 		}catch(SQLException e) {
 			System.err.println("Error deleting product orders by their order ID: " + e.getMessage());
             e.printStackTrace();
@@ -138,18 +146,19 @@ public class ProductOrderManager implements IProductOrderManager{
 		
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
-			//I get a list with the product orders associated to the order with the received order id and create a for loop in which, 
-			//for each product order, I call the method that adds the products to the stock.
-			List<ProductOrder> productOrdersOfOrder = getProductOrdersByOrderID(order_id); //TODO is this ok? can I have more than one product order of the same product i the same order?
-			for(int i = 0; i < productOrdersOfOrder.size(); i++) {
-				ProductOrder productOrder = productOrdersOfOrder.get(i);
-				addProductToStockQuantity(product_id, productOrder.getAmount());
-			}
+			ProductOrder productOrder = getProductOrderByIDs(product_id, order_id);
 			
 			stmt.setInt(1,  order_id);
 			stmt.setInt(2, product_id);
 			
-			stmt.executeUpdate();
+			int rowsAffected = stmt.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				productManager.updateProductStock(productOrder.getProduct(), productOrder.getAmount(), true);
+			} else {
+				throw new RuntimeException("An error occurred when updating the product order in the database.");
+			}
+			c.commit();
 		}catch(SQLException e) {
 			System.err.println("Error deleting product orders by the product and order ID: " + e.getMessage());
 		    e.printStackTrace();
@@ -303,30 +312,7 @@ public class ProductOrderManager implements IProductOrderManager{
 		}
 		return ordersWithProduct;
 	}
-	
-	/**
-	 * Method that receives a product id and an amount and adds that amount of the specified product to the product's stock quantity.
-	 * @param product_id integer that stores the id of a product.
-	 * @param amount integer that stores the amount of the product that we want to add to the stock.
-	 */
-	@Override
-	public void addProductToStockQuantity(int product_id, int amount) throws SQLException{
-		connectionManager.getProductManager().increaseStock(product_id, amount);
-	}
-	
-	/**
-	 * Method that receives a product id and an amount and removes that amount of the specified product from the product's stock.
-	 * @param product_id integer that stores a product id.
-	 * @param amount integer that stores the amount of the product that we want to remove from the prosuct's stock.
-	 */
-	@Override
-	public void removeProductFromStockQuantity(int product_id, int amount) throws SQLException{
-		boolean removed = connectionManager.getProductManager().reduceStock(product_id, amount);
-		if (!removed) {
-			//TODO throw an exception
-		}
-	}
-	
+		
 	/**
 	 * Method that receives an order id, a product's id and a quantity. The method updates the amount of the received product for the quantity passed by parameter of the order that corresponds with the received order id.
 	 * @param product_id integer that stores the id of the product whose quantity we wish to update.
@@ -334,12 +320,14 @@ public class ProductOrderManager implements IProductOrderManager{
 	 * @param product_amount integer that stores the amount we wish to order of the specified product.
 	 */
 	@Override
-	public void updateProductAmountInAnOrder(int product_id, int order_id, int product_amount) throws SQLException {
+	public void updateProductAmountInAnOrder(int product_id, int order_id, int product_amount) throws SQLException, ClientException {
 		//I get the product out of its ID
 		Product product = connectionManager.getProductManager().getProductById(product_id);
 		Float product_price = product.getPrice();
 		//I update the total price of the product order by multiplying the price of the product by the amount ordered.
 		Float updated_price = ((float) product_price * product_amount);
+		
+		ProductOrder productOrder = getProductOrderByIDs(product_id, order_id);
 		
 		//SQL query
 		String sql = "UPDATE product_order SET amount = ?, total_price = ? "
@@ -348,15 +336,26 @@ public class ProductOrderManager implements IProductOrderManager{
 
 		//I create the statement in the try catch block
 		try(PreparedStatement stmt = c.prepareStatement(sql)){
-			removeProductFromStockQuantity(product_id, 1); //I remove the added product from the stock.
-			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
-
 			stmt.setInt(1,  product_amount);
 			stmt.setFloat(2, updated_price);
 			stmt.setInt(3,  order_id);
 			stmt.setInt(4,  product_id);
 							
-			stmt.executeUpdate();
+			int rowsAffected = stmt.executeUpdate();
+			if(rowsAffected > 0) {
+				if(productOrder.getAmount() > product_amount) {
+					//I increase the stock
+					int newStock = productOrder.getAmount() - product_amount;
+					productManager.updateProductStock(product, newStock, true);
+				} else {
+					//I decrease the stock
+					int newStock = product_amount - productOrder.getAmount();
+					productManager.updateProductStock(product, newStock, false);
+				}
+			} else {
+				throw new RuntimeException("An error occurred when updating the product order in the database.");
+			}
+			c.commit();
 		}catch(SQLException e) {
 			System.err.println("Error updating the amount of a product in a product order: " + e.getMessage());
 			e.printStackTrace();

@@ -28,5 +28,5 @@ public interface IProductManager {
 
 	boolean updateProduct(Product product); // Actualizar producto
 
-	boolean updateProductStockInDB(int productId, int newStock);
+	void updateProductStock(Product product, int amount, boolean increasing);
 }

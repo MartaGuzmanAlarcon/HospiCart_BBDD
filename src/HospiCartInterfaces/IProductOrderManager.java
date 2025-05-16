@@ -64,26 +64,12 @@ public interface IProductOrderManager {
 	 * @return a list containing instances of Order.
 	 */
 	List<Order> getOrdersWithAProduct(int product_id) throws OrderExceptions, ClientException;
-	
-	/**
-	 * Method that receives a product id and an amount and adds that amount of the specified product to the product's stock quantity.
-	 * @param product_id integer that stores the id of a product.
-	 * @param amount integer that stores the amount of the product that we want to add to the stock.
-	 */
-	void addProductToStockQuantity(int product_id, int amount) throws SQLException;
-	
-	/**
-	 * Method that receives a product id and an amount and removes that amount of the specified product from the product's stock.
-	 * @param product_id integer that stores a product id.
-	 * @param amount integer that stores the amount of the product that we want to remove from the prosuct's stock.
-	 */
-	public void removeProductFromStockQuantity(int product_id, int amount)throws SQLException;
-	
+		
 	/**
 	 * Method that receives an order id, a product's id and a quantity. The method updates the amount of the received product for the quantity passed by parameter of the order that corresponds with the received order id.
 	 * @param product_id integer that stores the id of the product whose quantity we wish to update.
 	 * @param order_id integer that stores the id of the order which we wish to modify.
 	 * @param amount integer that stores the amount we wish to order of the specified product.
 	 */
-	void updateProductAmountInAnOrder(int product_id, int order_id, int amount)throws SQLException;
+	void updateProductAmountInAnOrder(int product_id, int order_id, int amount)throws SQLException, ClientException;
 }

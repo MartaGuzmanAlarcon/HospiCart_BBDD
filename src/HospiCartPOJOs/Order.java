@@ -48,10 +48,10 @@ public class Order implements Serializable {
 			      //We throw a personalized exception
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
 		}
-		if(_payment == null || _payment.getPaymentId() == null) {
+		if(_payment == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
 		}
-		if(_shipment == null || _shipment.getShipmentId() == null) {
+		if(_shipment == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
 		}
 		if(_productOrders.isEmpty()) {
@@ -94,10 +94,10 @@ public class Order implements Serializable {
 			      //We throw a personalized exception
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
 		}
-		if(_payment == null || _payment.getPaymentId() == null) {
+		if(_payment == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
 		}
-		if(_shipment == null || _shipment.getShipmentId() == null) {
+		if(_shipment == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
 		}
 		if(_productOrders.isEmpty()) {

@@ -32,7 +32,7 @@ import Exceptions.OrderExceptions;
 public class OrderManager implements IOrderManager {
     private Connection c;
     private ConnectionManagerJDBC cm;
-    private ProductOrderManager productOM;
+    private ProductOrderManager productOrderManager;
     private ShipmentManager shipmentManager;
     private PaymentManager paymentManager;
 
@@ -41,7 +41,7 @@ public class OrderManager implements IOrderManager {
     public OrderManager(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
-        productOM = new ProductOrderManager(cm);
+        productOrderManager = new ProductOrderManager(cm);
         shipmentManager = new ShipmentManager(cm);
         paymentManager = new PaymentManager(cm);
     }
@@ -103,7 +103,7 @@ public class OrderManager implements IOrderManager {
                 	//TODO: I THINK I SHOULD THROW AN EXCEPTION BECAUSE THE SUPPLIER IS THE ONE IN CHARGE OF INSERTING THE PRODUCTS
                 }
                 productOrder.setOrder(order);
-            	productOM.insertProductOrder(productOrder);
+            	productOrderManager.insertProductOrder(productOrder);
             }
             //I print success messages
             System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
@@ -168,14 +168,8 @@ public class OrderManager implements IOrderManager {
             } else {
                 System.out.println("\nOrder with ID " + order_id + " deleted successfully.");
             }
-    		//I call the method of Product Order that increases the stock of a product.
-    		List<ProductOrder> productOrdersOfOrder = cm.getProductOrderManager().getProductOrdersByOrderID(order_id);
-			for(int i = 0; i<productOrdersOfOrder.size(); i++) {
-				
-				ProductOrder productOrder = productOrdersOfOrder.get(i);
-				Product product = productOrder.getProduct();
-				cm.getProductOrderManager().addProductToStockQuantity(product.getProductId(), productOrder.getAmount());
-			}
+    		//I call the method of Product Order that deletes the product orders associated to the received order id.
+    		productOrderManager.deleteProductOrdersByOrderID(order_id);
 
             c.commit(); //we commit the transaction
     		

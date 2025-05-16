@@ -454,78 +454,7 @@ public class ProductManager implements IProductManager {
 		}
 		return false;
 	}
-
-	/**
-	 * Reduces the stock of a product by a given quantity after a purchase. If the
-	 * stock goes below the defined threshold, a low stock warning is triggered.
-	 *
-	 * @param productId the ID of the product
-	 * @param quantity  the quantity to reduce
-	 * @return true if the stock was successfully updated, false otherwise
-	 * @throws SQLException
-	 */
-	public boolean reduceStock(int productId, int quantity) throws SQLException {
-		Product product = getProductById(productId);
-		System.out.println(" " + product);
-
-		if (product == null) {
-			System.out.println("Product not found.");
-			return false;
-		}
-
-		if (product.getStockQuantity() < quantity) {
-			System.out.println("Insufficient stock for the requested purchase.");
-			return false;
-		}
-
-		int updatedStock = product.getStockQuantity() - quantity;
-		//TODO: CHECK IF WE WANT TO PRINT THIS UPDATE STOCK MESSAGE
-		System.out.println("upDateStock " + updatedStock + "\n");
-		product.setStockQuantity(updatedStock);
-
-		if (updateProductStockInDB(productId, updatedStock)) {
-			c.commit();
-			product.setStockQuantity(updatedStock);
-			checkLowStockAlert(product);
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Increases the stock quantity of a given product by the specified amount.
-	 *
-	 * @param productId     ID of the product whose stock will be increased
-	 * @param quantityToAdd Amount of stock to add
-	 * @return true if the stock was successfully updated and committed; false
-	 *         otherwise
-	 */
-	public boolean increaseStock(int productId, int quantityToAdd) {
-		Product product = getProductById(productId);
-
-		if (product == null) {
-			System.out.println("Product not found.");
-			return false;
-		}
-
-		int updatedStock = product.getStockQuantity() + quantityToAdd;
-		product.setStockQuantity(updatedStock);
-
-		try {
-			if (updateProductStockInDB(productId, updatedStock)) {
-				c.commit(); // Solo commit
-				product.setStockQuantity(updatedStock);
-				System.out.println("Stock increased successfully.");
-				return true;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return false;
-	}
-
+	
 	/**
 	 * Updates the stock of a product in the database.
 	 *
@@ -534,19 +463,27 @@ public class ProductManager implements IProductManager {
 	 * @return true if the update was successful, false otherwise
 	 */
 	@Override
-	public boolean updateProductStockInDB(int productId, int newStock) {
+	public void updateProductStock(Product product, int amount, boolean increasing) {
+		int newStock = 0;
+		//If the variable increasing is true it is because I have to increase the stock quantity of the product. This can happen when a product order is deleted.
+		if(increasing) {
+			newStock = product.getStockQuantity() + amount;
+		} else { //If increasing is false, it is because we have inserted a new product order in the database and we have to decrease the stock of the product.
+			newStock = product.getStockQuantity() - amount;
+		}
+		
 		String sql = "UPDATE product SET stock_quantity = ? WHERE product_id = ?";
 		try (PreparedStatement stmt = c.prepareStatement(sql)) {
 			stmt.setInt(1, newStock);
-			stmt.setInt(2, productId);
-			int rowsAffected = stmt.executeUpdate();
-			stmt.close();
-			return rowsAffected > 0;
+			stmt.setInt(2, product.getProductId());
+			product.setStockQuantity(newStock);
+			stmt.executeUpdate();
+			c.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
 	}
+
 
 	/**
 	 * Checks whether the stock of a product is below its threshold. If so, prints a
