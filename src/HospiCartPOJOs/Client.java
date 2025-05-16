@@ -137,7 +137,7 @@ public class Client implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
-		return Objects.equals(id, other.id);
+		return id == other.id;
 	}
 
 	// toString  --> ORDER PRINT??

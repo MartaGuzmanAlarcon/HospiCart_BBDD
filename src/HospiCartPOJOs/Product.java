@@ -133,7 +133,7 @@ public class Product implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Product other = (Product) obj;
-		return Objects.equals(productId, other.productId);
+		return productId == other.productId;
 	}
 
 	// toString

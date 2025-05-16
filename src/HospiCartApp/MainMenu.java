@@ -2,9 +2,10 @@ package HospiCartApp;
 
 import java.io.IOException;
 
+
 import Exceptions.ClientException;
 import Utilities.Encryption;
-import Utilities.IO;
+import Utilities.*;
 import HospiCartInterfaces.IClientManager;
 import HospiCartInterfaces.IUserManager;
 import HospiCartJDBC.ClientManager;
@@ -30,15 +31,15 @@ public class MainMenu {
             //The while runs as long as exit is false.
             while (!exit) {
             	//We print a welcome message and the first options of the menu of our application.
-                IO.println("\n=== Welcome to HospiCart ===");
-                IO.println("Dear customer, please introduce the respective number of the operation you wish to perform among the ones shown below:");
-                IO.println("1. Register as Doctor"); //TODO this should only be Register and then, if the user chose this option we should ask him/her to choose between nurse or doctor or supplier.
-                IO.println("2. Register as Nurse");
-                IO.println("3. Register as Supplier");
-                IO.println("4. Log In");
-                IO.println("0. Exit");
+            	Output.println("\n=== Welcome to HospiCart ===");
+            	Output.println("Dear customer, please introduce the respective number of the operation you wish to perform among the ones shown below:");
+            	Output.println("1. Register as Doctor"); //TODO this should only be Register and then, if the user chose this option we should ask him/her to choose between nurse or doctor or supplier.
+            	Output.println("2. Register as Nurse");
+            	Output.println("3. Register as Supplier");
+            	Output.println("4. Log In");
+            	Output.println("0. Exit");
                 //We create an variable of type integer, which will store the number the customer introduced in the screen.
-                int input = IO.readInteger();
+                int input = InputKB.readInteger();
                 //We create a switch which one case per each number the user might have introduced.
                 switch (input) {
                     case 1:
@@ -55,77 +56,77 @@ public class MainMenu {
                         break;
                     case 0:
                         conMan.disconnect();
-                        IO.println("Application closed!");
+                        Output.println("Application closed!");
                         //If the user introduces a 0, then we set the variable "exit" to true so we can exit the switch.
                         exit = true;
                         break;
                     default:
-                        IO.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
+                    	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
                 }
             }
 
         } catch (Exception e) {
-            IO.println("Critical system error:"); //TODO
+        	Output.println("Critical system error:"); //TODO
             e.printStackTrace();
         }
     }
 
     public static void registerDoctor() throws IOException, ClientException {
-        IO.println("\n=== Doctor Registration ===");
-        Client doctor = IO.gatherClientInfo();
+    	Output.println("\n=== Doctor Registration ===");
+        Client doctor = InputKB.getClientFromKB();
         clientMan.insertClient(doctor);
 
-        User user = IO.createUser(doctor.getEmail());
+        User user = InputKB.getUserFromKB(doctor.getEmail());
         userMan.register(user);
         Role doctorRole = userMan.getRole("doctor");
         userMan.assignRole(user, doctorRole);
 
-        IO.println("Doctor registration completed.");
-        IO.println("Username: "+user.getEmail());
+        Output.println("Doctor registration completed.");
+        Output.println("Username: "+user.getEmail());
     }
 
     public static void registerNurse() throws IOException, ClientException {
-        IO.println("\n=== Nurse Registration ===");
-        Client nurse = IO.gatherClientInfo();
+    	Output.println("\n=== Nurse Registration ===");
+        Client nurse = InputKB.getClientFromKB();
         clientMan.insertClient(nurse);
 
-        User user = IO.createUser(nurse.getEmail());
+        User user = InputKB.getUserFromKB(nurse.getEmail());
         userMan.register(user);
         Role nurseRole = userMan.getRole("nurse");
         userMan.assignRole(user, nurseRole);
 
-        IO.println("Nurse registration completed.");
-        IO.println("Username: "+user.getEmail());
+        Output.println("Nurse registration completed.");
+        Output.println("Username: "+user.getEmail());
     }
 
     public static void registerSupplier() throws IOException, ClientException {
-        IO.println("\n=== Supplier Registration ===");
-        Client supplier = IO.gatherClientInfo();
+    	Output.println("\n=== Supplier Registration ===");
+        Client supplier = InputKB.getClientFromKB();
         clientMan.insertClient(supplier);
 
-        User user = IO.createUser(supplier.getEmail());
+        User user = InputKB.getUserFromKB(supplier.getEmail());
         userMan.register(user);
         Role supplierRole = userMan.getRole("supplier");
         userMan.assignRole(user, supplierRole);
 
-        IO.println("Supplier registration completed.");
-        IO.println("Username: "+user.getEmail());
+        Output.println("Supplier registration completed.");
+        Output.println("Username: "+user.getEmail());
     }
 
     public static void login(ConnectionManagerJDBC conMan) throws IOException {
-        IO.println("\n=== Log In ===");
+    	Output.println("\n=== Log In ===");
 
         while (true) {
-            IO.println("Email: ");
-            String email = IO.readString();
-            IO.println("Password: ");
-            String password = IO.readString();
+        	Output.println("Email: ");
+            String email = InputKB.readString();
+            Output.println("Password: ");
+            String password = InputKB.readString();
 
             User user = userMan.login(email, password);
 
             if (user != null) {
                 String roleName = user.getRole().getName();
-                IO.println("Logged in as: " + roleName);
+                Output.println("Logged in as: " + roleName);
 
                 switch (roleName) {
                     case "doctor":
@@ -138,12 +139,12 @@ public class MainMenu {
                         new HospiCartApp.SupplierMenu(conMan, user).displayMenu();
                         break;
                     default:
-                        IO.println("Unrecognized role.");
+                    	Output.println("Unrecognized role.");
                         break;
                 }
                 break;
             } else {
-                IO.println("Incorrect email or password, or user not registered. Please try again.");
+            	Output.println("Incorrect email or password, or user not registered. Please try again.");
             }
         }
     }
