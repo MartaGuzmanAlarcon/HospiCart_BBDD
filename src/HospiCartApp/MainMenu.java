@@ -1,11 +1,16 @@
 package HospiCartApp;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
+
 import Exceptions.ClientException;
 import Utilities.Encryption;
 import Utilities.*;
 import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
+import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJPA.UserManagerJPA;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Role;
@@ -16,6 +21,7 @@ public class MainMenu {
     private static UserManagerJPA userManager;
     private static ClientManagerJDBC clientManager;
     private static ConnectionManagerJDBC connectionManager;
+    private static ProductManagerJDBC productManager;
 
 
     public static void main(String[] args) {
@@ -23,6 +29,7 @@ public class MainMenu {
             connectionManager = new ConnectionManagerJDBC();
             userManager = new UserManagerJPA();
             clientManager = new ClientManagerJDBC(connectionManager);
+            productManager = new ProductManagerJDBC(connectionManager);
             //We declare a boolean variable and set it to false in order to create a while that prints the menu in the screen that runs until 
             //the value of this variable is changes (when the user wants to leave the application) 
             boolean exit = false;
@@ -59,6 +66,20 @@ public class MainMenu {
         	Output.println("Critical system error:"); //TODO
             e.printStackTrace();
         }
+    }
+    /**
+     * This method sets the "HospiCart" application by calling the method of Product that inserts all the products contained in a CSV file in the folder "Utilities".
+     */
+    public static void setApplication() {
+    	//TODO SOLVE THIS!!!
+    	//URL resourceUrl = getClass().getClassLoader().getResource("yourfile.csv");
+//        if (resourceUrl != null) {
+//            try {
+//            	productManager.insertProductsFromCSV(Paths.get(resourceUrl.toURI()).toString());
+//            } catch (URISyntaxException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
     
     /**
@@ -217,7 +238,7 @@ public class MainMenu {
             	//We obtain the role of the user.
                 String roleName = user.getRole().getName();
                 Output.println("It is nice to see you again, dear " + roleName + "!");
-
+                setApplication(); //I call the method that prepares the application by inserting the products we sell.
                 switch (roleName) {
                     case "doctor":
                         DoctorMenu.displayMenu();
