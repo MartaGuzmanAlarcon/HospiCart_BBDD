@@ -4,7 +4,6 @@ import HospiCartInterfaces.IOrderManager;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
 import HospiCartPOJOs.Status;
@@ -29,21 +28,21 @@ import Exceptions.OrderExceptions;
  * This class implements the interface "IOrderManager" and implements all of its methods. 
  */
 
-public class OrderManager implements IOrderManager {
+public class OrderManagerJDBC implements IOrderManager {
     private Connection c;
     private ConnectionManagerJDBC cm;
-    private ProductOrderManager productOrderManager;
-    private ShipmentManager shipmentManager;
-    private PaymentManager paymentManager;
+    private ProductOrderManagerJDBC productOrderManager;
+    private ShipmentManagerJDBC shipmentManager;
+    private PaymentManagerJDBC paymentManager;
 
 
     //Constructor
-    public OrderManager(ConnectionManagerJDBC cm) {
+    public OrderManagerJDBC(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
-        productOrderManager = new ProductOrderManager(cm);
-        shipmentManager = new ShipmentManager(cm);
-        paymentManager = new PaymentManager(cm);
+        productOrderManager = new ProductOrderManagerJDBC(cm);
+        shipmentManager = new ShipmentManagerJDBC(cm);
+        paymentManager = new PaymentManagerJDBC(cm);
     }
 
     /**
@@ -97,11 +96,6 @@ public class OrderManager implements IOrderManager {
             List<ProductOrder> productOrders = order.getProductOrders();
             for(int i=0; i<productOrders.size(); i++) {
                 ProductOrder productOrder = productOrders.get(i);
-                Product product = productOrder.getProduct();
-                if(product.getProductId() == null) {
-                	//productM.insertProduct(product);
-                	//TODO: I THINK I SHOULD THROW AN EXCEPTION BECAUSE THE SUPPLIER IS THE ONE IN CHARGE OF INSERTING THE PRODUCTS
-                }
                 productOrder.setOrder(order);
             	productOrderManager.insertProductOrder(productOrder);
             }
@@ -131,56 +125,62 @@ public class OrderManager implements IOrderManager {
 	 * @param order_id integer that stores the id of the order we wish to remove.
 	 */
     @Override
-    public void deleteOrder(int order_id)  throws ClientException{
-    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
-    	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
-    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ? ";
-    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ? ";
-    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ? ";
-    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ? ";
-    	
-    	try (
-    			//I create one prepared statement per each SQL sequence created.
-    			PreparedStatement stmtProductOrders = c.prepareStatement(deleteFromProductOrders);
-    			PreparedStatement stmtPayment = c.prepareStatement(deleteFromPayment);
-    			PreparedStatement stmtFromShipment = c.prepareStatement(deleteFromShipment);
-    			PreparedStatement stmtOrder = c.prepareStatement(deleteFromOrder);
-    	){
-    		//Delete from product orders
-    		stmtProductOrders.setInt(1, order_id);
-    		stmtProductOrders.executeUpdate();
-    		
-    		//Delete from payment
-    		stmtPayment.setInt(1, order_id);
-    		stmtPayment.executeUpdate();
-
-    		//Delete from shipment
-    		stmtFromShipment.setInt(1, order_id);
-    		stmtFromShipment.executeUpdate();
-    		
-    		//Delete from client_order
-    		stmtOrder.setInt(1, order_id);
-    		int rowsAffected = stmtOrder.executeUpdate();
-    		
-    		//We check whether a line was or not affected (is yes, then the order was removed)
-    		if (rowsAffected == 0) {
-                System.out.println("No order found with ID: " + order_id);
-            } else {
-                System.out.println("\nOrder with ID " + order_id + " deleted successfully.");
-            }
-    		//I call the method of Product Order that deletes the product orders associated to the received order id.
-    		productOrderManager.deleteProductOrdersByOrderID(order_id);
-
-            c.commit(); //we commit the transaction
-    		
-    	}catch (SQLException e) {
-            try {
-                c.rollback(); // Roll back on failure
-            } catch (SQLException rollbackEx) {
-                System.err.println("Rollback failed: " + rollbackEx.getMessage());
-            }
-            throw new RuntimeException("Error deleting order: " + e.getMessage(), e);
-        }
+    public void deleteOrder(int order_id)  throws ClientException, OrderExceptions{
+    	Order order = getOrderByID(order_id);
+    	//After obtaining the order that the user wants to delete, I check if the status of the order is "ORDERED", as it is the only scenario in which an order can be removed.
+    	if(order.getStatus() != Status.ORDERED) {
+    		throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.DELETE_ERROR);
+    	} else {
+	    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
+	    	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
+	    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ? ";
+	    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ? ";
+	    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ? ";
+	    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ? ";
+	    	
+	    	try (
+	    			//I create one prepared statement per each SQL sequence created.
+	    			PreparedStatement stmtProductOrders = c.prepareStatement(deleteFromProductOrders);
+	    			PreparedStatement stmtPayment = c.prepareStatement(deleteFromPayment);
+	    			PreparedStatement stmtFromShipment = c.prepareStatement(deleteFromShipment);
+	    			PreparedStatement stmtOrder = c.prepareStatement(deleteFromOrder);
+	    	){
+	    		//Delete from product orders
+	    		stmtProductOrders.setInt(1, order_id);
+	    		stmtProductOrders.executeUpdate();
+	    		
+	    		//Delete from payment
+	    		stmtPayment.setInt(1, order_id);
+	    		stmtPayment.executeUpdate();
+	
+	    		//Delete from shipment
+	    		stmtFromShipment.setInt(1, order_id);
+	    		stmtFromShipment.executeUpdate();
+	    		
+	    		//Delete from client_order
+	    		stmtOrder.setInt(1, order_id);
+	    		int rowsAffected = stmtOrder.executeUpdate();
+	    		
+	    		//We check whether a line was or not affected (is yes, then the order was removed)
+	    		if (rowsAffected == 0) {
+	                System.out.println("No order found with ID: " + order_id);
+	            } else {
+	                System.out.println("\nOrder with ID " + order_id + " deleted successfully.");
+	            }
+	    		//I call the method of Product Order that deletes the product orders associated to the received order id.
+	    		productOrderManager.deleteProductOrdersByOrderID(order_id);
+	
+	            c.commit(); //we commit the transaction
+	    		
+	    	}catch (SQLException e) {
+	            try {
+	                c.rollback(); // Roll back on failure
+	            } catch (SQLException rollbackEx) {
+	                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+	            }
+	            throw new RuntimeException("Error deleting order: " + e.getMessage(), e);
+	        }
+    	}
     }
     
     /**

@@ -31,10 +31,10 @@ import Exceptions.*;
  */
 
 
-public class ClientManager implements IClientManager{
+public class ClientManagerJDBC implements IClientManager{
 	private ConnectionManagerJDBC manager;
 
-	public ClientManager(ConnectionManagerJDBC m) {
+	public ClientManagerJDBC(ConnectionManagerJDBC m) {
 		this.manager = m;
 	}
 	

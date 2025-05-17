@@ -14,11 +14,11 @@ import HospiCartPOJOs.PaymentStatus;
 import HospiCartPOJOs.Shipment;
 import Utilities.Utilities;
 
-public class PaymentManager implements IPaymentManager {
+public class PaymentManagerJDBC implements IPaymentManager {
 	private ConnectionManagerJDBC manager;
 	// private OrderManager orderManager;
 
-    public PaymentManager(ConnectionManagerJDBC m) {
+    public PaymentManagerJDBC(ConnectionManagerJDBC m) {
         this.manager = m;
     }
 

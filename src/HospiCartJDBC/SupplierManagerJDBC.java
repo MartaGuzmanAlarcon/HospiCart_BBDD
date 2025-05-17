@@ -15,11 +15,11 @@ import HospiCartPOJOs.Supplier;
  * information from a CSV file and displaying the list of suppliers.
  */
 
-public class SupplierManager {
+public class SupplierManagerJDBC {
 
 	private Connection c;
 	private ConnectionManagerJDBC cm;
-	private ProductManager productManager;
+	private ProductManagerJDBC productManager;
 
 	/**
 	 * Constructor that initializes the SupplierManager with the given
@@ -28,11 +28,11 @@ public class SupplierManager {
 	 * @param cm The ConnectionManager that will be used to obtain the database
 	 *           connection.
 	 */
-	public SupplierManager(ConnectionManagerJDBC cm) {
+	public SupplierManagerJDBC(ConnectionManagerJDBC cm) {
 
 		this.cm = cm;
 		this.c = cm.getConnection();
-		this.productManager = new ProductManager(cm);
+		this.productManager = new ProductManagerJDBC(cm);
 	}
 
 	/**

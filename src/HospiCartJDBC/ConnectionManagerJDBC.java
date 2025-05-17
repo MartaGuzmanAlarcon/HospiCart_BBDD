@@ -9,13 +9,13 @@ public class ConnectionManagerJDBC {
 	
 	private Connection c = null;
 
-	private ClientManager clientMan;
-	private OrderManager orderMan;
-	private ProductManager productMan;
-	private ProductOrderManager productOrderMan;
-	private ShipmentManager shipmentMan;
-	private SupplierManager supplierMan;
-	private PaymentManager paymentMan;
+	private ClientManagerJDBC clientMan;
+	private OrderManagerJDBC orderMan;
+	private ProductManagerJDBC productMan;
+	private ProductOrderManagerJDBC productOrderMan;
+	private ShipmentManagerJDBC shipmentMan;
+	private SupplierManagerJDBC supplierMan;
+	private PaymentManagerJDBC paymentMan;
 
 	public ConnectionManagerJDBC() {
 		try {
@@ -136,13 +136,13 @@ public class ConnectionManagerJDBC {
 	
 	//TODO see what we do with this
 	private void initManagers() {
-		this.clientMan = new ClientManager(this);
-		this.orderMan = new OrderManager(this);
-		this.productMan = new ProductManager(this);
-		this.productOrderMan = new ProductOrderManager(this);
-		this.shipmentMan = new ShipmentManager(this);
-		this.supplierMan = new SupplierManager(this);
-		this.paymentMan = new PaymentManager(this);
+		this.clientMan = new ClientManagerJDBC(this);
+		this.orderMan = new OrderManagerJDBC(this);
+		this.productMan = new ProductManagerJDBC(this);
+		this.productOrderMan = new ProductOrderManagerJDBC(this);
+		this.shipmentMan = new ShipmentManagerJDBC(this);
+		this.supplierMan = new SupplierManagerJDBC(this);
+		this.paymentMan = new PaymentManagerJDBC(this);
 		System.out.println("Managers initialized correctly.");
 	}
 
@@ -150,31 +150,31 @@ public class ConnectionManagerJDBC {
 		return c;
 	}
 
-	public ClientManager getClientManager() {
+	public ClientManagerJDBC getClientManager() {
 		return clientMan;
 	}
 
-	public OrderManager getOrderManager() {
+	public OrderManagerJDBC getOrderManager() {
 		return orderMan;
 	}
 
-	public ProductManager getProductManager() {
+	public ProductManagerJDBC getProductManager() {
 		return productMan;
 	}
 
-	public ProductOrderManager getProductOrderManager() {
+	public ProductOrderManagerJDBC getProductOrderManager() {
 		return productOrderMan;
 	}
 
-	public ShipmentManager getShipmentManager() {
+	public ShipmentManagerJDBC getShipmentManager() {
 		return shipmentMan;
 	}
 
-	public SupplierManager getSupplierManager() {
+	public SupplierManagerJDBC getSupplierManager() {
 		return supplierMan;
 	}
 
-	public PaymentManager getPaymentManager() {
+	public PaymentManagerJDBC getPaymentManager() {
 		return paymentMan;
 	}
 

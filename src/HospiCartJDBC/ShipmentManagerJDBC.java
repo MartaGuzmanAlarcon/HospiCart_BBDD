@@ -19,13 +19,13 @@ import HospiCartPOJOs.Shipment;
  * 
  * This class implements the interface "IShipmentManager" and implements all of its methods. 
  */
-public class ShipmentManager implements IShipmentManager{
+public class ShipmentManagerJDBC implements IShipmentManager{
 
 	private Connection c;
     private ConnectionManagerJDBC cm;
 
     //Constructor
-    public ShipmentManager(ConnectionManagerJDBC cm) {
+    public ShipmentManagerJDBC(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
     }

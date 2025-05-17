@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
-import HospiCartJDBC.ClientManager;
+import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
-import HospiCartJDBC.OrderManager;
-import HospiCartJDBC.ShipmentManager;
-import HospiCartJDBC.SupplierManager;
+import HospiCartJDBC.OrderManagerJDBC;
+import HospiCartJDBC.ShipmentManagerJDBC;
+import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
@@ -36,10 +36,10 @@ public class ShipmentManagerTest {
 	//I define global variables that are going to be needed in several tests
 	
 	 private static ConnectionManagerJDBC connectionManager;
-	 private static ShipmentManager shipmentManager;
-	 private static OrderManager orderManager;
-	 private static ClientManager clientManager;
-	 private static SupplierManager supplierManager;
+	 private static ShipmentManagerJDBC shipmentManager;
+	 private static OrderManagerJDBC orderManager;
+	 private static ClientManagerJDBC clientManager;
+	 private static SupplierManagerJDBC supplierManager;
 
    
    @BeforeAll 
@@ -49,10 +49,10 @@ public class ShipmentManagerTest {
        // Initialize the ConnectionManager (creates tables)
        
        connectionManager = new ConnectionManagerJDBC();
-       shipmentManager = new ShipmentManager(connectionManager);
-       orderManager = new OrderManager(connectionManager);
-       clientManager = new ClientManager(connectionManager);
-       supplierManager = new SupplierManager(connectionManager);
+       shipmentManager = new ShipmentManagerJDBC(connectionManager);
+       orderManager = new OrderManagerJDBC(connectionManager);
+       clientManager = new ClientManagerJDBC(connectionManager);
+       supplierManager = new SupplierManagerJDBC(connectionManager);
    }
 
    @BeforeEach

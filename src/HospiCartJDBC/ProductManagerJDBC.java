@@ -20,7 +20,7 @@ import java.io.IOException;
  * Implements the IProductManager interface.
  */
 
-public class ProductManager implements IProductManager {
+public class ProductManagerJDBC implements IProductManager {
 
 	private Connection c;
 	private ConnectionManagerJDBC cm;
@@ -43,7 +43,7 @@ public class ProductManager implements IProductManager {
 	 * @param cm The ConnectionManager that will be used to obtain the database
 	 *           connection.
 	 */
-	public ProductManager(ConnectionManagerJDBC cm) {
+	public ProductManagerJDBC(ConnectionManagerJDBC cm) {
 		this.cm = cm;
 		this.c = cm.getConnection();
 	}

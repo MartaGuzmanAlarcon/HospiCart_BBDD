@@ -11,7 +11,11 @@ public class InputKB {
 	
 	 private static final BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 	 
-	 
+	 /**
+	  * Method that asks the user to introduce his/her personal information and creates a client.
+	  * @return the created client
+	  * @throws IOException if an input/output error occurred.
+	  */
 	 public static Client getClientFromKB() throws IOException {
          Output.println("Name: ");
          String name = InputKB.readString();
@@ -23,14 +27,21 @@ public class InputKB {
          String address = InputKB.readString();
          Output.println("Email: ");
          String email = InputKB.readString();
-
-        return new Client(name, surname, phone, address, email);
+         //TODO THINK IF WE HAVE TO INCLUDE EXCEPTION IN THE CLIENT CONSTRUCTOR
+        return new Client(name, surname, phone, email, address);
 	    }
-
+	 	/**
+	 	 * Method that receives the clent's username (the email) as parameter and asks him/her to introduce the password, which is used to create the user.
+	 	 * @param email username introduced by the client.
+	 	 * @return the created user
+	     * @throws IOException if an input/output error occurred.
+	 	 */
 	    public static User getUserFromKB(String email) throws IOException {
+	    	//We ask the client to introduce the password.
 	    	Output.println("Password: ");
 	    	String password = InputKB.readString();
 	    	String encryptedPassword = Encryption.encryptPasswordMD5(password);
+	    	//We create the user and return it
 	    	return new User(email, encryptedPassword, email);
 	    }
 	 

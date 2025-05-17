@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
-import HospiCartJDBC.ClientManager;
+import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
-import HospiCartJDBC.OrderManager;
-import HospiCartJDBC.ProductManager;
-import HospiCartJDBC.ProductOrderManager;
-import HospiCartJDBC.SupplierManager;
+import HospiCartJDBC.OrderManagerJDBC;
+import HospiCartJDBC.ProductManagerJDBC;
+import HospiCartJDBC.ProductOrderManagerJDBC;
+import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
@@ -36,11 +36,11 @@ import HospiCartPOJOs.Supplier;
 public class ProductOrderManagerTest {
 	// Define global variables that are going to be needed in several tests
 	private static ConnectionManagerJDBC connectionManager;
-	private static ClientManager clientManager;
-	private static OrderManager orderManager;
-	private static SupplierManager supplierManager;
-	private static ProductManager productManager;
-	private static ProductOrderManager productOrderManager;
+	private static ClientManagerJDBC clientManager;
+	private static OrderManagerJDBC orderManager;
+	private static SupplierManagerJDBC supplierManager;
+	private static ProductManagerJDBC productManager;
+	private static ProductOrderManagerJDBC productOrderManager;
 	
 	@BeforeAll
 	static void initAll() {
@@ -48,11 +48,11 @@ public class ProductOrderManagerTest {
         // In our case, this annotation allows us to create tables once.
         // Initialize the ConnectionManager (creates tables)
 		connectionManager = new ConnectionManagerJDBC();
-		clientManager = new ClientManager(connectionManager);
-		supplierManager = new SupplierManager(connectionManager);
-        productManager = new ProductManager(connectionManager);
-        orderManager = new OrderManager(connectionManager);
-        productOrderManager = new ProductOrderManager(connectionManager);
+		clientManager = new ClientManagerJDBC(connectionManager);
+		supplierManager = new SupplierManagerJDBC(connectionManager);
+        productManager = new ProductManagerJDBC(connectionManager);
+        orderManager = new OrderManagerJDBC(connectionManager);
+        productOrderManager = new ProductOrderManagerJDBC(connectionManager);
     }
 	
 	 @BeforeEach

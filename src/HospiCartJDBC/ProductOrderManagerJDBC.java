@@ -26,20 +26,20 @@ import HospiCartPOJOs.Status;
  * 
  * This class implements the interface "IProductOrderManager" and implements all of its methods. 
  */
-public class ProductOrderManager implements IProductOrderManager{
+public class ProductOrderManagerJDBC implements IProductOrderManager{
 	
     private Connection c;
 	private ConnectionManagerJDBC connectionManager;
-	private ProductManager productManager;
+	private ProductManagerJDBC productManager;
 	//private OrderManager orderManager;
 	/**
 	 * Constructor
 	 * @param cm object of "ConnectionManagerJDBC"
 	 */
-	public ProductOrderManager(ConnectionManagerJDBC cm) {
+	public ProductOrderManagerJDBC(ConnectionManagerJDBC cm) {
 		this.connectionManager = cm;
 		this.c = cm.getConnection();
-		this.productManager = new ProductManager(cm);
+		this.productManager = new ProductManagerJDBC(cm);
 		//this.orderManager = new OrderManager(cm);
 		
 	}

@@ -1,15 +1,8 @@
 package HospiCartApp;
 
-import HospiCartJDBC.ConnectionManagerJDBC;
-import HospiCartPOJOs.User;
+public abstract class SupplierMenu {
 
-public class SupplierMenu {
-
-	public SupplierMenu(ConnectionManagerJDBC conMan, User user) {
-		// TODO Auto-generated constructor stub
-	}
-
-	public void displayMenu() {
+	public static void displayMenu() {
 		// TODO Auto-generated method stub
 		
 	}

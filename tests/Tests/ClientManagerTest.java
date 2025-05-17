@@ -4,7 +4,7 @@ import HospiCartPOJOs.Role;
 import org.junit.jupiter.api.*;
 
 import Exceptions.ClientException;
-import HospiCartJDBC.ClientManager;
+import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
 
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ClientManagerTest {
 	// Define global variables that are going to be needed in several tests
 	 private static ConnectionManagerJDBC connectionManager;
-	 private static ClientManager clientManager;
+	 private static ClientManagerJDBC clientManager;
     
     @BeforeAll 
     static void initAll() throws Exception {
@@ -27,7 +27,7 @@ public class ClientManagerTest {
         // Initialize the ConnectionManager (creates tables)
         
         connectionManager = new ConnectionManagerJDBC();
-        clientManager = new ClientManager(connectionManager);
+        clientManager = new ClientManagerJDBC(connectionManager);
     }
 
     @BeforeEach

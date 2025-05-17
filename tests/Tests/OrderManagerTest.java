@@ -17,11 +17,11 @@ import org.junit.jupiter.api.Test;
 
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
-import HospiCartJDBC.ClientManager;
+import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
-import HospiCartJDBC.OrderManager;
-import HospiCartJDBC.ProductManager;
-import HospiCartJDBC.SupplierManager;
+import HospiCartJDBC.OrderManagerJDBC;
+import HospiCartJDBC.ProductManagerJDBC;
+import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
@@ -38,9 +38,9 @@ class OrderManagerTest {
 	//I define global variables that are going to be needed in several tests
 	
 	 private static ConnectionManagerJDBC connectionManager;
-	 private static ClientManager clientManager;
-	 private static OrderManager orderManager;
-	 private static SupplierManager supplierManager;
+	 private static ClientManagerJDBC clientManager;
+	 private static OrderManagerJDBC orderManager;
+	 private static SupplierManagerJDBC supplierManager;
 	// private static ProductManager productManager;
 
     
@@ -51,9 +51,9 @@ class OrderManagerTest {
         // Initialize the ConnectionManager (creates tables)
         
         connectionManager = new ConnectionManagerJDBC();
-        orderManager = new OrderManager(connectionManager);
-        clientManager = new ClientManager(connectionManager);
-        supplierManager = new SupplierManager(connectionManager);
+        orderManager = new OrderManagerJDBC(connectionManager);
+        clientManager = new ClientManagerJDBC(connectionManager);
+        supplierManager = new SupplierManagerJDBC(connectionManager);
        // productManager = new ProductManager(connectionManager);
     }
 

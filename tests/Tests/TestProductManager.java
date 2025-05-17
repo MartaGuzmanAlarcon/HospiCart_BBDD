@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import HospiCartJDBC.ConnectionManagerJDBC;
-import HospiCartJDBC.ProductManager;
-import HospiCartJDBC.SupplierManager;
+import HospiCartJDBC.ProductManagerJDBC;
+import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartPOJOs.*;
 import Utilities.Utilities;
 
@@ -13,8 +13,8 @@ public class TestProductManager {
 	public static void main(String[] args) {
 
 		ConnectionManagerJDBC cm = new ConnectionManagerJDBC();
-		SupplierManager sm = new SupplierManager(cm);
-		ProductManager pm = new ProductManager(cm); // establezco conexion
+		SupplierManagerJDBC sm = new SupplierManagerJDBC(cm);
+		ProductManagerJDBC pm = new ProductManagerJDBC(cm); // establezco conexion
 
 		 //sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
 		// System.out.println("supplies table values inserted");
