@@ -425,6 +425,8 @@ public class ProductManagerJDBC implements IProductManager {
 
 		return products;
 	}
+	
+	// TODO CREATE METHOD getProductsByCategory(Category category);
 
 	/**
 	 * Updates an existing product in the database.
