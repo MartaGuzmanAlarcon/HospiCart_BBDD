@@ -37,50 +37,48 @@ public class SupplierManagerJDBC {
 
 	/**
 	 * Inserts supplier data into the database from a CSV file. Each row in the CSV
-	 * should contain the company name, contact person, and address of the supplier.
+	 * should contain the company name, contact number, and address of the supplier.
 	 * The file should not have a header.
 	 * 
 	 * @param filePath The path to the CSV file containing supplier data.
 	 */
 
-//	public void insertSuppliersFromCSV(String filePath) {
-//		String line;
-//		String csvSplitBy = ",";
-//
-//		String sql = "INSERT INTO supplier (company_name, contact_person, address) VALUES (?, ?, ?)";
-//
-//		try (PreparedStatement stmt = c.prepareStatement(sql);
-//				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-//
-//			// Saltar la cabecera
-//			br.readLine();
-//
-//			while ((line = br.readLine()) != null) {
-//				String[] data = line.split(csvSplitBy);
-//
-//				if (data.length < 3) {
-//					System.out.println("Skipping invalid row: " + line);
-//					continue;
-//				}
-//
-//				String companyName = data[0].trim(); // .trim(): elimina espacios en blanco
-//				String contactPerson = data[1].trim();
-//				String address = data[2].trim();
-//
-//				stmt.setString(1, companyName);
-//				stmt.setString(2, contactPerson);
-//				stmt.setString(3, address);
-//
-//				stmt.executeUpdate();
-//			}
-//
-//			c.commit();
-//			System.out.println("Suppliers inserted correctly from the CSV.");
-//
-//		} catch (IOException | SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public void insertSuppliersFromCSV(String filePath) {
+		String line;
+		String csvSplitBy = ",";
+
+		String sql = "INSERT INTO supplier (company_name, contact_number, address) VALUES (?, ?, ?)";
+
+		try (PreparedStatement stmt = c.prepareStatement(sql);
+				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+			// Saltar la cabecera
+			br.readLine();
+
+			while ((line = br.readLine()) != null) {
+				String[] data = line.split(csvSplitBy);
+
+				if (data.length < 3) {
+					System.out.println("Skipping invalid row: " + line);
+					continue;
+				}
+
+				String companyName = data[0].trim(); // .trim(): elimina espacios en blanco
+				Integer contactNumber = Integer.parseInt(data[1].trim());
+				String address = data[2].trim();
+
+				stmt.setString(1, companyName);
+				stmt.setInt(2, contactNumber);
+				stmt.setString(3, address);
+
+				stmt.executeUpdate();
+			}
+
+			c.commit();
+		} catch (IOException | SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void insertSupplier(Supplier supplier) throws SQLException {
        

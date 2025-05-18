@@ -36,7 +36,10 @@ public class OrderManagerJDBC implements IOrderManager {
     private PaymentManagerJDBC paymentManager;
 
 
-    //Constructor
+	/**
+	 * Constructor of order manager.
+	 * @param cm object of "ConnectionManagerJDBC"
+	 */
     public OrderManagerJDBC(ConnectionManagerJDBC cm) {
         this.cm = cm;
         this.c = cm.getConnection();
@@ -49,6 +52,7 @@ public class OrderManagerJDBC implements IOrderManager {
      * Method that creates a new order with the client it receives as parameter and setting the current date and the default status to the order.
      * @param order object of Order that stores the order that we want to inert to the database.
      * @throws SQLException if there is a problem with the connection (it is closed or not properly initialized), if there is an error in the SQL query, if there is a mismatch between the data being inserted and the expected one, etc.
+     * @throws ClientException if the method insert product order throws an exception of this type, we re-throw it here.
      */
     @Override
       public void insertOrder(Order order) throws SQLException, ClientException{
@@ -96,8 +100,11 @@ public class OrderManagerJDBC implements IOrderManager {
             List<ProductOrder> productOrders = order.getProductOrders();
             for(int i=0; i<productOrders.size(); i++) {
                 ProductOrder productOrder = productOrders.get(i);
-                productOrder.setOrder(order);
-            	productOrderManager.insertProductOrder(productOrder);
+                //I check if the product order has an assigned order and I only set the order and insert the productOrder into the database to those that don't have it set.
+                if(productOrder.getOrder() == null) {
+                    productOrder.setOrder(order);
+                	productOrderManager.insertProductOrder(productOrder);
+                }
             }
             //I print success messages
             System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");

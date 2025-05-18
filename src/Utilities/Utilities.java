@@ -1,15 +1,12 @@
 package Utilities;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.io.IOException;
 
 public class Utilities {
 	
-	public static BigDecimal truncateBigDecimal(BigDecimal value, int decimals) {
-	    return value.setScale(decimals, RoundingMode.DOWN);
+	public String getFilePath() throws IOException{
+        String filePath = "src/Utilities/data/Products.txt";
+        return filePath;
 	}
-
-
-
 
 }

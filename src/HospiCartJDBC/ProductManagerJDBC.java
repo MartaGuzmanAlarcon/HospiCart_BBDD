@@ -55,7 +55,7 @@ public class ProductManagerJDBC implements IProductManager {
 	 * 
 	 * @param filePath The path to the CSV file containing the product data.
 	 */
-	public void insertProductsFromCSV(String filePath) {
+	public void insertProductsFromCSV(String filePath){
 
 		String line;
 		String csvSplitBy = ",";
@@ -81,10 +81,7 @@ public class ProductManagerJDBC implements IProductManager {
 
 				stmt.executeUpdate();
 			}
-
 			c.commit();
-			System.out.println("Products inserted correctly from the CSV.");
-
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}

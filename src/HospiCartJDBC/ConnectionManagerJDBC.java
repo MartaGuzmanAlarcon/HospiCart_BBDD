@@ -27,21 +27,36 @@ public class ConnectionManagerJDBC {
 			e.printStackTrace();
 		}
 	}
-
+	//TODO COMMENT THIS METHOD
 	private void connect() {
-		try {
-			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:./db/HospiCartDB.db");
-			c.setAutoCommit(false); // We disable the auto commit
-			c.createStatement().execute("PRAGMA foreign_keys=ON");
-			System.out.println("Connection established.");
-		} catch (ClassNotFoundException cnfE) {
-			System.out.println("Error: The database libraries were not loaded.");
-			cnfE.printStackTrace();
-		} catch (SQLException sqlE) {
-			System.out.println("Error with the database.");
-			sqlE.printStackTrace();
-		}
+	    try {
+	        Class.forName("org.sqlite.JDBC");
+	        if (c != null && !c.isClosed()) {
+	            c.close();
+	        }
+
+	        // 1) Open with auto-commit on so we’re never in a transaction
+	        c = DriverManager.getConnection("jdbc:sqlite:./db/HospiCartDB.db");
+	        c.setAutoCommit(true);
+
+	        // 2) Set PRAGMAs while auto-commit is true
+	        try (Statement s = c.createStatement()) {
+	            s.execute("PRAGMA foreign_keys = ON");
+	            s.execute("PRAGMA journal_mode = WAL");
+	            s.execute("PRAGMA busy_timeout = 30000");
+	        }
+
+	        // 3) Now switch to manual transactions for your DDL/Data work
+	        c.setAutoCommit(false);
+	        System.out.println("Connection established (WAL mode, FK ON).");
+
+	    } catch (ClassNotFoundException cnfE) {
+	        System.err.println("Error: The database libraries were not loaded.");
+	        cnfE.printStackTrace();
+	    } catch (SQLException sqlE) {
+	        System.err.println("Error with the database.");
+	        sqlE.printStackTrace();
+	    }
 	}
 
 	private void createTables() throws SQLException {
@@ -124,7 +139,12 @@ public class ConnectionManagerJDBC {
 			}
 			c.commit();
 			System.out.println("Tables created correctly.");
+			c.setAutoCommit(true);
+			System.out.println("Tables created correctly. Auto-commit restored.");
+			
 		} catch (SQLException e) {
+			//In case of error, I rollback
+			c.rollback();
 			// Check if the exception is because the tables already exist
 			if (e.getMessage().contains("already exist")) {
 				return;

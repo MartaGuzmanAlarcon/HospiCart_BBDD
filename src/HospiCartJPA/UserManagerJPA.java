@@ -1,11 +1,13 @@
 package HospiCartJPA;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.persistence.*;
 
 import HospiCartPOJOs.Role;
 import HospiCartPOJOs.User;
+import Utilities.Encryption;
 import HospiCartInterfaces.IUserManager;
 
 
@@ -25,8 +27,10 @@ public class UserManagerJPA implements IUserManager {
 		if (this.getRoles().isEmpty()) {
 			Role doctor = new Role("doctor");
 			Role nurse = new Role("nurse");
+			Role supplier = new Role("supplier");
 			this.createRole(doctor);
 			this.createRole(nurse);
+			this.createRole(supplier);
 			//TODO SEE IF WE HAVE TO INCLUDE SUPPLIER AS A ROLE 
 		}
 	}
@@ -34,14 +38,28 @@ public class UserManagerJPA implements IUserManager {
 	 * Method that closes the entity manager. This method should be called after having worked with the database.
 	 */
 	public void close() {
-		em.close();
-	}
+		if (em != null && em.isOpen()) {
+	        // I make sure any active transaction is committed or rolled back
+	        if (em.getTransaction().isActive()) {
+	            try {
+	                em.getTransaction().commit();
+	            } catch (Exception e) {
+	                em.getTransaction().rollback();
+	            }
+	        }
+	        em.close();
+	    }	}
 
 	@Override
-	public void register(User user) {
+	public void register(User user, int roleOption) throws SQLException {
+		User existentUser = getUserByEmail(user.getEmail());
 		em.getTransaction().begin();
-		//Persist is used for creating in JPA.
-		em.persist(user); 
+		if(existentUser == null) {
+			Role role = em.find(Role.class, roleOption);
+			assignRole(user, role);
+			//Persist is used for creating in JPA.
+			em.persist(user); 
+		}
 		em.getTransaction().commit();
 	}
 
@@ -54,18 +72,29 @@ public class UserManagerJPA implements IUserManager {
 
 	@Override
 	public void assignRole(User user, Role role) {
-		em.getTransaction().begin();
 		user.setRole(role);
 		role.addUser(user);
-		em.getTransaction().commit();
 	}
 
 	@Override
-	public User getUser(String name, String password) {
+	public User getUserByEmail(String email) {
 		try {
-			Query q = em.createNativeQuery("SELECT * FROM users WHERE username = ? AND password = ?", User.class);
-			q.setParameter(1, name);
-			q.setParameter(2, password);
+			Query q = em.createNativeQuery("SELECT * FROM users WHERE email = ? ", User.class);
+			q.setParameter(1, email);
+			User user = (User) q.getSingleResult();
+			return user;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	@Override
+	public User getUser(String email, String password) {
+		try {
+			String encriptedPassword = Encryption.encryptPasswordMD5(password);
+			Query q = em.createNativeQuery("SELECT * FROM users WHERE email = ? AND password = ?", User.class);
+			q.setParameter(1, email);
+			q.setParameter(2, encriptedPassword);
 			User user = (User) q.getSingleResult();
 			return user;
 		} catch (NoResultException e) {
@@ -82,10 +111,25 @@ public class UserManagerJPA implements IUserManager {
 
 	@Override
 	public Role getRole(String name) {
-		Query q = em.createNativeQuery("SELECT * FROM roles WHERE name LIKE ?", Role.class);
+		Query q = em.createNativeQuery("SELECT * FROM roles WHERE name = ?", Role.class);
 		q.setParameter(1, name);
 		Role r = (Role) q.getSingleResult();
 		return r;
 	}
-
+	
+	@Override
+	public void updatePassword(String email, String password) {
+	    try {
+	    	em.getTransaction().begin(); // Start the transaction
+	        Query q = em.createNativeQuery("UPDATE users SET password = ? WHERE email = ?");
+	        String encryptedPassword = Encryption.encryptPasswordMD5(password);
+	        q.setParameter(1, encryptedPassword);
+	        q.setParameter(2, email);
+	        q.executeUpdate(); // Execute the update query
+	        em.getTransaction().commit(); // Commit the transaction
+	    } catch (Exception e) {
+	        em.getTransaction().rollback(); // Rollback the transaction in case of an error
+	        throw e; // Re-throw the exception to handle it at a higher level
+	    }
+	}
 }

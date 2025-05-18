@@ -42,7 +42,7 @@ public class InputKB {
 	    	String password = InputKB.readString();
 	    	String encryptedPassword = Encryption.encryptPasswordMD5(password);
 	    	//We create the user and return it
-	    	return new User(email, encryptedPassword, email);
+	    	return new User(email, encryptedPassword);
 	    }
 	 
 

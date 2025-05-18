@@ -1,25 +1,25 @@
-company_name,contact_person,address
-PFIZER,John Smith,123 Health Ave
-ROCHE,Clara Müller,88 Pharma Way
-NOVARTIS,David García,56 Biotech Blvd
-SANOFI,Emily Dubois,22 Wellness St
-ASTRAZENECA,Laura Brown,19 Cure Avenue
-JOHNSON_AND_JOHNSON,Miguel Torres,35 Vitality Rd
-MERCK,Julia Schmidt,78 Innovation Ln
-BAYER,Antonio Ruiz,40 Greenfield Blvd
-MODERNA,Grace Liu,66 mRNA Drive
-SIEMENS,Elena García,34 Diagnostic Ln
-GE_HEALTHCARE,Mark Johnson,12 Imaging Park
-PHILIPS,Sophia Lee,21 Monitor Blvd
-MEDTRONIC,Héctor Fernández,18 NeuroTech St
-BAXTER,Luis Ortega,90 Dialysis Rd
-STRYKER,Natalie Perez,51 Ortho Center
-BOSTON_SCIENTIFIC,Alejandro Kim,73 Surgery Plaza
-OLYMPUS,María Suzuki,28 Endoscopy Ave
-ABBOTT,Carlos Rivera,84 Biomed Blvd
-ZOLL,Ana Martínez,77 Emergency Rd
-THERMO_FISHER,Daniel Kim,55 Lab District
-BD,Isabel Moreno,65 Syringe Street
-CARDINAL_HEALTH,Victor Sánchez,42 Distribution Way
-FRESENIUS,Emma Becker,61 Renal Ave
-SMITH_AND_NEPHEW,Cristina Romero,36 WoundCare Blvd
+company_name,contact_number,address
+PFIZER,612345678,123 Health Ave
+ROCHE,613456789,88 Pharma Way
+NOVARTIS,614567890,56 Biotech Blvd
+SANOFI,615678901,22 Wellness St
+ASTRAZENECA,616789012,19 Cure Avenue
+JOHNSON_AND_JOHNSON,617890123,35 Vitality Rd
+MERCK,618901234,78 Innovation Ln
+BAYER,619012345,40 Greenfield Blvd
+MODERNA,620123456,66 mRNA Drive
+SIEMENS,621234567,34 Diagnostic Ln
+GE_HEALTHCARE,622345678,12 Imaging Park
+PHILIPS,623456789,21 Monitor Blvd
+MEDTRONIC,624567890,18 NeuroTech St
+BAXTER,625678901,90 Dialysis Rd
+STRYKER,626789012,51 Ortho Center
+BOSTON_SCIENTIFIC,627890123,73 Surgery Plaza
+OLYMPUS,628901234,28 Endoscopy Ave
+ABBOTT,629012345,84 Biomed Blvd
+ZOLL,630123456,77 Emergency Rd
+THERMO_FISHER,631234567,55 Lab District
+BD,632345678,65 Syringe Street
+CARDINAL_HEALTH,633456789,42 Distribution Way
+FRESENIUS,634567890,61 Renal Ave
+SMITH_AND_NEPHEW,635678901,36 WoundCare Blvd

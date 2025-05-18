@@ -11,13 +11,9 @@ import java.util.List;
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
 import HospiCartInterfaces.IProductOrderManager;
-import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
-import HospiCartPOJOs.Shipment;
-import HospiCartPOJOs.Status;
 
 /**
  * This class is the responsible for handling all the operations related product orders.
@@ -31,16 +27,15 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
     private Connection c;
 	private ConnectionManagerJDBC connectionManager;
 	private ProductManagerJDBC productManager;
-	//private OrderManager orderManager;
+
 	/**
-	 * Constructor
+	 * Constructor of product order manager.
 	 * @param cm object of "ConnectionManagerJDBC"
 	 */
 	public ProductOrderManagerJDBC(ConnectionManagerJDBC cm) {
 		this.connectionManager = cm;
 		this.c = cm.getConnection();
 		this.productManager = new ProductManagerJDBC(cm);
-		//this.orderManager = new OrderManager(cm);
 		
 	}
 	
@@ -48,18 +43,13 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
 	 * Method that receives a product and an order id by parameter and adds the received product to the order that corresponds with the received order id. i.e: the method creates a new
 	 * product order with the order and product IDs received as parameter.
 	 * @param productOrder object of the class ProductOrder that store the product order that we want to insert to the database.
-	 * @throws ClientException 
+	 * @throws SQLException if there was a problem when inserting the product order into the database.
 	 */
 	@Override
-	public void insertProductOrder(ProductOrder productOrder) throws SQLException, ClientException{
+	public void insertProductOrder(ProductOrder productOrder) throws SQLException{
 		// Retrieve the product and order from the productOrder
 		Product product = productOrder.getProduct();
 		Order order = productOrder.getOrder();
-		
-		// Check that product and order exist in the DB
-//		if (order.getOrderId() == null) {
-//            orderManager.insertOrder(order);
-//        }
 		
 		if (product.getProductId() == null) {
             productManager.insertProduct(product);
@@ -67,20 +57,14 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
 		
 		// Compute the total price TODO REVISE THIS, WHY CAN WE OBTAIN DIRECTLY THE TOTAL PRICE WITH productOrder.getTotalPrice()?
 		int amount = productOrder.getAmount();
-		float totalPrice = productOrder.getTotalPrice();
-				
-		/*if(product.getProductId() == null) {
-			pm.insertProduct(product);
-		}*/
+		float totalPrice = amount * product.getPrice();
+		productOrder.setTotalPrice(totalPrice);
 
 		//SQL query
 		String sql = "INSERT INTO product_order (order_id, product_id, amount, total_price) VALUES (?, ?, ?, ?) ";
 		
 		// Prepare the statement in the try catch block
 		try(PreparedStatement prep = c.prepareStatement(sql)){
-			//removeProductFromStockQuantity(productOrder.getProduct().getProductId(), productOrder.getAmount()); //I remove the added product from the stock.
-			//TODO is this ok? won't the stock be reduced twice? Because I am updating it here and it is also being updated in "reduceStock" (Marta's function)
-
 			// Bind parameters
 			prep.setInt(1, order.getOrderId());
 			prep.setInt(2, productOrder.getProduct().getProductId());
@@ -237,10 +221,6 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
     				productOrder.setAmount(resultSet.getInt("amount"));
     				productOrder.setTotalPrice(resultSet.getFloat("total_price"));
     				
-    				// Get the full Order object from OrderManager
-    				//Order order = cm.getOrderManager().getOrderByID(order_id);
-    				///productOrder.setOrder(order);
-    				//TODO THE LINES ABOVE GENERATE STACK OVERFLOW
     				int product_id = resultSet.getInt("product_id");
     				Product product = connectionManager.getProductManager().getProductById(product_id);
     				productOrder.setProduct(product);
