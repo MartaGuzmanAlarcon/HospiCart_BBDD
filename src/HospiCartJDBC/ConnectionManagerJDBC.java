@@ -139,7 +139,7 @@ public class ConnectionManagerJDBC {
 			}
 			c.commit();
 			System.out.println("Tables created correctly.");
-			c.setAutoCommit(false);
+			c.setAutoCommit(true);
 			System.out.println("Tables created correctly. Auto-commit restored.");
 			
 		} catch (SQLException e) {

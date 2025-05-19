@@ -287,8 +287,8 @@ public class MainMenu {
 	                Output.println("It is nice to see you again, dear " + roleName + "!");
 	                switch (roleName) {
 	                    case "doctor":
-	                        DoctorMenu doctorMenu = new DoctorMenu(); // TODO MODIFY THE DOCTORMENU CONSTRUCTOR 
-	                        doctorMenu.displayDoctorMenu();
+	                        //DoctorMenu doctorMenu = new DoctorMenu(); // TODO MODIFY THE DOCTORMENU CONSTRUCTOR 
+	                        //doctorMenu.displayDoctorMenu();
 	                        break;
 	                    case "nurse":
 	                        NurseMenu.displayMenu();
