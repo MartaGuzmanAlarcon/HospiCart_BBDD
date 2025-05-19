@@ -33,8 +33,6 @@ public class OrderManagerJDBC implements IOrderManager {
     private ConnectionManagerJDBC cm;
     private ProductOrderManagerJDBC productOrderManager;
     private ShipmentManagerJDBC shipmentManager;
-    private PaymentManagerJDBC paymentManager;
-
 
 	/**
 	 * Constructor of order manager.
@@ -45,7 +43,6 @@ public class OrderManagerJDBC implements IOrderManager {
         this.c = cm.getConnection();
         productOrderManager = new ProductOrderManagerJDBC(cm);
         shipmentManager = new ShipmentManagerJDBC(cm);
-        paymentManager = new PaymentManagerJDBC(cm);
     }
 
     /**
@@ -84,13 +81,7 @@ public class OrderManagerJDBC implements IOrderManager {
                     throw new SQLException("Inserting order failed, no ID obtained.");
                 }
             }
-            Payment payment = order.getPayment();
             Shipment shipment = order.getShipment();
-            
-            payment.setOrder(order);
-            if(payment.getPaymentId() == null) {
-            	paymentManager.insertPayment(payment);
-            }
             
             shipment.setOrder(order);
             if(shipment.getShipmentId() == null) {
@@ -108,7 +99,6 @@ public class OrderManagerJDBC implements IOrderManager {
             }
             //I print success messages
             System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
-            System.out.println("\n- Payment ID of order with ID " + order.getOrderId() + ": " + payment.getPaymentId());
             System.out.println("\n- Shipment ID of order with ID " + order.getOrderId() + ": " + shipment.getShipmentId());
             System.out.println("\n- Tracking number of order with ID " + order.getOrderId() + ": " + shipment.getTrackingNumber());
 
@@ -127,12 +117,15 @@ public class OrderManagerJDBC implements IOrderManager {
         }
     }
     
-    /**
+	/**
 	 * Method that receives an order's id as parameter and deletes it.
 	 * @param order_id integer that stores the id of the order we wish to remove.
+	 * @throw ClientException if the method get order by ID throws an exception of this type.
+	 * @throws OrderExceptions if the method get order by ID throws an exception of this type.
+	 * @throws Exception if the method that deletes a payment throws an exception.
 	 */
     @Override
-    public void deleteOrder(int order_id)  throws ClientException, OrderExceptions{
+    public void deleteOrder(int order_id)  throws ClientException, OrderExceptions, Exception{
     	Order order = getOrderByID(order_id);
     	//After obtaining the order that the user wants to delete, I check if the status of the order is "ORDERED", as it is the only scenario in which an order can be removed.
     	if(order.getStatus() != Status.ORDERED) {
@@ -141,24 +134,22 @@ public class OrderManagerJDBC implements IOrderManager {
 	    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
 	    	//First, I delete it from ProductOrders because of the many to many relationship. Then, I delete it from shipment and payment and finally from the client_order table.
 	    	String deleteFromProductOrders = "DELETE FROM product_order WHERE order_id = ? ";
-	    	String deleteFromPayment = "DELETE FROM payment WHERE order_id = ? ";
 	    	String deleteFromShipment = "DELETE FROM shipment WHERE order_id = ? ";
 	    	String deleteFromOrder = "DELETE FROM client_order WHERE order_id = ? ";
 	    	
 	    	try (
 	    			//I create one prepared statement per each SQL sequence created.
 	    			PreparedStatement stmtProductOrders = c.prepareStatement(deleteFromProductOrders);
-	    			PreparedStatement stmtPayment = c.prepareStatement(deleteFromPayment);
 	    			PreparedStatement stmtFromShipment = c.prepareStatement(deleteFromShipment);
 	    			PreparedStatement stmtOrder = c.prepareStatement(deleteFromOrder);
 	    	){
+	    		if(order.getPayment() != null) {
+	    			//I call the method of Payment that deletes a payment.
+	    			cm.getPaymentManager().deletePaymentById(order.getPayment().getPaymentId());
+	    		}
 	    		//Delete from product orders
 	    		stmtProductOrders.setInt(1, order_id);
 	    		stmtProductOrders.executeUpdate();
-	    		
-	    		//Delete from payment
-	    		stmtPayment.setInt(1, order_id);
-	    		stmtPayment.executeUpdate();
 	
 	    		//Delete from shipment
 	    		stmtFromShipment.setInt(1, order_id);
@@ -213,7 +204,12 @@ public class OrderManagerJDBC implements IOrderManager {
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
-    				order.setPayment(payment);
+    				if(payment != null) {
+    					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
+    					order.setPayment(payment);
+//    					order.setStatus(Status.ORDERED);
+//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
+    				}
     				
     				int user_id = resultSet.getInt("user_id");
     				Client client = cm.getClientManager().getClientByID(user_id);
@@ -274,9 +270,13 @@ public class OrderManagerJDBC implements IOrderManager {
     				order.setStatus(Status.valueOf(resultSet.getString("order_status")));
     				order.setClient(client);   
     				
-    				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
-    				order.setPayment(payment);
+    				if(payment != null) {
+    					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
+    					order.setPayment(payment);
+//    					order.setStatus(Status.ORDERED);
+//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
+    				}
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
@@ -336,8 +336,13 @@ public class OrderManagerJDBC implements IOrderManager {
     				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
     				order.setClient(client);
     				
-    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id); 
-    				order.setPayment(payment);
+    				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
+    				if(payment != null) {
+    					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
+    					order.setPayment(payment);
+//    					order.setStatus(Status.ORDERED);
+//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
+    				}
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
@@ -401,7 +406,12 @@ public class OrderManagerJDBC implements IOrderManager {
     				order.setClient(client);
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
-    				order.setPayment(payment);
+    				if(payment != null) {
+    					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
+    					order.setPayment(payment);
+//    					order.setStatus(Status.ORDERED);
+//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
+    				}
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
     				order.setShipment(shipment);
@@ -446,7 +456,12 @@ public class OrderManagerJDBC implements IOrderManager {
     				order.setStatus(Status.valueOf(resultSet.getString("status")));
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
-    				order.setPayment(payment);
+    				if(payment != null) {
+    					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
+    					order.setPayment(payment);
+//    					order.setStatus(Status.ORDERED);
+//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
+    				}
     				
     				int user_id = resultSet.getInt("user_id");
     				Client client = cm.getClientManager().getClientByID(user_id);

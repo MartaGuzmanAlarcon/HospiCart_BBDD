@@ -20,15 +20,11 @@ import Exceptions.OrderExceptions;
 import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManagerJDBC;
-import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.PaymentMethod;
-import HospiCartPOJOs.PaymentStatus;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
@@ -59,20 +55,20 @@ class OrderManagerTest {
 
     @BeforeEach
     void cleanTable() throws Exception {
-    	// This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
-        // Crucial for wiping or resetting data so tests can’t influence each other.
+        // This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
+        // Crucial for wiping or resetting data so tests can't influence each other.
         // Ensure a clean state
-        
+
         Connection c = connectionManager.getConnection();
-        try ( Statement s = c.createStatement() ) {
-        	// Delete in reverse order of dependencies
-            s.execute("DELETE FROM supplier");
-        	s.execute("DELETE FROM product");
-        	s.execute("DELETE FROM product_order");
-            s.execute("DELETE FROM payment");
-            s.execute("DELETE FROM shipment");
-            s.execute("DELETE FROM client");
-            s.execute("DELETE FROM client_order");
+        try (Statement s = c.createStatement()) {
+            // Delete in correct order based on dependencies
+            s.execute("DELETE FROM payment");         // Must come before client_order deletion
+            s.execute("DELETE FROM shipment");        // Must come before product_order deletion
+            s.execute("DELETE FROM product_order");   // Depends on product and client_order
+            s.execute("DELETE FROM product");         // Depends on supplier
+            s.execute("DELETE FROM client_order");    // Depends on client
+            s.execute("DELETE FROM client");          // No dependencies
+            s.execute("DELETE FROM supplier");        // Must come last due to product dependency
             c.commit();
         }
     }
@@ -92,8 +88,7 @@ class OrderManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(123456);
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
@@ -123,13 +118,13 @@ class OrderManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
 			List <Order> ordersBefore = orderManager.getAllOrders();
 			int countTotalOrdersBefore = ordersBefore.size();
 			
-			//I create the order with the respective method from OrderManager and pass the complete client as parameter
+			//I create the order with the respective method from OrderManager and pass the order as parameter
 			orderManager.insertOrder(order);
 			
 			//I call the method that returns a list that contains all the orders made and store this amount on an integer.
@@ -157,8 +152,7 @@ class OrderManagerTest {
 	void deleteOrderTest() {		
 		Client client = new Client("Robert", "Williams", 346667855, "robwilliams@gmail.com", "Calle de Paraguay 20");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(123451);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
@@ -188,9 +182,9 @@ class OrderManagerTest {
 			supplierManager.insertSupplier(supplier);
 
 			//Now, I create the order
-			Order order = new Order(client, payment, shipment, productOrders);
+			Order order = new Order(client, shipment, productOrders);
 			
-			//I create the order with the respective method from OrderManager and pass the complete client as parameter
+			//I create the order with the respective method from OrderManager and pass the order as parameter
 			orderManager.insertOrder(order);
 			//After inserting the order, payment, shipment and the product orders will already be inserted in the database.
 			
@@ -227,8 +221,7 @@ class OrderManagerTest {
 	void getOrderByValidIDTest() {
 		Client client = new Client("Serena", "Williams", 346667865, "serewilliams@gmail.com", "Calle de Uruguay 50");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(123437);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
@@ -258,8 +251,8 @@ class OrderManagerTest {
 			supplierManager.insertSupplier(supplier);
 
 			//Now, I create the order
-			Order order = new Order(client, payment, shipment, productOrders);
-			//I create the order with the respective method from OrderManager and pass the complete client as parameter
+			Order order = new Order(client, shipment, productOrders);
+			//I create the order with the respective method from OrderManager and pass the order as parameter
 			orderManager.insertOrder(order);
 			
 			for(int i = 0; i<productOrders.size(); i++) {
@@ -288,9 +281,7 @@ class OrderManagerTest {
 	void getOrderByUserTest() {
 		Client client = new Client("Bobby", "Brown", 343367865, "bobby@gmail.com", "Calle de Ambar 40");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment2 = new Payment(8, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create 2 shipments and 2 products.
 		Shipment shipment1 = new Shipment(127452);
 		Shipment shipment2 = new Shipment(123452);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
@@ -320,15 +311,12 @@ class OrderManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the orders
-			Order order1 = new Order(client, payment1, shipment1, productOrders1);
-			Order order2 = new Order(client, payment2, shipment2, productOrders2);
+			Order order1 = new Order(client, shipment1, productOrders1);
+			Order order2 = new Order(client, shipment2, productOrders2);
 			
-			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
+			//I create an order with the created orders to make sure the client has at least one order associated to him/her.
 			orderManager.insertOrder(order1);
 			orderManager.insertOrder(order2);
-//			List<Order> insertedOrders = new ArrayList<Order>();
-//			insertedOrders.add(order1);
-//			insertedOrders.add(order2);
 			
 			int amountOfOrdersOfUser = 2;
 			
@@ -356,8 +344,7 @@ class OrderManagerTest {
 	void getOneOrderByOrderDateTest() {
 		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(127497);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
@@ -387,7 +374,7 @@ class OrderManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the orders
-			Order order1 = new Order(client, payment1, shipment, productOrders);
+			Order order1 = new Order(client, shipment, productOrders);
 			
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			orderManager.insertOrder(order1);
@@ -416,10 +403,7 @@ class OrderManagerTest {
 	void getSeveralOrdersByOrderDateTest() {
 		Client client = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment2 = new Payment(6, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment3 = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create 3 shipments and 3 products.
 		Shipment shipment1 = new Shipment(127457);
 		Shipment shipment2 = new Shipment(327457);
 		Shipment shipment3 = new Shipment(427457);
@@ -427,7 +411,6 @@ class OrderManagerTest {
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
 		Product product3 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 
-								
 		//I create a list of products and add the products I created above.
 		List<Product> products = new ArrayList<Product>();
 		products.add(product1);
@@ -454,9 +437,9 @@ class OrderManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the orders
-			Order order1 = new Order(client, payment1, shipment1, productOrders);
-			Order order2 = new Order(client, payment2, shipment2, productOrders);
-			Order order3 = new Order(client, payment3, shipment3, productOrders);
+			Order order1 = new Order(client, shipment1, productOrders);
+			Order order2 = new Order(client, shipment2, productOrders);
+			Order order3 = new Order(client, shipment3, productOrders);
 
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			orderManager.insertOrder(order1);
@@ -510,8 +493,7 @@ class OrderManagerTest {
 	void getOneOrderWithinDateRangeTest() {
 		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment1 = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(127457);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
@@ -537,7 +519,7 @@ class OrderManagerTest {
 			clientManager.insertClient(client);
 			supplierManager.insertSupplier(supplier);
 			
-			Order order = new Order(client, payment1, shipment, productOrders);
+			Order order = new Order(client, shipment, productOrders);
 
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
 			orderManager.insertOrder(order);
@@ -568,9 +550,7 @@ class OrderManagerTest {
 		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
 		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment1 = new Payment(3, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create 2 shipments and 2 products.
 		Shipment shipment = new Shipment(127457);
 		Shipment shipment1 = new Shipment(137457);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
@@ -598,8 +578,8 @@ class OrderManagerTest {
 			clientManager.insertClient(client1);
 			supplierManager.insertSupplier(supplier);
 
-			Order order = new Order(client, payment, shipment, productOrders);
-			Order order1 = new Order(client, payment1, shipment1, productOrders);
+			Order order = new Order(client, shipment, productOrders);
+			Order order1 = new Order(client, shipment1, productOrders);
 
 
 			//I create an order with the created client to make sure he/she has at least one order associated to him/her.
@@ -657,15 +637,11 @@ class OrderManagerTest {
 		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
 		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment1 = new Payment(3, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment2 = new Payment(2, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment3 = new Payment(4, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create 4 shipments and 4 products.
 		Shipment shipment = new Shipment(127457);
+		Shipment shipment1 = new Shipment(127557);
 		Shipment shipment2 = new Shipment(127757);
 		Shipment shipment3 = new Shipment(123457);
-		Shipment shipment1 = new Shipment(127557);
 		Product product = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		Product product1 = new Product("Insulin Syringe", Category.DISPOSABLES, "Syringe for insulin administration", 5.0f, 1000, false);
 		Product product2 = new Product("ECG Monitor", Category.DIAGNOSTIC_TOOLS, "Portable ECG machine", 300.0f, 50, true);
@@ -700,11 +676,11 @@ class OrderManagerTest {
 			clientManager.insertClient(client1);
 			supplierManager.insertSupplier(supplier);
 
-			Order order = new Order(client, payment, shipment, productOrders);
-			Order order1 = new Order(client, payment1, shipment1, productOrders);
-			Order order2 = new Order(client, payment2, shipment2, productOrders);
-			Order order3 = new Order(client, payment3, shipment3, productOrders);
-
+			Order order = new Order(client, shipment, productOrders);
+			Order order1 = new Order(client, shipment1, productOrders);
+			Order order2 = new Order(client, shipment2, productOrders);
+			Order order3 = new Order(client, shipment3, productOrders);
+			//I insert the orders in the database
 			orderManager.insertOrder(order);
 			orderManager.insertOrder(order1);
 			orderManager.insertOrder(order2);

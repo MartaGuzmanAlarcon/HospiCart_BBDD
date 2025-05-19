@@ -12,9 +12,6 @@ import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.PaymentMethod;
-import HospiCartPOJOs.PaymentStatus;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
@@ -26,8 +23,7 @@ public class OrderTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 				
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(123456);
 		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
 		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", 3.1f, 200, false);
@@ -47,7 +43,7 @@ public class OrderTest {
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);			
 		
-        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, payment, shipment, productOrders));
+        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, shipment, productOrders));
 	}
 	
 	@Test
@@ -55,8 +51,7 @@ public class OrderTest {
 		//I create a client with an ID so that the client is valid in order to create the order.
 		Client expectedClient = new Client(1, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 				
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(123456);
 		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
 		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks", 3.1f, 200, false);
@@ -76,7 +71,7 @@ public class OrderTest {
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);			
 		
-        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, payment, shipment, productOrders));
+        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, shipment, productOrders));
 	}
 	
 	@Test
@@ -84,9 +79,7 @@ public class OrderTest {
 		//I create a client with an ID so that the client is valid in order to create the order.
 		Client expectedClient = new Client(1, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 				
-		//I create a payment, a shipment and 2 products.
-		//I create a payment with a payment ID so that the payment is valid to create the order.
-		Payment payment = new Payment(1, 5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Shipment shipment = new Shipment(123456);
 		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
 		Product product2 = new Product("Masks", Category.DISPOSABLES, "Blue Masks",3.1f, 200, false);
@@ -106,7 +99,7 @@ public class OrderTest {
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);			
 		
-        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, payment, shipment, productOrders));
+        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, shipment, productOrders));
 	}
 	
 	@Test
@@ -114,9 +107,7 @@ public class OrderTest {
 		//I create a client with an ID so that the client is valid in order to create the order.
 		Client expectedClient = new Client(1, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 				
-		//I create a payment, a shipment and 2 products.
-		//I create a payment with a payment ID so that the payment is valid to create the order.
-		Payment payment = new Payment(1, 5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		//I create a shipment with a shipment ID so that the shipment is valid to create the order.
 		Shipment shipment = new Shipment(1, 123456);
 		Product product1 = new Product("Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
@@ -137,7 +128,7 @@ public class OrderTest {
 		productOrders.add(productOrder1);
 		productOrders.add(productOrder2);			
 		
-        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, payment, shipment, productOrders));
+        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, shipment, productOrders));
 	}
 	
 	@Test
@@ -145,9 +136,7 @@ public class OrderTest {
 		//I create a client with an ID so that the client is valid in order to create the order.
 		Client expectedClient = new Client(1, "Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 				
-		//I create a payment, a shipment and 2 products.
-		//I create a payment with a payment ID so that the payment is valid to create the order.
-		Payment payment = new Payment(1, 5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		//I create a shipment with a shipment ID so that the shipment is valid to create the order.
 		Shipment shipment = new Shipment(1, 123456);
 		Product product1 = new Product(1, "Gloves", Category.DISPOSABLES, "Latex pink gloves", 2.1f, 300, false);
@@ -166,6 +155,6 @@ public class OrderTest {
 		//I create the list of product orders and add the product orders to the list.
 		List<ProductOrder> productOrders = new ArrayList<ProductOrder>();	
 		
-        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, payment, shipment, productOrders));
+        assertThrows(OrderExceptions.class, () -> new Order(expectedClient, shipment, productOrders));
 	}
 }

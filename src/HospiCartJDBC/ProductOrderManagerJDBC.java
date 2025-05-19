@@ -36,7 +36,6 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
 		this.connectionManager = cm;
 		this.c = cm.getConnection();
 		this.productManager = new ProductManagerJDBC(cm);
-		
 	}
 	
 	/**

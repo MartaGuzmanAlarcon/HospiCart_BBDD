@@ -119,7 +119,7 @@ public class ConnectionManagerJDBC {
 							shipment_id INTEGER PRIMARY KEY AUTOINCREMENT,
 							order_id INTEGER NOT NULL,
 							tracking_number INTEGER NOT NULL,
-							FOREIGN KEY (order_id) REFERENCES product_order(order_id)
+							FOREIGN KEY (order_id) REFERENCES client_order(order_id)
 						);
 						""",
 				// payment
@@ -139,7 +139,7 @@ public class ConnectionManagerJDBC {
 			}
 			c.commit();
 			System.out.println("Tables created correctly.");
-			c.setAutoCommit(true);
+			c.setAutoCommit(false);
 			System.out.println("Tables created correctly. Auto-commit restored.");
 			
 		} catch (SQLException e) {

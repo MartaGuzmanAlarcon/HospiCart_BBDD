@@ -82,20 +82,16 @@ public class Order implements Serializable {
 	/**
 	 * Constructor of "Order" that receives one parameter per attribute the class has (except for order ID) and initializes them.
 	 * @param _client object of the class "Client" that stores the client that made the order.
-	 * @param _payment object of the class "Payment" that stores the payment of the order.
 	 * @param _shipment object of the class "Shipment" that stores the shipment of the order.
 	 * @param _productOrders list of objects of the class "ProductOrder" that stores all the product orders associated to the order.
 	 * @throws OrderExceptions if any object received as parameter is null.
 	 */
-	public Order(Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders) throws OrderExceptions{
+	public Order(Client _client, Shipment _shipment, List<ProductOrder> _productOrders) throws OrderExceptions{
 		super();
 		//First, I check that the received objects are not null. If any of them is null, I won't be able to create the order and will throw the appropriate exception.
 		if(_client == null || _client.getUserId() == null) {
 			      //We throw a personalized exception
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
-		}
-		if(_payment == null) {
-			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PAYMENT);
 		}
 		if(_shipment == null) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
@@ -108,15 +104,14 @@ public class Order implements Serializable {
 					throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_PRODUCT_ORDER);
 				}
 			}
-		}		this.client = _client;
-		this.payment = _payment;
+		}		
+		this.client = _client;
 		this.Shipment = _shipment;
 		this.productOrders = _productOrders;
 		//I initialize the order date to the present date.
 		this.orderDate = Date.valueOf(LocalDate.now());
-		//I initialize the status of the order to "ORDERED" which is the 'default' status.
-		this.status = Status.ORDERED;
-
+		//I initialize the status of the order to "PENDING" which is the 'default' status.
+		this.status = Status.PENDING;
 	}
 	
 	
@@ -125,21 +120,26 @@ public class Order implements Serializable {
 	 * Constructor of "Order" that receives one parameter per attribute the class has 
 	 * (except for order ID, order date, order status and the list of product orders) and initializes them.
 	 * @param client object of the class "Client" that stores the client that made the order.
-	 * @param payment object of the class "Payment" that stores the payment of the order.
 	 * @param shipment shipment object of the class "Shipment" that stores the shipment of the order.
-	 * @param orderDate
-	 * @param status
+	 * @throws OrderExceptions if any of the parameters is null.
 	 */
-	public Order(Client client, Payment payment, Shipment shipment) {
+	public Order(Client client, Shipment shipment) throws OrderExceptions {
 		super();
+		//First, I check that the received objects are not null. If any of them is null, I won't be able to create the order and will throw the appropriate exception.
+		if(client == null || client.getUserId() == null) {
+			      //We throw a personalized exception
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
+		}
+		if(shipment == null) {
+			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
+		}
 		this.client = client;
-		this.payment = payment;
 		Shipment = shipment;
 		this.productOrders = new ArrayList<ProductOrder>();
 		//I initialize the order date to the present date.
 		this.orderDate = Date.valueOf(LocalDate.now());
-		//I initialize the status of the order to "ORDERED" which is the 'default' status.
-		this.status = Status.ORDERED;
+		//I initialize the status of the order to "PENDING" which is the 'default' status.
+		this.status = Status.PENDING;
 	}
 
 	// Additional method to use LocalDate objects
@@ -149,8 +149,7 @@ public class Order implements Serializable {
 		}
 		this.orderDate = Date.valueOf(ldate);
 	}
-	//TODO: SEE IF THIS METHOD SHOULD RECEIVE A LOCAL DATE OR A DATE!!
-
+	
 	// Additional method to use LocalDate objects
 	public LocalDate getLocalDateDob() {
 		return this.orderDate.toLocalDate();
@@ -223,7 +222,7 @@ public class Order implements Serializable {
 
 
 	public void setStatus(Status status) throws OrderExceptions{
-		if(status != Status.ORDERED && status != Status.DELIVERED && status != Status.CANCELLED) {
+		if(status != Status.PENDING && status != Status.ORDERED && status != Status.DELIVERED && status != Status.CANCELLED) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
 		}
 		this.status = status;

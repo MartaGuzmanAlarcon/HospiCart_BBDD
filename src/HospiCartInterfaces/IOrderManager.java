@@ -24,8 +24,11 @@ public interface IOrderManager {
 	/**
 	 * Method that receives an order's id as parameter and deletes it.
 	 * @param order_id integer that stores the id of the order we wish to remove.
+	 * @throw ClientException if the method get order by ID throws an exception of this type.
+	 * @throws OrderExceptions if the method get order by ID throws an exception of this type.
+	 * @throws Exception if the method that deletes a payment throws an exception.
 	 */
-	void deleteOrder(int order_id)  throws ClientException, OrderExceptions;
+	void deleteOrder(int order_id)  throws ClientException, OrderExceptions, Exception;
 	
 	/**
 	 * Method that retrieves a specific order whose id matches the one received as parameter.

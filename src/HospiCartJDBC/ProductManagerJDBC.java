@@ -86,7 +86,7 @@ public class ProductManagerJDBC implements IProductManager {
 			e.printStackTrace();
 		}
 	}
-	
+	//TODO SEE IF WE HAVE TO DELETE THIS
 	/**
 	 * Adds a new product to the database.
 	 * 
@@ -127,6 +127,7 @@ public class ProductManagerJDBC implements IProductManager {
 		}
 		return false;
 	}*/
+	
 	public boolean insertProduct(Product product) throws SQLException{
 		Supplier supplier = product.getSupplier();
 		

@@ -1,6 +1,6 @@
 package HospiCartPOJOs;
 
 public enum Status {
-	ORDERED, DELIVERED, CANCELLED
+	PENDING, ORDERED, DELIVERED, CANCELLED
 
 }

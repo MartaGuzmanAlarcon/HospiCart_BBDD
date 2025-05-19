@@ -24,9 +24,6 @@ import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.PaymentMethod;
-import HospiCartPOJOs.PaymentStatus;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
@@ -57,22 +54,21 @@ public class ShipmentManagerTest {
 
    @BeforeEach
    void cleanTable() throws Exception {
-   	// This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
-       // Crucial for wiping or resetting data so tests can’t influence each other.
+       // This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
+       // Crucial for wiping or resetting data so tests can't influence each other.
        // Ensure a clean state
-       
-       Connection c = connectionManager.getConnection();
-       try ( Statement s = c.createStatement() ) {
-       	   // Delete in reverse order of dependencies
-           s.execute("DELETE FROM supplier");
-       	   s.execute("DELETE FROM product");
-       	   s.execute("DELETE FROM product_order");
-           s.execute("DELETE FROM payment");
-           s.execute("DELETE FROM client");
-           s.execute("DELETE FROM client_order");
-           s.execute("DELETE FROM shipment");
-           c.commit();
 
+       Connection c = connectionManager.getConnection();
+       try (Statement s = c.createStatement()) {
+           // Delete in correct order based on dependencies
+           s.execute("DELETE FROM payment");         // Must come before client_order deletion
+           s.execute("DELETE FROM shipment");        // Must come before product_order deletion
+           s.execute("DELETE FROM product_order");   // Depends on product and client_order
+           s.execute("DELETE FROM product");         // Depends on supplier
+           s.execute("DELETE FROM client_order");    // Depends on client
+           s.execute("DELETE FROM client");          // No dependencies
+           s.execute("DELETE FROM supplier");        // Must come last due to product dependency
+           c.commit();
        }
    }
 
@@ -90,8 +86,7 @@ public class ShipmentManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		
@@ -120,7 +115,7 @@ public class ShipmentManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			
 			//I call the method that returns a list that contains all the shipments made and store this amount as an integer.
 			List <Shipment> shipmentBefore = shipmentManager.getAllShipments();
@@ -149,8 +144,7 @@ public class ShipmentManagerTest {
 			//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 			Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 			
-			//I create a payment, a shipment and 2 products.
-			Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+			//I create a shipment and 2 products.
 			Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 			Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 			
@@ -179,7 +173,7 @@ public class ShipmentManagerTest {
 				supplierManager.insertSupplier(supplier);
 				
 				//Now, I create the order
-				Order order = new Order(expectedClient, payment, shipment, productOrders);
+				Order order = new Order(expectedClient, shipment, productOrders);
 				orderManager.insertOrder(order);
 				
 				//I call the method that returns a list that contains all the shipments made and store this amount as an integer.
@@ -211,8 +205,7 @@ public class ShipmentManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		
@@ -241,7 +234,7 @@ public class ShipmentManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			orderManager.insertOrder(order);
 			
 			//I call the method that returns a list that contains all the shipments made and store this amount as an integer.
@@ -273,8 +266,7 @@ public class ShipmentManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		
@@ -303,7 +295,7 @@ public class ShipmentManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			orderManager.insertOrder(order);
 			
 			//I call the method that returns a list that contains all the shipments made and store this amount as an integer.
@@ -335,8 +327,7 @@ public class ShipmentManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		
@@ -365,7 +356,7 @@ public class ShipmentManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			orderManager.insertOrder(order);
 			
 			Shipment retrievedShipment = shipmentManager.getShipmentByID(shipment.getShipmentId());
@@ -388,8 +379,7 @@ public class ShipmentManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		
@@ -418,7 +408,7 @@ public class ShipmentManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			orderManager.insertOrder(order);
 			
 			Shipment retrievedShipment = shipmentManager.getShipmentByTrackingNumber(shipment.getTrackingNumber());
@@ -441,8 +431,7 @@ public class ShipmentManagerTest {
 		//I create an 'incomplete' client with the constructor of Client that does not admit a user_id.
 		Client expectedClient = new Client("Julian", "Alvarez", 346667865, "julialvarez@gmail.com", "Calle de la Princesa 30");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+		//I create a shipment and 2 products.
 		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
 		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
 		
@@ -471,7 +460,7 @@ public class ShipmentManagerTest {
 			supplierManager.insertSupplier(supplier);
 			
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment, productOrders);
+			Order order = new Order(expectedClient, shipment, productOrders);
 			orderManager.insertOrder(order);
 			
 			Shipment retrievedShipment = shipmentManager.getShipmentByOrderID(order.getOrderId());
@@ -492,16 +481,11 @@ public class ShipmentManagerTest {
 		Client client1 = new Client("Rodrigo", "De Paul", 543367865, "rodri@gmail.com", "Calle de Argentina 80");
 		Client client = new Client("Nahuel", "Molina", 543667865, "nahuel@gmail.com", "Calle de Tucuman 80");
 		
-		//I create a payment, a shipment and 2 products.
-		Payment payment = new Payment(7, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment1 = new Payment(3, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment2 = new Payment(2, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		Payment payment3 = new Payment(4, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
-		
+		//I create 4 shipments and 4 products.		
 		Shipment shipment = new Shipment(127457);
+		Shipment shipment1 = new Shipment(127557);
 		Shipment shipment2 = new Shipment(127757);
 		Shipment shipment3 = new Shipment(123457);
-		Shipment shipment1 = new Shipment(127557);
 		int amountOfShipments = 4;
 
 		Product product = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
@@ -542,10 +526,10 @@ public class ShipmentManagerTest {
 			clientManager.insertClient(client1);
 			supplierManager.insertSupplier(supplier);
 
-			Order order = new Order(client, payment, shipment, productOrders);
-			Order order1 = new Order(client, payment1, shipment1, productOrders);
-			Order order2 = new Order(client, payment2, shipment2, productOrders);
-			Order order3 = new Order(client, payment3, shipment3, productOrders);
+			Order order = new Order(client, shipment, productOrders);
+			Order order1 = new Order(client, shipment1, productOrders);
+			Order order2 = new Order(client, shipment2, productOrders);
+			Order order3 = new Order(client, shipment3, productOrders);
 
 			orderManager.insertOrder(order);
 			orderManager.insertOrder(order1);

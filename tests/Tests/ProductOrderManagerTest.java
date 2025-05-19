@@ -14,20 +14,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import Exceptions.ClientException;
-import Exceptions.OrderExceptions;
 import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManagerJDBC;
-import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.ProductOrderManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Manufacturer;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.PaymentMethod;
-import HospiCartPOJOs.PaymentStatus;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Shipment;
@@ -39,7 +34,6 @@ public class ProductOrderManagerTest {
 	private static ClientManagerJDBC clientManager;
 	private static OrderManagerJDBC orderManager;
 	private static SupplierManagerJDBC supplierManager;
-	private static ProductManagerJDBC productManager;
 	private static ProductOrderManagerJDBC productOrderManager;
 	
 	@BeforeAll
@@ -50,7 +44,6 @@ public class ProductOrderManagerTest {
 		connectionManager = new ConnectionManagerJDBC();
 		clientManager = new ClientManagerJDBC(connectionManager);
 		supplierManager = new SupplierManagerJDBC(connectionManager);
-        productManager = new ProductManagerJDBC(connectionManager);
         orderManager = new OrderManagerJDBC(connectionManager);
         productOrderManager = new ProductOrderManagerJDBC(connectionManager);
     }
@@ -67,7 +60,6 @@ public class ProductOrderManagerTest {
 	        	s.execute("DELETE FROM supplier");
 	         	s.execute("DELETE FROM product");
 	         	s.execute("DELETE FROM product_order");
-	            s.execute("DELETE FROM payment");
 	            s.execute("DELETE FROM shipment");
 	            s.execute("DELETE FROM client");
 	            s.execute("DELETE FROM client_order");
@@ -150,8 +142,7 @@ public class ProductOrderManagerTest {
         	clientManager.insertClient(expectedClient); // throws ClientException
         	
 			// Create and insert a supplier 
-        		// To create a suppler, I have to create a payment, a shipment and 2 products.
-    		Payment payment = new Payment(5, PaymentMethod.BANK_TRANSFER, PaymentStatus.COMPLETED);
+        	// To create a suppler, I have to create a shipment and 2 products.
     		Shipment shipment = new Shipment(123456);
     		Product product1 = new Product("Paracetamol", Category.MEDICATIONS, "Analgesic", 50.0f, 200, true);
     		Product product2 = new Product("Mask", Category.DISPOSABLES, "Mask for surgical protection", 15.0f, 1000, false);
@@ -166,7 +157,7 @@ public class ProductOrderManagerTest {
 			
 			// Create and insert the order 
 			//Now, I create the order
-			Order order = new Order(expectedClient, payment, shipment);
+			Order order = new Order(expectedClient, shipment);
 			
 			orderManager.insertOrder(order);
 			
