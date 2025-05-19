@@ -2,8 +2,6 @@ package HospiCartInterfaces;
 import java.sql.SQLException;
 import java.util.List;
 
-import Exceptions.ClientException;
-import Exceptions.OrderExceptions;
 import HospiCartPOJOs.Payment;
 import HospiCartPOJOs.PaymentMethod;
 import HospiCartPOJOs.PaymentStatus;
@@ -24,5 +22,5 @@ public interface IPaymentManager {
 	public void updatePaymentStatus(Integer paymentId, PaymentStatus status) throws Exception;
 	
 	
-	public Payment getPaymentByOrderId(int order_id) throws ClientException, OrderExceptions;
+	public Payment getPaymentByOrderId(int order_id);
 }

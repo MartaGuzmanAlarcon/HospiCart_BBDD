@@ -4,15 +4,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import Exceptions.ClientException;
-import Exceptions.OrderExceptions;
 import HospiCartInterfaces.IPaymentManager;
-import HospiCartPOJOs.Order;
 import HospiCartPOJOs.Payment;
 import HospiCartPOJOs.PaymentMethod;
 import HospiCartPOJOs.PaymentStatus;
-import HospiCartPOJOs.Shipment;
-import Utilities.Utilities;
 
 public class PaymentManagerJDBC implements IPaymentManager {
 	private ConnectionManagerJDBC manager;
@@ -236,9 +231,10 @@ public class PaymentManagerJDBC implements IPaymentManager {
 	/**
 	 * Method that receives an order id by parameter and retrieves the payment that is associated to the order of the received order id.
 	 * @param order_id integer that stores the id of the order whose payment we want to get.
+	 * @return payment object of class payment that contains the found payment or null if a payment was not found.
 	 */
 	@Override
-	public Payment getPaymentByOrderId(int order_id) throws ClientException, OrderExceptions{
+	public Payment getPaymentByOrderId(int order_id){
 		Payment payment = null;
 	    //SQL query
     	String sql = "SELECT * "
@@ -261,7 +257,7 @@ public class PaymentManagerJDBC implements IPaymentManager {
     				payment.setPaymentStatus(PaymentStatus.valueOf(resultSet.getString("payment_status")));
     			}
     			else {
-    				throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_ID);
+    				return null;
     			}
     		}
     	} catch(SQLException e) {

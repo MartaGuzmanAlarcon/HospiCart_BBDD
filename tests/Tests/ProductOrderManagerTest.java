@@ -48,24 +48,26 @@ public class ProductOrderManagerTest {
         productOrderManager = new ProductOrderManagerJDBC(connectionManager);
     }
 	
-	 @BeforeEach
-	    void cleanTables() throws Exception {
-		 // This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
-	     // Crucial for wiping or resetting data so tests can’t influence each other.
-	     // Ensure a clean state
-		 
-		 Connection c = connectionManager.getConnection();
-	        try (Statement s = c.createStatement() ) {
-	        	// Delete in reverse order of dependencies
-	        	s.execute("DELETE FROM supplier");
-	         	s.execute("DELETE FROM product");
-	         	s.execute("DELETE FROM product_order");
-	            s.execute("DELETE FROM shipment");
-	            s.execute("DELETE FROM client");
-	            s.execute("DELETE FROM client_order");
-	            c.commit();
-	        }
+	@BeforeEach
+	void cleanTables() throws Exception {
+	    // This annotation is used to signal that the annotated method should be executed before each @Test method in the current test class.
+	    // Crucial for wiping or resetting data so tests can't influence each other.
+	    // Ensure a clean state
+	    
+	    Connection c = connectionManager.getConnection();
+	    try (Statement s = c.createStatement()) {
+	        // Delete in correct order based on foreign key dependencies
+	        // First delete tables that reference other tables
+	        s.execute("DELETE FROM product_order");  // Depends on product and order
+	        s.execute("DELETE FROM payment");        // Depends on order
+	        s.execute("DELETE FROM shipment");       // Depends on order
+	        s.execute("DELETE FROM client_order");   // Depends on client
+	        s.execute("DELETE FROM product");        // Depends on supplier
+	        s.execute("DELETE FROM supplier");       // Independent table
+	        s.execute("DELETE FROM client");         // Independent table
+	        c.commit();
 	    }
+	}
 	 
 	 @AfterAll
      static void tearDown() {

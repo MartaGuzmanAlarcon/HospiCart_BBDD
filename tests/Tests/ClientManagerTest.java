@@ -1,6 +1,5 @@
 package Tests;
 import HospiCartPOJOs.Client;
-import HospiCartPOJOs.Role;
 import org.junit.jupiter.api.*;
 
 import Exceptions.ClientException;
@@ -10,7 +9,6 @@ import HospiCartJDBC.ConnectionManagerJDBC;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -144,9 +142,6 @@ public class ClientManagerTest {
         	
         	// Create an ID that we know is invalid (e.g. existingId + 100)
         	int invalidID = existingId + 100;
-        	
-        	// Remove the client 
-            clientManager.deleteClientbyID(invalidID); // throws ClientException
     		
             assertThrows( ClientException.class, () -> clientManager.deleteClientbyID(invalidID),
                     "Trying to delete a client with an invalid id should throw an exception");
