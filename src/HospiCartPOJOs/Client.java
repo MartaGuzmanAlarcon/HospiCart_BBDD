@@ -143,9 +143,8 @@ public class Client implements Serializable {
 	// toString  --> ORDER PRINT??
 	@Override
 	public String toString() {
-		return "Client [id =" + this.id + ", name =" + this.name + ", surname =" + this.surname +
-				", phoneNumber =" + this.phoneNumber + ", email =" + this.email + 
-				", address =" + this.address + "]";
+		return "Client: \t\tClient ID = " + this.id + "\t\tName = " + this.name + "\t\tSurname = " + this.surname +
+				"\t\tPhone Number = " + this.phoneNumber + "\t\tEmail = " + this.email + "\t\tAddress = " + this.address;
 	}
 
 }

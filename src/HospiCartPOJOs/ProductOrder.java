@@ -105,7 +105,7 @@ public class ProductOrder implements Serializable {
 // toString
 	@Override
 	public String toString() {
-		return "ProductOrder [amount=" + amount + ", total_price=" + totalPrice + ", product=" + product + "]";
+		return "Product Order: \t\tAmount = " + this.amount + "\t\tTotal Price = " + this.totalPrice + "\t\tProduct = " + this.product.getProductId();
 	}
 
 }

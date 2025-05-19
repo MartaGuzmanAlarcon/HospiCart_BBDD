@@ -130,8 +130,6 @@ public class Payment implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Payment [paymentId=" + this.paymentId + ", amount=" + this.amount + ", paymentMethod=" + 
-				this.paymentMethod + ", paymentStatus=" + this.paymentStatus + "]";
+		return "Payment: \t\tPayment ID = " + this.paymentId + "\t\tAmount = " + this.amount + "\t\tPayment Method = " + this.paymentMethod + "\t\tPayment Status = " + this.paymentStatus;
 	}
-
 }

@@ -15,7 +15,7 @@ public class Order implements Serializable {
 	private Integer orderId;
 	private Client client; // 1 Order has 1 Client 
 	private Payment payment;
-	private Shipment Shipment; // 1 Order has 1 Shipment TODO: CHANGE THE CAPITAL S OF THE NAME OF THE VARIABLE FOR AN s (lower case S)
+	private Shipment shipment; // 1 Order has 1 Shipment TODO: CHANGE THE CAPITAL S OF THE NAME OF THE VARIABLE FOR AN s (lower case S)
 	private List<ProductOrder> productOrders; // 1 Order has many ProductOrders 
 	private Date orderDate;
 	private Status status;
@@ -73,7 +73,7 @@ public class Order implements Serializable {
 		this.orderId = _orderId;
 		this.client = _client;
 		this.payment = _payment;
-		this.Shipment = _shipment;
+		this.shipment = _shipment;
 		this.productOrders = _productOrders;
 		this.orderDate = _orderDate;
 		this.status = _status;
@@ -106,7 +106,7 @@ public class Order implements Serializable {
 			}
 		}		
 		this.client = _client;
-		this.Shipment = _shipment;
+		this.shipment = _shipment;
 		this.productOrders = _productOrders;
 		//I initialize the order date to the present date.
 		this.orderDate = Date.valueOf(LocalDate.now());
@@ -134,7 +134,7 @@ public class Order implements Serializable {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_SHIPMENT);
 		}
 		this.client = client;
-		Shipment = shipment;
+		this.shipment = shipment;
 		this.productOrders = new ArrayList<ProductOrder>();
 		//I initialize the order date to the present date.
 		this.orderDate = Date.valueOf(LocalDate.now());
@@ -196,12 +196,12 @@ public class Order implements Serializable {
 
 
 	public Shipment getShipment() {
-		return Shipment;
+		return shipment;
 	}
 
 
 	public void setShipment(Shipment shipment) {
-		Shipment = shipment;
+		this.shipment = shipment;
 	}
 
 
@@ -250,7 +250,7 @@ public class Order implements Serializable {
 	// toString
 	@Override
 	public String toString() {
-		return "Order [orderId=" + orderId + ", client=" + client + ", payment=" + payment + ", Shipment=" + Shipment
-				+ ", productOrders=" + productOrders + ", orderDate=" + orderDate + ", status=" + status + "]";
+		return "Order: \t\tOrder ID = " + this.orderId + "\t\tClient = " + this.client + "\t\tPayment = " + this.payment +
+				"\t\tShipment = " + this.shipment + "\t\tProduct Orders = " + this.productOrders + "\t\tOrder Date = " + this.orderDate + "\t\tStatus = " + this.status;
 	}
 }

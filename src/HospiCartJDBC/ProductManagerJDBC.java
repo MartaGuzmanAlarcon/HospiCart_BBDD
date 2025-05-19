@@ -9,7 +9,6 @@ import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Manufacturer;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.Supplier;
-import Utilities.Utilities;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -86,7 +85,7 @@ public class ProductManagerJDBC implements IProductManager {
 			e.printStackTrace();
 		}
 	}
-	//TODO SEE IF WE HAVE TO DELETE THIS
+	
 	/**
 	 * Adds a new product to the database.
 	 * 
@@ -95,39 +94,6 @@ public class ProductManagerJDBC implements IProductManager {
 	 * @return true if product was added, false otherwise.
 	 */
 	@Override
-	/*public boolean insertProduct(int supplierId, Product product) throws SQLException{
-		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-		try (PreparedStatement stmt = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-			// Set parameters for the SQL query
-			stmt.setInt(1, supplierId); // Using the supplierId passed as a parameter
-			stmt.setString(2, product.getName());
-			stmt.setString(3, product.getCategory().toString()); // Assuming product.getCategory() returns an Enum
-			stmt.setString(4, product.getDescription());
-			stmt.setFloat(5, product.getPrice()); // Assuming price comes from the
-																						// Product object
-			stmt.setInt(6, product.getStockQuantity());
-			stmt.setBoolean(7, product.getNeedPrescription());
-
-			int rowsAffected = stmt.executeUpdate();
-			if (rowsAffected > 0) {
-				//Now, I get the generated primary key of order (the order id, which is assigned by the database), making use of the method "getGeneratedKeys"
-	            try(ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-	                if (generatedKeys.next()) {
-	                    product.setProductId(generatedKeys.getInt(1));
-	                } else {
-	                    throw new SQLException("Inserting product failed, no ID obtained.");
-	                }
-				c.commit();
-				return true;
-	            }
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}*/
-	
 	public boolean insertProduct(Product product) throws SQLException{
 		Supplier supplier = product.getSupplier();
 		

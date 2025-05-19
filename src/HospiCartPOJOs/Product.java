@@ -139,15 +139,10 @@ public class Product implements Serializable {
 	// toString
 	@Override
 	public String toString() {
-	    return "\n-----Product-----" + "\n" +
-	           "  - Product ID: " + productId + "\n" +
-	           "  - Supplier: " + supplier.getCompanyName() + "\n" +
-	           "  - Product name: " + name + "\n" +
-	           "  - Description: " + description + "\n" +
-	           "  - Category: " + category + "\n" +
-	           "  - Price: " + price + "\n" +
-	           "  - Amount in stock: " + stockQuantity + "\n" +
-	           "  - Need prescription: " + needPrescription + "\n\n";  
+		//TODO we are not printing the needPrescription nor the amount in stock (because it is not relevant to the user)
+//	           "  - Amount in stock: " + stockQuantity + "\n" +
+//	           "  - Need prescription: " + needPrescription + "\n\n";  
+		return "Product: \t\tProduct ID = " + this.productId + "\t\tSupplier = " + this.supplier.getCompanyName() + "\t\tProduct Name = " + this.name + "\t\tDescription = " + this.description
+				+ "\t\tCategory = " + this.category + "\t\tPrice = " + this.price;
 	}
-
 }

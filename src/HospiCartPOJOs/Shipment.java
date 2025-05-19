@@ -113,7 +113,7 @@ public class Shipment implements Serializable {
 	// toString
 	@Override
 	public String toString() {
-		return "Shipment [shipmentId=" + shipmentId + ", trackingNumber=" + trackingNumber + "]";
+		return "Shipment: \t\tShipment ID = " + this.shipmentId + "\t\tTracking Number = " + this.trackingNumber;
 	}
 
 }
