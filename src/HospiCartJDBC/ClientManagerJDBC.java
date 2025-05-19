@@ -11,7 +11,7 @@ import HospiCartPOJOs.Payment;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Role;
 import HospiCartPOJOs.Shipment;
-import HospiCartPOJOs.Status;
+import HospiCartPOJOs.OrderStatus;
 import Exceptions.*;
 
 /*

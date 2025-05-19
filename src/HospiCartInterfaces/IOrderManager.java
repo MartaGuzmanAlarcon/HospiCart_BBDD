@@ -7,7 +7,7 @@ import java.util.List;
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
 import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Status;
+import HospiCartPOJOs.OrderStatus;
 
 /**
  * Interface that defines the operations for managing orders in the HospiCart system.
@@ -70,12 +70,12 @@ public interface IOrderManager {
 	 * @param status variable of type Status that contains the status we are interested in (in order to see the orders that have this status)
 	 * @return a list that contains the orders with the received status.
 	 */
-	List<Order> getOrdersByStatus(Status status) throws ClientException, OrderExceptions;
+	List<Order> getOrdersByStatus(OrderStatus status) throws ClientException, OrderExceptions;
 	
 	/**
 	 * Method that receives an order id and a status as parameters and updates the status of the order whose id coincides with the received as parameter.
 	 * @param order_id integer that stores the id of the order whose status we wish to update.
 	 * @param newStatus variable of type Status that store the status we want the order to have.
 	 */
-	void updateOrderStatus(int order_id, Status newStatus) throws OrderExceptions, ClientException;
+	void updateOrderStatus(int order_id, OrderStatus newStatus) throws OrderExceptions, ClientException;
 }

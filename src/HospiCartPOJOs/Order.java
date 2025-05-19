@@ -18,7 +18,7 @@ public class Order implements Serializable {
 	private Shipment shipment; // 1 Order has 1 Shipment TODO: CHANGE THE CAPITAL S OF THE NAME OF THE VARIABLE FOR AN s (lower case S)
 	private List<ProductOrder> productOrders; // 1 Order has many ProductOrders 
 	private Date orderDate;
-	private Status status;
+	private OrderStatus status;
 
 	/**
 	 * Empty constructor of "Order" in which the list of product orders is created.
@@ -40,7 +40,7 @@ public class Order implements Serializable {
 	 * @param _status variable of the enumerate "Status" that stores the status of the order.
 	 * @throws OrderExceptions if any object received as parameter is null or if the order date is future.
 	 */
-	public Order(int _orderId, Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders, Date _orderDate, Status _status) throws OrderExceptions{
+	public Order(int _orderId, Client _client, Payment _payment, Shipment _shipment, List<ProductOrder> _productOrders, Date _orderDate, OrderStatus _status) throws OrderExceptions{
 		super();
 		
 		//First, I check that the received objects are not null. If any of them is null, I won't be able to create the order and will throw the appropriate exception.
@@ -66,7 +66,7 @@ public class Order implements Serializable {
 		if(_orderDate.after(Date.valueOf(LocalDate.now()))){
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_ORDER_DATE_FUTURE);
 		}
-		if(_status != Status.ORDERED && _status != Status.DELIVERED && _status != Status.CANCELLED) {
+		if(_status != OrderStatus.ORDERED && _status != OrderStatus.DELIVERED && _status != OrderStatus.CANCELLED) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
 		}
 		//TODO SHOULD I ALSO CHECK IF THE ORDER DATE IS IN THE PAST? i.e. before 2020 or something like that?
@@ -111,7 +111,7 @@ public class Order implements Serializable {
 		//I initialize the order date to the present date.
 		this.orderDate = Date.valueOf(LocalDate.now());
 		//I initialize the status of the order to "PENDING" which is the 'default' status.
-		this.status = Status.PENDING;
+		this.status = OrderStatus.PENDING;
 	}
 	
 	
@@ -139,7 +139,7 @@ public class Order implements Serializable {
 		//I initialize the order date to the present date.
 		this.orderDate = Date.valueOf(LocalDate.now());
 		//I initialize the status of the order to "PENDING" which is the 'default' status.
-		this.status = Status.PENDING;
+		this.status = OrderStatus.PENDING;
 	}
 
 	// Additional method to use LocalDate objects
@@ -216,13 +216,13 @@ public class Order implements Serializable {
 	}
 
 
-	public Status getStatus() {
+	public OrderStatus getStatus() {
 		return status;
 	}
 
 
-	public void setStatus(Status status) throws OrderExceptions{
-		if(status != Status.PENDING && status != Status.ORDERED && status != Status.DELIVERED && status != Status.CANCELLED) {
+	public void setStatus(OrderStatus status) throws OrderExceptions{
+		if(status != OrderStatus.PENDING && status != OrderStatus.ORDERED && status != OrderStatus.DELIVERED && status != OrderStatus.CANCELLED) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
 		}
 		this.status = status;

@@ -1,6 +1,6 @@
 package HospiCartPOJOs;
 
-public enum Status {
+public enum OrderStatus {
 	PENDING, ORDERED, DELIVERED, CANCELLED
 
 }
