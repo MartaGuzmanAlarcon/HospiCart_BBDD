@@ -3,7 +3,6 @@ package HospiCartApp;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import Exceptions.ClientException;
 import Utilities.*;
@@ -34,7 +33,7 @@ public class MainMenu {
             productManager = new ProductManagerJDBC(connectionManager);
             supplierManager = new SupplierManagerJDBC(connectionManager);
             
-            resetApplication();
+            //TODO ADD CHECK TO INSERT THE SUPPLIER AND PRODUCTS
             setApplication(); //I call the method that prepares the application by inserting the products we sell and the supplier.
             
             //We declare a boolean variable and set it to false in order to create a while that prints the menu in the screen that runs until 
@@ -94,21 +93,7 @@ public class MainMenu {
             System.out.println("Error closing connections: " + e.getMessage());
         }
     }
-    //TODO ASK RODRIGO HOW WE CAN CHANGE THIS so that it works!!!
-    public static void resetApplication() {
-        // Crucial for wiping or resetting data so tests can’t influence each other.
-        // Ensure a clean state
-        
-        Connection c = connectionManager.getConnection();
-        try ( Statement s = c.createStatement() ) {
-        	// Delete in reverse order of dependencies
-        	s.execute("DELETE FROM product");
-            s.execute("DELETE FROM supplier");
-            c.commit();
-        } catch(SQLException sqle) {
-        	System.out.println("ERROR: " + sqle);
-        }
-    }
+
     /**
      * This method sets the "HospiCart" application by calling the method of Product that inserts all the products contained in a CSV file in the folder "Utilities".
      */
