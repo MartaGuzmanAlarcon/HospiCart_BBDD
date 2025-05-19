@@ -47,28 +47,20 @@ public class DoctorMenu {
         	Output.println("Dear doctor, please introduce the number of the operation you wish to perform:");
         	Output.println("1. Browse products");
             Output.println("2. View your cart");
-            Output.println("0. Logout");
+            Output.println("3. View my account");
+            //View my accoutn should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
+            	//MY DATA should enable the user to SEE ITS PERSONAL INFORMATION, CHANGE PASSWORD, CHANGE ADDRESS.
+            	//MY ORDERS should 
+            //should call the update mthods to updae the information of the 
+            Output.println("0. Go back"); //ir a donde se llama al menu de doctor
             
             int choice = InputKB.readInteger();
             
             try {
             	switch (choice) {
             	case 1:  
-            		Output.println("Press:");
-            		Output.println("1. If you want to browse products by category.");
-            		Output.println("2. If you want to browse all products.");
-            		Output.println("3. If you want to go back.");
-            		int choice2 = InputKB.readInteger();
-            		switch(choice2) {
-            		case 1:
-            			//We call the method that asks the user to introduce a category and returns the category.
-            			Category category = getCategoryElection();
-            			browseProductsByCategory(category);
-            			break;
-            		case 2:
-                		browseAllProducts(); 
-                		break;
-            		}
+            		browseProducts();
+            		break;
                 case 2:  viewCart();          break;
                 case 0:  return;
                 default: Output.println("Invalid option. Please try agin introducing a valid number.");    
@@ -82,6 +74,74 @@ public class DoctorMenu {
 		}
 		
 	}
+	
+	public void browseProducts() {
+		Output.println("Press:");
+		Output.println("1. If you want to browse products by category.");
+		Output.println("2. If you want to browse all products.");
+		Output.println("3. If you want to go back.");
+		int choice2 = InputKB.readInteger();
+		switch(choice2) {
+		case 1:
+			//We call the method that asks the user to introduce a category and returns the category.
+			Category category = getCategoryElection();
+			browseProductsByCategory(category);
+			break;
+		case 2:
+    		browseAllProducts(); 
+    		break;
+		}   
+	}
+	
+	
+//	public void resetPassword() {
+//		//I ask the user to introduce and confirm the new password and I check that they are in fact equal.
+//		Output.println("Please introduce your new password: ");
+//        String newPassword = InputKB.readString();
+//        Output.println("Confirm new password: ");
+//        String newPasswordConfirmed = InputKB.readString();
+//        //If the introduced passwords are equal
+//        if(newPassword.equals(newPasswordConfirmed)) {
+//        	userManager.updatePassword(user.getEmail(), newPasswordConfirmed);
+//        	//I call the setter method for password, which encrypts it and sets it as the password of the user.
+//        	//TODO DO I HAVE TO ENCRYPT THE PASSWORD IN THE SETTER???
+//        	user.setPassword(newPasswordConfirmed);
+//        	Output.println("Password successfully reset!");
+//        	Output.println("Redirecting to login...");
+//        	login();
+//        }
+//        else {
+//        	//I tell the user that the password do not match and ask him/her what does he/she want to do.
+//        	Output.println("The introduced passwords do not match!");
+//        	Output.println("Introduce: ");
+//    		Output.println("1. If you want to try again.");
+//    		Output.println("2. If you want to go back.");
+//    		Output.println("0. If you want to exit.");
+//    		int option2 = InputKB.readInteger();
+//    		switch(option2) {
+//    			case 1:
+//    				//If the user wants to keep trying, I set the try again variable to true and just exit the switch case.
+//    				reintroducePassword = true;
+//    				break;
+//    			case 2:
+//    				keepGoing = true;
+//    				reintroducePassword = false;
+//    				tryAgain = true;
+//    				break;
+//    			case 0:
+//    				//If the user wants to exit, I disconnect the application.
+//    				closeConnections();
+//                    Output.println("Application closed! Hope to see you again soon!");
+//    				keepGoing = false;
+//    				reintroducePassword = false;
+//    				break; //TODO VERIFY IF IT WORKS CORRECTLY!!
+//                default:
+//                	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
+//                	tryAgain = false;
+//                	break;	
+//    		}
+//        }
+//	}
 	
 	/**
 	 * Method that allows the doctor to see all the product orders within its cart. 

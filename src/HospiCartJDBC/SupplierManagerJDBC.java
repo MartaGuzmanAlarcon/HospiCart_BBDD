@@ -47,7 +47,7 @@ public class SupplierManagerJDBC {
 		String line;
 		String csvSplitBy = ",";
 
-		String sql = "INSERT INTO supplier (company_name, contact_number, address) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO supplier (supplier_id, company_name, contact_number, address) VALUES (?, ?, ?, ?)";
 
 		try (PreparedStatement stmt = c.prepareStatement(sql);
 				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -62,14 +62,15 @@ public class SupplierManagerJDBC {
 					System.out.println("Skipping invalid row: " + line);
 					continue;
 				}
-
-				String companyName = data[0].trim(); // .trim(): elimina espacios en blanco
-				Integer contactNumber = Integer.parseInt(data[1].trim());
-				String address = data[2].trim();
-
-				stmt.setString(1, companyName);
-				stmt.setInt(2, contactNumber);
-				stmt.setString(3, address);
+				Integer supplierId = Integer.parseInt(data[0].trim());
+				String companyName = data[1].trim(); // .trim(): elimina espacios en blanco
+				Integer contactNumber = Integer.parseInt(data[2].trim());
+				String address = data[3].trim();
+				
+				stmt.setInt(1, supplierId);
+				stmt.setString(2, companyName);
+				stmt.setInt(3, contactNumber);
+				stmt.setString(4, address);
 
 				stmt.executeUpdate();
 			}

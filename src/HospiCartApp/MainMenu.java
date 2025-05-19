@@ -53,9 +53,11 @@ public class MainMenu {
                 switch (input) {
                     case 1:
                         register();
+                        exit = true;
                         break;
                     case 2:
                         login();
+                        exit = true;
                         break;
                     case 0:
                         closeConnections();
@@ -139,14 +141,17 @@ public class MainMenu {
 		            case 1:
 		                registerDoctor();
 		                login();
+		                keepGoing = false;
 		                break;
 		            case 2:
 		                registerNurse();
 		                login();
+		                keepGoing = false;
 		                break;
 		            case 3:
 		                registerSupplier();
 		                login();
+		                keepGoing = false;
 		                break;
 		            case 0:
 		            	closeConnections();
