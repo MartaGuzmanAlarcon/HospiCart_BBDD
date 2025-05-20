@@ -7,7 +7,7 @@ public class ProductOrder implements Serializable {
 
 	private static final long serialVersionUID = 1794207772823018743L;
 	private Integer amount;
-	private Float totalPrice; //TODO THIS SHOULD ALSO BE A BIG DECIMAL !!! CCHECK HOW IT SHOULD BE IN THE DATABASE
+	private Float totalPrice;
 	private Order order; // 1 ProductOrder has 1 Order 
 	private Product product; // 1 ProductOrder has 1 Product 
 

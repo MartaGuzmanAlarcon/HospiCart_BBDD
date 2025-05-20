@@ -15,7 +15,7 @@ public class Order implements Serializable {
 	private Integer orderId;
 	private Client client; // 1 Order has 1 Client 
 	private Payment payment;
-	private Shipment shipment; // 1 Order has 1 Shipment TODO: CHANGE THE CAPITAL S OF THE NAME OF THE VARIABLE FOR AN s (lower case S)
+	private Shipment shipment; // 1 Order has 1 Shipment 
 	private List<ProductOrder> productOrders; // 1 Order has many ProductOrders 
 	private Date orderDate;
 	private OrderStatus status;

@@ -1,5 +1,6 @@
 package HospiCartApp;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -49,7 +50,8 @@ public class DoctorMenu {
         	Output.println("Dear doctor, please introduce the number of the operation you wish to perform:");
         	Output.println("1. Browse products");
             Output.println("2. View your cart");
-            Output.println("3. View my account");
+            Output.println("3. Add products to my cart");
+            Output.println("4. Account settings"); // Includes the UPDATE methods 
             //View my accoutn should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
             	//MY DATA should enable the user to SEE ITS PERSONAL INFORMATION, CHANGE PASSWORD, CHANGE ADDRESS.
             	//MY ORDERS should 
@@ -63,7 +65,14 @@ public class DoctorMenu {
             	case 1:  
             		browseProducts();
             		break;
-                case 2:  viewCart();          break;
+                case 2:  
+                	viewCart();          
+                	break;
+                case 3: 
+                	Product chosenProduct = chooseProduct();
+                	int amount = chooseAmount(chosenProduct);
+                	addToCart(chosenProduct, amount);
+                	
                 case 0:  return;
                 default: Output.println("Invalid option. Please try agin introducing a valid number.");    
               }
@@ -71,13 +80,15 @@ public class DoctorMenu {
 	        	System.out.println("ERROR: " + ce);
 	        } catch(OrderExceptions oe) {
 	        	System.out.println("ERROR: " + oe);
+	        } catch(SQLException sqle) {
+	        	System.out.println("ERROR: " + sqle);
 	        }
 			
 		}
 		
 	}
 	
-	public void browseProducts() {
+	public void browseProducts() { // TODO IMPLEMENT CASE 3: A DONDE TIENE QUE IR EL GO BACK?
 		Output.println("Press:");
 		Output.println("1. If you want to browse products by category.");
 		Output.println("2. If you want to browse all products.");
@@ -92,6 +103,8 @@ public class DoctorMenu {
 		case 2:
     		browseAllProducts(); 
     		break;
+		case 3: 
+			return; 
 		}   
 	}
 	
@@ -146,33 +159,160 @@ public class DoctorMenu {
 //	}
 	
 	/**
-	 * Method that allows the doctor to see all the product orders within its cart. 
+	 * Method that allows the doctor to see all the product orders within its cart.
+	 * If the cart is empty either because no cart was inserted in the database or because the list of product orders is empty, the method exits.
 	 * @throws OrderExceptions
 	 * @throws ClientException
 	 */
 	public void viewCart() throws OrderExceptions, ClientException {
-		 List<ProductOrder> productsOrders = productOrderManager.getProductOrdersByOrderID(cart.getOrderId());
-		 
-		 if (productsOrders.isEmpty()) {
-	            Output.println("Your cart is empty.");
-	     } else {
-	    	 Output.println("Your current cart items:");
-	    	 // Print column headers
-	         Output.println(String.format("%-20s %5s %10s", "Product", "Quantity", "Total"));
-	         Output.println("----------------------------------------");
-	         for (ProductOrder po : productsOrders) {
-	             String name  = po.getProduct().getName();
-	             int    amount   = po.getAmount();
-	             float  totalPrice = po.getTotalPrice();
-	             // Same formatted row as before
-	             Output.println(String.format("  - %-18s %5d %10.2f", name, amount, totalPrice));
-	         }
-	     }
-		 
-		 
-		 
-		 
+		// Check for a brand new cart that’s never been inserted in the DB: If the user never calls addToCart(), and thus never inserted the Order into the DB, cart.getOrderId() will be null
+		// Recap: at this point the object Order has been created in Java thanks to the constructor, but it is not inserted in the DB until addToCart() is called
+		if(cart.getOrderId() == null) {
+			Output.println("Your cart is empty.");
+			return; // Tells Java “stop executing this method right now and go back to the caller”, it is a way of exiting the method
+		} 
+		
+		// Now it's safe to pull the product orders from the DB -> the corresponding manager is used for this purpose 
+		List<ProductOrder> productsOrders = productOrderManager.getProductOrdersByOrderID(cart.getOrderId());
+		
+		// Check if there really zero items:
+		if (productsOrders.isEmpty()) {
+            Output.println("Your cart is empty.");
+            return; // To exit the method 
+		} 
+		
+		// Otherwise, show all products 
+		Output.println("Your current cart items:");
+    	// Print column headers
+        Output.println(String.format("%-20s %5s %10s", "Product", "Quantity", "Total"));
+        Output.println("----------------------------------------");
+        for (ProductOrder po : productsOrders) {
+            String name = po.getProduct().getName();
+            int amount = po.getAmount();
+            float totalPrice = po.getTotalPrice();
+            // Same formatted row as before
+            Output.println(String.format("  - %-18s %5d %10.2f", name, amount, totalPrice));
+         } 
 	 }
+	
+	/**
+	 * Method that adds a product to the client's cart (an order).
+	 * This method performs the addition of the product both in Java and in the database.
+	 * @param product
+	 * @param amount
+	 * @throws SQLException
+	 * @throws ClientException
+	 */
+	public void addToCart(Product product, int amount) throws SQLException, ClientException {
+		// ADD A PRODUCT ORDER TO AN ORDER IN JAVA -> link them both
+		ProductOrder productOrder = new ProductOrder(amount, cart, product); // Attach our in-memory Order (cart) to a ProductOrder
+		// Add the productOrder to the list of products orders of the cart (order)
+		List<ProductOrder> productOrders = cart.getProductOrders(); // Retrieve the product orders of the cart (order)
+		productOrders.add(productOrder);
+		
+		// INSERT THE NEW ROWS OF THE CORRESPONDING TABLES IN THE DB 
+		if(cart.getOrderId() == null) { // Insert the Order (cart) in the DB if it does not exist -> the DB will generate its ID with AUTOINCREMENT
+			orderManager.insertOrder(cart); 
+		} else { // If the order exists in the DB, insert the product order in the DB 
+			productOrderManager.insertProductOrder(productOrder);
+		}
+		
+		 Output.println(amount + " x '" + product.getName() + "' added to your cart.");
+	}
+	
+	
+//	private Product chooseProduct() {
+//		// Retrieve all the products from the DB, which are loaded in setApplication() method once we run the MainMenu 
+//		List<Product> products = productManager.getAllProducts();
+//		
+//		// Show all the products numbered
+//		Output.println("\nPlease choose a product:");
+//	    for (int i = 0; i < products.size(); i++) {
+//	        Product p = products.get(i);
+//	        Output.println(String.format("%2d) %s  [%s]  $%.2f", 
+//	            i+1, p.getName(), p.getCategory(), p.getPrice()));
+//	    }
+//	    
+//	    // Read until the user introduces a valid option 
+//	    while (true) {
+//	        int option = InputKB.readInteger();
+//	        if (option >= 0 && option < products.size()) {
+//	        	Product chosedProduct = products.get(option -1);
+//	    	    return chosedProduct;
+//	        } else {
+//	        	Output.println("Invalid selection. Please enter a number between 1 and " + (products.size()));
+//	        }
+//	    }
+//	    
+//	}
+	
+	private Product chooseProduct() {
+	    while (true) {
+	        // Display the options to the user
+	        Output.println("\nChoose how to browse products:");
+	        Output.println(" 1. By category");
+	        Output.println(" 2. Show all");
+	        Output.println(" 0. Cancel");
+	        int browseOption = InputKB.readInteger();
+	        
+	        List<Product> candidates;
+	        switch (browseOption) {
+	          case 1:
+	            Category category = getCategoryElection();
+	            candidates = productManager.getProductsByCategory(category);
+	            break;
+	          case 2:
+	            candidates = productManager.getAllProducts();
+	            break;
+	          case 0:
+	            return null;  // Exit 
+	          default:
+	            Output.println("Invalid option, try again.");
+	            continue;
+	        }
+	        
+	        // Show the candidates products numbered 
+	        Output.println("\nChoose a product by number:");
+	        for (int i = 0; i < candidates.size(); i++) {
+	            Product p = candidates.get(i);
+	            Output.println(String.format(" %2d) %s [%s] $%.2f",
+	                i + 1, p.getName(), p.getCategory(), p.getPrice()));
+	        }
+	        Output.println(" 0. Go back");
+	        
+	        // Read and validate their choice  
+	        int choice = InputKB.readInteger();
+	        if (choice == 0) {
+	            continue;  // back to browse mode
+	        }
+	        if (choice < 1 || choice > candidates.size()) {
+	            Output.println("That’s not a valid product number. Try again.");
+	            continue; 
+	        }
+	        
+	        // 4) Return the picked one
+	        Product chosedProduct = candidates.get(choice -1);
+	        return chosedProduct;
+	    }
+	}
+
+
+	private int chooseAmount(Product product) {
+		Output.println("How many units of '" + product.getName() + "' would you like to add?");
+		while(true) {
+			int amount = InputKB.readInteger();
+			if(amount <= 0) {
+				Output.println("Quantity must be at least 1. Try again:");
+			} else if (amount > product.getStockQuantity()) {
+				Output.println("Threre are no more units of " + product.getName() + " in stock. Please enter a smaller amount.");
+			} else {
+				return amount;
+			}
+		}
+	    
+	    
+	}
+	
 	/**
 	 * Method that calls the get all products method of product manager and prints all the products contained in the database.
 	 */
@@ -213,4 +353,9 @@ public class DoctorMenu {
 			 System.out.println(productsByCategory.get(i));
 		 }
 	 }
+	 
+	 
+	 // TODO METODO PAY QUE ASIGNE UN SHIPMENT UNA VEZ QUE EL PAGO SE HA PROCESADO
+	 // SETSHIPMENT DE ORDER PARA QUE ACTUALICE EL SHIPMENT EN JAVA 
+	 // DESPUÉS -> CREAR UPDATESHIPMENTID EN ORDER PARA ACTUALIZAR EL SHIPMENT EN LA DB 
 }
