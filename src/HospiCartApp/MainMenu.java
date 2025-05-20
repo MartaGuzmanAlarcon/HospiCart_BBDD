@@ -288,8 +288,9 @@ public class MainMenu {
 	                        NurseMenu.displayMenu();
 	                        break;
 	                    case "supplier":
-	                        SupplierMenu.displayMenu();
-	                        break;
+	                    	SupplierMenu supplierMenu = new SupplierMenu(connectionManager, user); 
+	                    	supplierMenu.displaySupplierMenu();	                       
+	                    	break;
 	                    default:
 	                    	Output.println("Unrecognized role.");
 	                        break;

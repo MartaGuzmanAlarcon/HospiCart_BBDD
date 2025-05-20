@@ -21,7 +21,7 @@ public class Supplier implements Serializable {
 	}
 	
 	public Supplier(Manufacturer m) {
-	 this.companyName=m;
+	 this.companyName = m;
 	}
 	
 	public Supplier(int _supplierId, List<Product> _products, Manufacturer _companyName, Integer _contactNumber, String _address) {
@@ -83,7 +83,7 @@ public class Supplier implements Serializable {
 	}
 
 
-	public void setContactPerson(Integer _contactNumber) {
+	public void setContactNumber(Integer _contactNumber) {
 		this.contactNumber = _contactNumber;
 	}
 

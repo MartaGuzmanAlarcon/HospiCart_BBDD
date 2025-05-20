@@ -452,17 +452,19 @@ public class ProductManagerJDBC implements IProductManager {
 
 
 	/**
-	 * Checks whether the stock of a product is below its threshold. If so, prints a
-	 * warning message.
+	 * Checks whether the stock of a product is below its threshold and adds it to a list that contains the products that have the products with low stock.
 	 *
 	 * @param product the product to check
+	 * @return true if the product is running out of stock or false otherwise.
 	 */
-	public void checkLowStockAlert(Product product) {
+	public boolean checkLowStockAlert(Product product) {
 		int threshold = getThresholdForCategory(product.getCategory());
 
 		if (product.getStockQuantity() < threshold) {
-			System.out.println("Warning: Product \"" + product.getName() + "\" is running low on stock.");
+			System.out.println("Warning: Product \"" + product.getName() + "\" with ID " + product.getProductId()+" is running low on stock.");
+			return true;
 		}
+		return false;
 	}
 
 	/**

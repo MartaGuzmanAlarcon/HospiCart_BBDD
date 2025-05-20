@@ -35,7 +35,8 @@ public class Product implements Serializable {
     }
 	//TODO: THINK IF WE HAVE TO INITIALISE THE LIST OF PRODUCT ORDERS
 	public Product(String name, Category category, String description, Float price, int stockQuantity, boolean needPrescription) {
-        this.name = name;                       
+       super();
+		this.name = name;                       
         this.category = category;                
         this.description = description;          
         this.price = price;                      
