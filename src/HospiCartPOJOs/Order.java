@@ -141,6 +141,25 @@ public class Order implements Serializable {
 		//I initialize the status of the order to "PENDING" which is the 'default' status.
 		this.status = OrderStatus.PENDING;
 	}
+	
+	/**
+	 * Constructor of "Order" that only receives a client as parameter. It creates an empty order (cart) for the given client.
+	 * @param client object of the class "Client" that stores the client that made the order.
+	 * @throws OrderExceptions OrderExceptions if any of the parameters is null.
+	 */
+	public Order(Client client) throws OrderExceptions {
+		// Check that the received objects are not null. If any of them is null, no order will be created and a personalized exception is going to be thrown
+	    if (client == null || client.getUserId() == null) {
+	        throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_CLIENT);
+	    }
+	    // Initialize only the attributes of our interest according to the logic of the application 
+	    this.client = client;
+	    this.productOrders = new ArrayList<>(); // Initialize to an empty list of product orders -> empty cart
+	    this.orderDate = Date.valueOf(LocalDate.now()); // Initialize the order date to the present date
+	    this.status = OrderStatus.PENDING; // Initialize the status of the order to "PENDING" which is the 'default' status
+	    // payment & shipment remain null until we call them in pay() method of DoctorMenu and NurseMenu
+	}
+	
 
 	// Additional method to use LocalDate objects
 	public void setLocalDateDob(LocalDate ldate) throws OrderExceptions {

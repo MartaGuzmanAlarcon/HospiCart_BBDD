@@ -272,13 +272,17 @@ public class MainMenu {
 
 	            //We verify that the user retrieved is not null
 	            if (user != null) {
-	            	//We obtain the role of the user.
+	            	// We obtain the role of the user.
 	                String roleName = user.getRole().getName();
 	                Output.println("It is nice to see you again, dear " + roleName + "!");
-	                switch (roleName) {
-	                    case "doctor":
-	                        //DoctorMenu doctorMenu = new DoctorMenu(); // TODO MODIFY THE DOCTORMENU CONSTRUCTOR 
-	                        //doctorMenu.displayDoctorMenu();
+	                try {
+	                	// Retrieve the matching client for this user -> THIS IS THE REASON WHY IT'S VERY IMPORTANT THAT CLIENT AND ROLE SHARE A COMMON ATTRIBUTE
+		                Client loggedInClient = clientManager.getClientByEmail(user.getEmail()); // throws ClientException
+		                
+		                switch (roleName) {
+		                case "doctor":
+		                	DoctorMenu doctorMenu = new DoctorMenu(connectionManager, loggedInClient); 
+	                        doctorMenu.displayDoctorMenu();
 	                        break;
 	                    case "nurse":
 	                        NurseMenu.displayMenu();
@@ -290,6 +294,13 @@ public class MainMenu {
 	                    	Output.println("Unrecognized role.");
 	                        break;
 	                }
+		                
+	                } catch(ClientException ce) {
+        	        	System.out.println("ERROR: " + ce);
+        	        }
+	                
+	                
+	             
 	                break;
 	            } else {
 	            	//If the method log in retrieves a null user, we print an error message

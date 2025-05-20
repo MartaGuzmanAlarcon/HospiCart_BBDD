@@ -13,29 +13,31 @@ import Utilities.*;
  * A menu UI for doctors to browse products and manage their shopping cart (an Order).
  */
 public class DoctorMenu {
-	private static ProductManagerJDBC productManager;
-	private static ConnectionManagerJDBC connectionManager;
-	private static OrderManagerJDBC orderManager;
-	private static ProductOrderManagerJDBC productOrderManager;
-	private static ClientManagerJDBC clientManager;
-	private static Order cart;
-	private static Client doctor; 
+	private ProductManagerJDBC productManager;
+	private ConnectionManagerJDBC connectionManager;
+	private OrderManagerJDBC orderManager;
+	private ProductOrderManagerJDBC productOrderManager;
+	private ClientManagerJDBC clientManager;
+	private Order cart;
+	private Client doctor; 
+	
+	// NOTE: this attributes CAN NOT BE STATIC because they are per-session pieces of state.
+	// Making them static would cause that two different doctors logging in consecutively would trample on each other’s doctor/cart
 
 	/**
 	 * Construct a DoctorMenu for the given doctor and cart, wired up to the shared JDBC connection.
 	 * @param cm the JDBC connection manager, which allows this class to be connected to the database
 	 * @param doc the Client representing the currently‐logged‐in doctor
-	 * @param cart the Order object being used as this doctor’s “shopping cart”
 	 */
-	public DoctorMenu(ConnectionManagerJDBC cm, Client doc, Order cart) {
-		// Initialize all the attributes with DoctorMenu. instead of this. because they are static variables 
-        DoctorMenu.connectionManager   = cm; // Passing one cm is simpler than passing five or six different manager objects, cm includes all of them
-        DoctorMenu.productManager      = new ProductManagerJDBC(cm);
-        DoctorMenu.orderManager        = new OrderManagerJDBC(cm);
-        DoctorMenu.productOrderManager = new ProductOrderManagerJDBC(cm);
-        DoctorMenu.clientManager       = new ClientManagerJDBC(cm);
-        DoctorMenu.doctor = doc;
-        DoctorMenu.cart = cart;
+	public DoctorMenu(ConnectionManagerJDBC cm, Client doc) {
+		// Initialize all the attributes 
+        this.connectionManager = cm; // Passing one cm is simpler than passing five or six different manager objects, cm includes all of them
+        this.productManager = new ProductManagerJDBC(cm);
+        this.orderManager = new OrderManagerJDBC(cm);
+        this.productOrderManager = new ProductOrderManagerJDBC(cm);
+        this.clientManager = new ClientManagerJDBC(cm);
+        this.doctor = doc;
+        this.cart = new Order(doctor); // Initialize a brand-new, empty cart. In this way we are assigning an Order to a Client, which is a doctor in this case 
 	}
 	
 	/**
@@ -205,7 +207,7 @@ public class DoctorMenu {
 	 * Method that calls the get products by category method of product manager and prints all the products of the specified category contained in the database.
 	  * @param category variable of type category.
 	  */
-	 public static void browseProductsByCategory(Category category) {
+	 public void browseProductsByCategory(Category category) {
 		 List<Product> productsByCategory = productManager.getProductsByCategory(category);
 		 for(int i = 0; i < productsByCategory.size(); i++) {
 			 System.out.println(productsByCategory.get(i));
