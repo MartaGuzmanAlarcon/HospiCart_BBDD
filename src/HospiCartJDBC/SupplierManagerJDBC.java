@@ -220,7 +220,7 @@ public class SupplierManagerJDBC implements ISupplierManager{
 		 * @return the retrieved supplier.
 		 */
 	    @Override
-	    public Supplier getSupplierByCompanyName(String companyName) throws SQLException{
+	    public Supplier getSupplierByCompanyName(String companyName){
 	    	Supplier supplier = null;
 	    	
 	    	String sql = "SELECT * "

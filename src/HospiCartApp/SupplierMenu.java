@@ -1,16 +1,21 @@
 package HospiCartApp;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Exceptions.ClientException;
+import Exceptions.OrderExceptions;
 import HospiCartJDBC.ConnectionManagerJDBC;
+import HospiCartJDBC.OrderManagerJDBC;
 import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartJPA.UserManagerJPA;
 import HospiCartPOJOs.Category;
+import HospiCartPOJOs.Order;
+import HospiCartPOJOs.OrderStatus;
 import HospiCartPOJOs.Product;
+import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Supplier;
 import HospiCartPOJOs.User;
 import Utilities.InputKB;
@@ -19,6 +24,7 @@ import Utilities.Output;
 public class SupplierMenu {
 	private static ConnectionManagerJDBC connectionManager;
 	private static SupplierManagerJDBC supplierManager;
+	private static OrderManagerJDBC orderManager;
 	private static ProductManagerJDBC productManager;
 	private static Supplier supplier;
 	private static User user;
@@ -34,6 +40,7 @@ public class SupplierMenu {
 		SupplierMenu.connectionManager = cm; // Passing one cm is simpler than passing five or six different manager objects, cm includes all of them
 		SupplierMenu.productManager = new ProductManagerJDBC(cm);
 		SupplierMenu.supplierManager = new SupplierManagerJDBC(cm);
+		OrderManagerJDBC orderManager = new OrderManagerJDBC(cm);
 		//SupplierMenu.supplier = supplier;
 		user = supplierUser; //TODO SEE IF THIS WORKS
 		userManager = new UserManagerJPA();
@@ -43,18 +50,13 @@ public class SupplierMenu {
 		// TODO Auto-generated method stub
 		Output.println("\n=== Welcome to the Supplier Menu! ===");
 		String chosenCompany = outputCompanyNames();
-		try {
 			supplier = supplierManager.getSupplierByCompanyName(chosenCompany);
 			setProductsToSupplier(supplier);
 			Output.println("Logged in as '" + supplier.getCompanyName()+"', welcome back!");
 			displaySupplierMenuOptions();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
 	}
 	
-	public void displaySupplierMenuOptions() throws SQLException {
+	public void displaySupplierMenuOptions() {
 		Output.println("Dear supplier, please introduce the number of the operation you wish to perform:");
 		boolean keepGoing = true;
 		while(keepGoing) {
@@ -63,35 +65,42 @@ public class SupplierMenu {
 			Output.println("3. Manage products.");
 			Output.println("4. Manage orders.");
 			Output.println("0. Exit.");
-			
-			int option = InputKB.readInteger();
-			switch(option) {
-			case 1:
-				viewPersonalData();
-				keepGoing = false;
-				break;
-			case 2:
-				viewCompanyData();
-				keepGoing = false;
-				break;
-			case 3:
-				manageProducts();
-				keepGoing = false;
-				break;
-			case 4:
-				//TODO CREATE THIS METHOD manageOrders();
-				keepGoing = false;
-				break;
-			case 0:
-                closeConnections();
-                Output.println("Application closed!");
-                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
-                keepGoing = false;
-                break;
-            default:
-            	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
-            	break;				
-			}
+			try {	
+				int option = InputKB.readInteger();
+				switch(option) {
+				case 1:
+					viewPersonalData();
+					keepGoing = false;
+					break;
+				case 2:
+					viewCompanyData();
+					keepGoing = false;
+					break;
+				case 3:
+					manageProducts();
+					keepGoing = false;
+					break;
+				case 4:
+					manageOrders();
+					keepGoing = false;
+					break;
+				case 0:
+	                closeConnections();
+	                Output.println("Application closed!");
+	                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
+	                keepGoing = false;
+	                break;
+	            default:
+	            	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
+	            	break;				
+				}
+			} catch(ClientException ce) {
+				System.out.println("ERROR: " + ce);
+			} catch (OrderExceptions oe) {
+				System.out.println("ERROR: " + oe);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} 
 		}
 	}
 	
@@ -143,7 +152,7 @@ public class SupplierMenu {
     /**
      * Method that shows the user his/her personal data and asks if he/she wants to change the password or not.
      */
-    private void viewPersonalData() throws SQLException {
+    private void viewPersonalData() {
     	Output.println("Username: " + user.getEmail());
     	Output.println("Password: " + user.getPassword());
     	
@@ -167,9 +176,8 @@ public class SupplierMenu {
     
     /**
      * Method that resets the password of a user.
-     * @throws IOException if the method register throws an exception of this type.
      */
-    private void resetPassword() throws SQLException{
+    private void resetPassword() {
     	Output.println("HospiCart's got you!");
     	boolean reintroducePassword = true;
     	
@@ -357,7 +365,7 @@ public class SupplierMenu {
 	  * @return a variable of type integer that stores the ID of the product the user wants to delete from the database.
 	  */
 	 private Integer getPrdocutIDs() {
-		 List<Integer> productIDs = null;
+		 List<Integer> productIDs = new ArrayList<>();
 		 for(int i=0; i< supplier.getProducts().size(); i++) {
 			 productIDs.add(supplier.getProducts().get(i).getProductId());
 		 }
@@ -454,6 +462,83 @@ public class SupplierMenu {
 		 }
 	 }
 	 
+	 private void manageOrders() throws OrderExceptions, ClientException  {
+		 //This method should enable the supplier to: see all the orders, see the ones that have a specific state, 
+		 Output.println("Introduce the number of the operation you wish to perform regarding the administration of the orders:");
+		 boolean keepGoing = true;
+		 while(keepGoing) {
+			 Output.println("1. See orders by state.");
+			 Output.println("2. See all orders.");
+			 
+			 int option = InputKB.readInteger();
+			 
+			 switch(option) {
+			 case 1:
+				 Output.println("Introduce the order state you are interested in among the following ones: ");
+				 OrderStatus statusChosen = getOrderStatusOfOrder();
+				 List<Order> ordersWithProvidedStatus = seeOrdersByCategory(statusChosen);
+				 //I print the result obtained
+				 Output.println("Orders with status '" + statusChosen + "': ");
+				 for(int i=0; i<ordersWithProvidedStatus.size(); i++) {
+					 Order order = ordersWithProvidedStatus.get(i);
+					 System.out.println(order);
+				 }
+				 keepGoing = false;
+				 displaySupplierMenuOptions();
+				 break;
+			 case 2:
+				 List<Order> allOrders = orderManager.getAllOrders();
+				 //I print the result obtained
+				 Output.println("Orders: ");
+				 for(int i=0; i<allOrders.size(); i++) {
+					 Order order = allOrders.get(i);
+					 System.out.println(order);
+				 }
+				 keepGoing = false;
+				 displaySupplierMenuOptions();
+				 break;
+	         default:
+		            Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
+		            break;	
+			 }
+		 }
+	 }
+	 
+	 /**
+	  * Method that shows the user the status of the orders.
+	  * @return a variable of type Order Status.
+	  */
+	 private OrderStatus getOrderStatusOfOrder() {
+		 OrderStatus[] status = OrderStatus.values();
+		 while(true) {
+			 for(int i = 0; i < status.length; i++) {
+				 Output.println(" " + i + ". " + " " + status[i]);
+			 }
+			 int choice = InputKB.readInteger();
+			 if(choice > -1 && choice < status.length) {
+				 return status[choice];
+			 } else {
+				 Output.println("The introduced number is invalid, please try again.");
+			 }
+		 }
+	 }
+	 
+	 private List<Order> seeOrdersByCategory(OrderStatus chosenStatus) throws OrderExceptions, ClientException {
+		//I call the method from order manager that returns a list of all the orders whose order status matches the one received as parameter
+		 List<Order> ordersWithProvidedStatus = orderManager.getOrdersByStatus(chosenStatus);
+		 return ordersWithProvidedStatus;
+	 }
 	 
 	 
+	 public boolean approveOrder(Order order) {
+		 List<ProductOrder> productOrders = order.getProductOrders();
+		 for(int i=0; i<productOrders.size(); i++) {
+			 ProductOrder productOrder = productOrders.get(i);
+			 if(productOrder.getProduct().getStockQuantity() < 0) {
+				 //If there is no sufficient stock of the product the user is tying to buy, then we return false in order to state that the order is not approved by the supplier.
+				 return false;
+			 }
+		 }
+		 return true;
+	 }
 }
