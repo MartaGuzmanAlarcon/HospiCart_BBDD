@@ -46,19 +46,21 @@ public class NurseMenu {
 	 * Method that displays the doctor's menu.
 	 */
 	public void displayNurseMenu() { 
+		Output.println("\n=== Welcome to the Nurse Menu! ===");
 		while(true) {
-			Output.println("\n=== Welcome to the Nurse Menu! ===");
         	Output.println("Dear nurse, please introduce the number of the operation you wish to perform:");
         	//Output.println("1. Browse products");
             Output.println("1. View your cart");
             Output.println("2. Shop");
-            Output.println("3. Account settings"); // Includes the UPDATE methods 
+            Output.println("3. Pay");
+            Output.println("4. Account settings"); // Includes the UPDATE methods 
             //View my account should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
             	//MY DATA should enable the user to SEE ITS PERSONAL INFORMATION, CHANGE PASSWORD, CHANGE ADDRESS.
             	//MY ORDERS should 
             //should call the update mthods to updae the information of the 
             //1Output.println("0. Go back"); //ir a donde se llama al menu de doctor
-            
+            Output.println("0. Exit");
+
             int choice = InputKB.readInteger();
             
             try {
@@ -74,9 +76,15 @@ public class NurseMenu {
                 	int amount = chooseAmount(chosenProduct);
                 	addToCart(chosenProduct, amount);
                 	break;
-                case 3:
+                case 3: 
+                	//TODO ADD PAY
+                case 4:
                 	accountSettings();
-                
+                case 0:
+	                Output.println("Application closed!");
+	                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
+	                System.exit(0); //I close the application
+	                break;
                 //case 0:  return;
                 default: Output.println("Invalid option. Please try agin introducing a valid number.");    
               }
@@ -114,21 +122,23 @@ public class NurseMenu {
 	}
 	
 	/**
-	 * Method that allows the nurse to see all the product orders within its cart.
+	 * Method that allows the doctor to see all the product orders within its cart.
 	 * If the cart is empty either because no cart was inserted in the database or because the list of product orders is empty, the method exits.
 	 * @throws OrderExceptions
 	 * @throws ClientException
 	 */
-	public void viewCart() throws OrderExceptions, ClientException {
+	public void viewCart() throws OrderExceptions, ClientException { 
 		// Check for a brand new cart that’s never been inserted in the DB: If the user never calls addToCart(), and thus never inserted the Order into the DB, cart.getOrderId() will be null
 		// Recap: at this point the object Order has been created in Java thanks to the constructor, but it is not inserted in the DB until addToCart() is called
-		if(cart.getOrderId() == null) {
+//		if(cart.getOrderId() == null) {
+		if(cart.getProductOrders().isEmpty()) {
 			Output.println("Your cart is empty.");
 			return; // Tells Java “stop executing this method right now and go back to the caller”, it is a way of exiting the method
 		} 
 		
 		// Now it's safe to pull the product orders from the DB -> the corresponding manager is used for this purpose 
-		List<ProductOrder> productsOrders = productOrderManager.getProductOrdersByOrderID(cart.getOrderId());
+		//List<ProductOrder> productsOrders = productOrderManager.getProductOrdersByOrderID(cart.getOrderId());
+		List<ProductOrder> productsOrders = cart.getProductOrders();
 		
 		// Check if there really zero items:
 		if (productsOrders.isEmpty()) {
@@ -148,7 +158,8 @@ public class NurseMenu {
             // Same formatted row as before
             Output.println(String.format("  - %-18s %5d %10.2f", name, amount, totalPrice));
          } 
-	 }
+	}
+	 
 	
 	/**
 	 * Method that adds a product to the client's cart (an order).
@@ -313,6 +324,62 @@ public class NurseMenu {
 			 System.out.println(productsByCategory.get(i));
 		 }
 	 }
+	 
+	 /**
+	  * Completes the current cart: collects shipment + payment, persists both,
+	  * and finally moves the order to ORDERED status.
+	  */
+	 public void pay() throws SQLException, ClientException, OrderExceptions {
+	     // Check if there's something to pay for
+	     if (cart.getOrderId() == null) {
+	         Output.println("Your cart is empty. Add some products before trying to pay!");
+	         return;
+	     }
+
+	     // Ask for shipment details
+	     Output.println("\n======= Shipping Information =======");
+	   
+
+	     // Build & persist Shipment
+	     Shipment shipment = new Shipment(cart); // Link the user's cart (Order) to the Payment
+	     connectionManager.getShipmentManager().insertShipment(shipment);
+	     System.out.println(shipment);
+
+	     // Ask for payment details
+	     Output.println("\n======= Payment Information =======");
+	     //Output.println("Total to pay: $" + String.format("%.2f", cart.getProductOrders().getTotalPrice())); 
+	       // assume you have added a getTotalAmount() helper on Order
+	     
+	     // Calculate the total price of the Order (cart)
+	     float productTotalPrice = 0;
+         int orderTotalPrice = 0;
+	     List<ProductOrder> productsOrders = productOrderManager.getProductOrdersByOrderID(cart.getOrderId());
+	     for (ProductOrder po : productsOrders) {
+	            String name = po.getProduct().getName();
+	            productTotalPrice = po.getTotalPrice();
+	            orderTotalPrice = (int) (orderTotalPrice + productTotalPrice);
+	         } 
+	     
+	     //Output.println("Enter payment amount:");
+	     //int  amount = InputKB.readInteger();
+	     Output.println("Enter payment method (e.g. CREDIT_CARD, DEBIT_CARD, PAYPAL, BANK_TRANSFER):");
+	     String method = InputKB.readString().toUpperCase();
+
+	     // Build & persist Payment
+	     Payment payment = new Payment();
+	     payment.setOrder(cart);
+	     payment.setAmount(orderTotalPrice);
+	     payment.setPaymentMethod(PaymentMethod.valueOf(method));
+	     payment.setPaymentStatus(PaymentStatus.COMPLETED);
+	     connectionManager.getPaymentManager().insertPayment(payment);
+
+	     // Set the order status into “ORDERED”
+	     cart.setStatus(OrderStatus.ORDERED);
+	     orderManager.updateOrderStatus(cart.getOrderId(), OrderStatus.ORDERED);
+
+	     Output.println("\nPayment received and order placed! Your order ID is " + shipment.getTrackingNumber());
+	 }
+
 	 
 	/**
 	* Method that shows the user his/her personal data and asks if he/she wants to change the password or not.
