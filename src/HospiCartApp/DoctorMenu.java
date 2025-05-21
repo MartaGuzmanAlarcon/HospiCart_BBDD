@@ -48,32 +48,37 @@ public class DoctorMenu {
 		while(true) {
 			Output.println("\n=== Welcome to the Doctor Menu! ===");
         	Output.println("Dear doctor, please introduce the number of the operation you wish to perform:");
-        	Output.println("1. Browse products");
-            Output.println("2. View your cart");
-            Output.println("3. Add products to my cart");
-            Output.println("4. Account settings"); // Includes the UPDATE methods 
+        	//Output.println("1. Browse products");
+            Output.println("1. View your cart");
+            Output.println("2. Add products to my cart");
+            Output.println("3. Pay");
+            //Output.println("4. Account settings"); // Includes the UPDATE methods 
             //View my accoutn should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
             	//MY DATA should enable the user to SEE ITS PERSONAL INFORMATION, CHANGE PASSWORD, CHANGE ADDRESS.
             	//MY ORDERS should 
             //should call the update mthods to updae the information of the 
-            Output.println("0. Go back"); //ir a donde se llama al menu de doctor
+            //Output.println("0. Go back"); //ir a donde se llama al menu de doctor
             
             int choice = InputKB.readInteger();
             
             try {
             	switch (choice) {
-            	case 1:  
-            		browseProducts();
-            		break;
-                case 2:  
+//            	case 1:  
+//            		browseProducts();
+//            		break;
+                case 1:  
                 	viewCart();          
                 	break;
-                case 3: 
+                case 2: 
                 	Product chosenProduct = chooseProduct();
                 	int amount = chooseAmount(chosenProduct);
                 	addToCart(chosenProduct, amount);
+                	break;
                 	
-                case 0:  return;
+                case 3: 
+                	pay();
+                	break;
+                //case 0:  return;
                 default: Output.println("Invalid option. Please try agin introducing a valid number.");    
               }
             } catch(ClientException ce) { // It is the Menu's responsibility to catch all exceptions thrown by the methods it calls
@@ -88,7 +93,7 @@ public class DoctorMenu {
 		
 	}
 	
-	public void browseProducts() { // TODO IMPLEMENT CASE 3: A DONDE TIENE QUE IR EL GO BACK?
+	public void browseProducts() { 
 		Output.println("Press:");
 		Output.println("1. If you want to browse products by category.");
 		Output.println("2. If you want to browse all products.");
@@ -104,6 +109,7 @@ public class DoctorMenu {
     		browseAllProducts(); 
     		break;
 		case 3: 
+			displayDoctorMenu();
 			return; 
 		}   
 	}
@@ -353,6 +359,59 @@ public class DoctorMenu {
 			 System.out.println(productsByCategory.get(i));
 		 }
 	 }
+	 
+	 /**
+	  * Completes the current cart: collects shipment + payment, persists both,
+	  * and finally moves the order to ORDERED status.
+	  */
+	 public void pay() throws SQLException, ClientException, OrderExceptions {
+	     // Check if there's something to pay for
+	     if (cart.getOrderId() == null) {
+	         Output.println("Your cart is empty. Add some products before you pay!");
+	         return;
+	     }
+
+	     // Ask for shipment details
+	     Output.println("=== Shipping Information ===");
+	   
+
+	     // Build & persist Shipment
+	     Shipment shipment = new Shipment(cart); // Link the user's cart (Order) to the Payment
+	     connectionManager.getShipmentManager().insertShipment(shipment);
+
+	     // Ask for payment details
+	     Output.println("\n=== Payment Information ===");
+	     //Output.println("Total to pay: $" + String.format("%.2f", cart.getProductOrders().getTotalPrice())); 
+	       // assume you’ve added a getTotalAmount() helper on Order
+	     
+	     // Calculate the total price of the Order (cart)
+	     float productTotalPrice = 0;
+         int orderTotalPrice = 0;
+	     List<ProductOrder> productsOrders = productOrderManager.getProductOrdersByOrderID(cart.getOrderId());
+	     for (ProductOrder po : productsOrders) {
+	            String name = po.getProduct().getName();
+	            productTotalPrice = po.getTotalPrice();
+	            orderTotalPrice = (int) (orderTotalPrice + productTotalPrice);
+	         } 
+	     
+	     //Output.println("Enter payment amount:");
+	     //int  amount = InputKB.readInteger();
+	     Output.println("Enter payment method (e.g. CREDIT_CARD, DEBIT_CARD, PAYPAL, BANK_TRANSFER):");
+	     String method = InputKB.readString().toUpperCase();
+
+	     // Build & persist Payment
+	     Payment payment = new Payment();
+	     payment.setOrder(cart);
+	     payment.setAmount(orderTotalPrice);
+	     payment.setPaymentMethod(PaymentMethod.valueOf(method));
+	     connectionManager.getPaymentManager().insertPayment(payment);
+
+	     // Set the order status into “ORDERED”
+	     orderManager.updateOrderStatus(cart.getOrderId(), OrderStatus.ORDERED);
+
+	     Output.println("\nPayment received and order placed! Your order ID is " + shipment.getTrackingNumber());
+	 }
+
 	 
 	 
 	 // TODO METODO PAY QUE ASIGNE UN SHIPMENT UNA VEZ QUE EL PAGO SE HA PROCESADO

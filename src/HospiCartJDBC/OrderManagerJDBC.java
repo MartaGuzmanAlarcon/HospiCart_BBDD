@@ -81,26 +81,48 @@ public class OrderManagerJDBC implements IOrderManager {
                     throw new SQLException("Inserting order failed, no ID obtained.");
                 }
             }
+//            Shipment shipment = order.getShipment(); 
+//            shipment.setOrder(order);
+//            if(shipment.getShipmentId() == null) {
+//            	shipmentManager.insertShipment(shipment);
+//            }
+            // Only handle shipment if one has been attached
             Shipment shipment = order.getShipment();
-            
-            shipment.setOrder(order);
-            if(shipment.getShipmentId() == null) {
-            	shipmentManager.insertShipment(shipment);
-            }
-            
-            List<ProductOrder> productOrders = order.getProductOrders();
-            for(int i=0; i<productOrders.size(); i++) {
-                ProductOrder productOrder = productOrders.get(i);
-                //I check if the product order has an assigned order and I only set the order and insert the productOrder into the database to those that don't have it set.
-                if(productOrder.getOrder() == null) {
-                    productOrder.setOrder(order);
-                	productOrderManager.insertProductOrder(productOrder);
+            if (shipment != null) {
+                shipment.setOrder(order);
+                if (shipment.getShipmentId() == null) {
+                    shipmentManager.insertShipment(shipment);
                 }
             }
-            //I print success messages
+            
+//            List<ProductOrder> productOrders = order.getProductOrders();
+//            for(int i=0; i<productOrders.size(); i++) {
+//                ProductOrder productOrder = productOrders.get(i);
+//                //I check if the product order has an assigned order and I only set the order and insert the productOrder into the database to those that don't have it set.
+//                if(productOrder.getOrder() == null) {
+//                    productOrder.setOrder(order);
+//                	productOrderManager.insertProductOrder(productOrder);
+//                }
+//            }
+            
+            // Now insert any productOrders
+            for (ProductOrder po : order.getProductOrders()) {
+                if (po.getOrder() == null) {
+                    po.setOrder(order);
+                    productOrderManager.insertProductOrder(po);
+                }
+            }
+//            //I print success messages
+//            System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
+//            System.out.println("\n- Shipment ID of order with ID " + order.getOrderId() + ": " + shipment.getShipmentId());
+//            System.out.println("\n- Tracking number of order with ID " + order.getOrderId() + ": " + shipment.getTrackingNumber());
+            
+            // Print success messages
             System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
-            System.out.println("\n- Shipment ID of order with ID " + order.getOrderId() + ": " + shipment.getShipmentId());
-            System.out.println("\n- Tracking number of order with ID " + order.getOrderId() + ": " + shipment.getTrackingNumber());
+            if (shipment != null) {
+                System.out.println("- Shipment ID: " + shipment.getShipmentId());
+                System.out.println("- Tracking number: " + shipment.getTrackingNumber());
+            }
 
             // I don't have to close the statement nor the result sets because I used "trys-with resources"
             c.commit(); //we do this because we disabled the auto-commit in the connection
