@@ -249,7 +249,7 @@ public class SupplierMenu {
     	while(keepGoing) {
         	Output.println("1. If you want to change the company's address");
         	Output.println("2. If you want to change the company's contact number");
-        	Output.println("3. If you want to log out");
+        	Output.println("3. If you want to exit");
         	Output.println("0. If you want to go back");
         	
         	int option = InputKB.readInteger();
@@ -299,7 +299,7 @@ public class SupplierMenu {
     		Output.println("2. Add a new product");
     		Output.println("3. Delete a product");
     		Output.println("4. Manage my products' stock");
-        	Output.println("5. If you want to log out");
+        	Output.println("5. If you want to exit");
     		Output.println("0. Back");
     		int option = InputKB.readInteger();
     		switch(option) {
@@ -437,7 +437,7 @@ public class SupplierMenu {
 		 while(keepGoing) {
 			 Output.println("1. Check and update products with low stock");
 			 Output.println("2. Update all products' stock");
-	     	 Output.println("3. If you want to log out");
+	     	 Output.println("3. If you want to exit");
 			 Output.println("0. Go back");
 			 int option = InputKB.readInteger();
 			 List<Product> productsWithLowStock = new ArrayList<>();
@@ -533,7 +533,7 @@ public class SupplierMenu {
 		 while(keepGoing) {
 			 Output.println("1. See orders by state");
 			 Output.println("2. See all orders");
-	         Output.println("3. If you want to log out");
+	         Output.println("3. If you want to exit");
 	         //TODO AN EXCEPTION IS THROWN BECAUSE THE ORDER MANAGER IS NULL
 	         //ADD AN IF THAT SAYS IF THE SUPPLIER DOES NOT HAVE ANY ORDER!!!
 			 
