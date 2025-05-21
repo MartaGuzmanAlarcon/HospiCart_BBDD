@@ -24,7 +24,7 @@ public class MainMenu {
     //I create this variable in order to keep track of the activity of the user (i.e. if he /she has already logged in or not)
     private static boolean loggedIn = false; //TODO create a log out method that receives this variable and logs the user out only if the variable is true.
 
-
+  
     public static void main(String[] args) {
         try {
             connectionManager = new ConnectionManagerJDBC();
@@ -289,7 +289,8 @@ public class MainMenu {
 	                        doctorMenu.displayDoctorMenu();
 	                        break;
 	                    case "nurse":
-	                        NurseMenu.displayMenu();
+	                    	NurseMenu nurseMenu = new NurseMenu(connectionManager, loggedInClient); 
+	                    	nurseMenu.displayNurseMenu();	                       
 	                        break;
 	                    case "supplier":
 	                    	SupplierMenu supplierMenu = new SupplierMenu(connectionManager, user); 

@@ -143,7 +143,7 @@ public class Product implements Serializable {
 		//TODO we are not printing the needPrescription nor the amount in stock (because it is not relevant to the user)
 //	           "  - Amount in stock: " + stockQuantity + "\n" +
 //	           "  - Need prescription: " + needPrescription + "\n\n";  
-		return "Product: \t\tProduct ID = " + this.productId + "\t\tSupplier = " + this.supplier.getCompanyName() + "\t\tProduct Name = " + this.name + "\t\tDescription = " + this.description
-				+ "\t\tCategory = " + this.category + "\t\tPrice = " + this.price;
+		return "Product: \tProduct ID = " + this.productId + "\tProduct Name = " + this.name + "\t\tPrice = " + this.price + "\tCategory = " + this.category 
+				+ "\t\tSupplier = " + this.supplier.getCompanyName()  + "\t\t\tDescription = " + this.description;
 	}
 }
