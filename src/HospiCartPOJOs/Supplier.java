@@ -117,7 +117,7 @@ public class Supplier implements Serializable {
 	//toString
 	@Override
 	public String toString() {
-		return "Supplier: \t\tSupplier ID = " + supplierId + "\t\tCompany Name = " + companyName + "\t\tContact Number = "
-				+ contactNumber + "\t\tAddress = " + address;
+		return "Supplier: \tSupplier ID = " + supplierId + "\tCompany Name = " + companyName + "\tContact Number = "
+				+ contactNumber + "\tAddress = " + address;
 	}
 }

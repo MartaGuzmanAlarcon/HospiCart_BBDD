@@ -18,7 +18,7 @@ public interface IUserManager {
 		public User getUser(String name, String password);
 		public User getUserByEmail(String name);
 		public void close();
-		void updatePassword(String email, String password);
-	}
+		public void updatePassword(String email, String password, boolean closeEM);
+}
 
 

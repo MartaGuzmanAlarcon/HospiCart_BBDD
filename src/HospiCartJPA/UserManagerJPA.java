@@ -48,7 +48,8 @@ public class UserManagerJPA implements IUserManager {
 	            }
 	        }
 	        em.close();
-	    }	}
+	    }	
+	}
 
 	@Override
 	public void register(User user, int roleOption) throws SQLException {
@@ -118,7 +119,7 @@ public class UserManagerJPA implements IUserManager {
 	}
 	
 	@Override
-	public void updatePassword(String email, String password) {
+	public void updatePassword(String email, String password, boolean closeEM){
 	    try {
 	    	em.getTransaction().begin(); // Start the transaction
 	        Query q = em.createNativeQuery("UPDATE users SET password = ? WHERE email = ?");
@@ -127,9 +128,16 @@ public class UserManagerJPA implements IUserManager {
 	        q.setParameter(2, email);
 	        q.executeUpdate(); // Execute the update query
 	        em.getTransaction().commit(); // Commit the transaction
+	        //I only close the entity manager if I need to --> I need to close them after resetting the password in the actors menu because if they want to update any other
+	        //information (such as the company name in the case of the supplier menu), these methods use JDBC and I won't be able to update these values if the em is not closed in this method.
+	        if(closeEM) {
+	            close();
+	        }
 	    } catch (Exception e) {
-	        em.getTransaction().rollback(); // Rollback the transaction in case of an error
-	        throw e; // Re-throw the exception to handle it at a higher level
+	        if (em.getTransaction().isActive()) {
+	        	em.getTransaction().rollback(); //I rollback only if a transaction is active
+	        }
+	        throw new RuntimeException("Error updating user's password: " + e.getMessage(), e);
 	    }
 	}
 }
