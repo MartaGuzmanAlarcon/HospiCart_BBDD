@@ -9,7 +9,7 @@ import javax.xml.bind.Unmarshaller;
 
 import HospiCartInterfaces.IXMLManager;
 import HospiCartPOJOs.Client;
-import Utilities.Output;
+import HospiCartPOJOs.Product;
 
 public class ManagerImplXML implements IXMLManager {
 
@@ -55,6 +55,50 @@ public class ManagerImplXML implements IXMLManager {
 		}
 		
 		return c;
+	}
+	
+	@Override
+	public void product2Xml(Product p) { // Marshalling method: turns Java objects into XML documents 
+		try {
+			// Create the JAXBContext 
+			JAXBContext jaxbContext = JAXBContext.newInstance(Product.class); // throws a JAXBException
+			
+			// Create the JAXBMarshaller 
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			
+			// Pretty formatting 
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			
+			// Write to a file 
+			File file = new File("./xmls/Product.xml");
+			marshaller.marshal(p, file);
+			
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public Product xml2Product(File xml) { // Unmarshalling methods: turns XML documents into Java objects 
+		Product p = null;
+		try {
+			// Create the JAXBContext 
+			JAXBContext jaxbContext = JAXBContext.newInstance(Product.class); // throws a JAXBException
+			
+			// Create the JAXBUnmarshaller
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			
+			// Create the object by reading from a file 
+			p = (Product) unmarshaller.unmarshal(xml);
+			
+			return p;
+						
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		
+		return p;
 	}
 
 }

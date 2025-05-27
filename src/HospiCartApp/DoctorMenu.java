@@ -77,8 +77,25 @@ public class DoctorMenu {
                 	break;
                 case 2: 
                 	Product chosenProduct = chooseProduct();
-                	int amount = chooseAmount(chosenProduct);
-                	addToCart(chosenProduct, amount);
+                	Output.println("What do you want to do with this product?");
+                	Output.println("1. Add to my cart");
+                	Output.println("2. See more details of the product");
+                	Output.println("3. See product as XML");
+                	//TODO THINK IF WE HAVE TO INCLUDE A GO BACK
+                	int option = InputKB.readInteger();
+                	switch(option) {
+                	case 1:
+                    	int amount = chooseAmount(chosenProduct);
+                    	addToCart(chosenProduct, amount);
+                    	break;
+                	case 2:
+                		System.out.println(chosenProduct);
+                		break;
+                	case 3:
+                		//We call the Marshaller method
+            			xmlMan.product2Xml(chosenProduct);				
+            			System.out.println("Your product information is in ./xmls/Product.xml");
+                	}
                 	break;
                 case 3: 
                 	pay();
@@ -125,56 +142,6 @@ public class DoctorMenu {
 			return; 
 		}   
 	}
-	
-	
-//	public void resetPassword() {
-//		//I ask the user to introduce and confirm the new password and I check that they are in fact equal.
-//		Output.println("Please introduce your new password: ");
-//        String newPassword = InputKB.readString();
-//        Output.println("Confirm new password: ");
-//        String newPasswordConfirmed = InputKB.readString();
-//        //If the introduced passwords are equal
-//        if(newPassword.equals(newPasswordConfirmed)) {
-//        	userManager.updatePassword(user.getEmail(), newPasswordConfirmed);
-//        	//I call the setter method for password, which encrypts it and sets it as the password of the user.
-//        	//TODO DO I HAVE TO ENCRYPT THE PASSWORD IN THE SETTER???
-//        	user.setPassword(newPasswordConfirmed);
-//        	Output.println("Password successfully reset!");
-//        	Output.println("Redirecting to login...");
-//        	login();
-//        }
-//        else {
-//        	//I tell the user that the password do not match and ask him/her what does he/she want to do.
-//        	Output.println("The introduced passwords do not match!");
-//        	Output.println("Introduce: ");
-//    		Output.println("1. If you want to try again.");
-//    		Output.println("2. If you want to go back.");
-//    		Output.println("0. If you want to exit.");
-//    		int option2 = InputKB.readInteger();
-//    		switch(option2) {
-//    			case 1:
-//    				//If the user wants to keep trying, I set the try again variable to true and just exit the switch case.
-//    				reintroducePassword = true;
-//    				break;
-//    			case 2:
-//    				keepGoing = true;
-//    				reintroducePassword = false;
-//    				tryAgain = true;
-//    				break;
-//    			case 0:
-//    				//If the user wants to exit, I disconnect the application.
-//    				closeConnections();
-//                    Output.println("Application closed! Hope to see you again soon!");
-//    				keepGoing = false;
-//    				reintroducePassword = false;
-//    				break; //TODO VERIFY IF IT WORKS CORRECTLY!!
-//                default:
-//                	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
-//                	tryAgain = false;
-//                	break;	
-//    		}
-//        }
-//	}
 	
 	/**
 	 * Method that allows the doctor to see all the product orders within its cart.
@@ -494,6 +461,7 @@ public class DoctorMenu {
 			    	System.out.println(doctor);
 			    case 6:
 			    	client2Xml();
+			    	break;
 			   	case 0: 
 			   		displayDoctorMenu();
 		    		keepGoing = false;

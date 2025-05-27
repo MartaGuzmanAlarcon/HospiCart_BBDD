@@ -19,7 +19,7 @@ public class Product implements Serializable {
 
 	private static final long serialVersionUID = 3199455987362996759L;
 	
-	@XmlAttribute(name = "Product ID")
+	@XmlAttribute(name = "ID")
 	private Integer productId;
 	@XmlElement(name = "Supplier")
 	private Supplier supplier;
@@ -34,9 +34,9 @@ public class Product implements Serializable {
 	@XmlElement(name = "Price")
 	private Float price; 
 	//We set required to false in order to state that this attribute is not mandatory but optional
-	@XmlElement(name = "Stock Quantity", required = false)
+	@XmlElement(name = "Stock_Quantity", required = false)
 	private Integer stockQuantity;
-	@XmlAttribute(name = "Need Precription")
+	@XmlAttribute(name = "Need_Prescription")
 	private Boolean needPrescription;
 
 	/**

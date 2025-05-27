@@ -203,7 +203,7 @@ public class MainMenu {
     	}
     }
     
-    /**
+    /** 
      * Method that registers a user as a nurse.
      * @throws IOException if some input/ output error was produced.
      * @throws ClientException if the method "insertClient" throws an exception of this type.

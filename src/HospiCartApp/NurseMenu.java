@@ -77,8 +77,25 @@ public class NurseMenu {
                 	break;
                 case 2: 
                 	Product chosenProduct = chooseProduct();
-                	int amount = chooseAmount(chosenProduct);
-                	addToCart(chosenProduct, amount);
+                	Output.println("What do you want to do with this product?");
+                	Output.println("1. Add to my cart");
+                	Output.println("2. See more details of the product");
+                	Output.println("3. See product as XML");
+                	//TODO THINK IF WE HAVE TO INCLUDE A GO BACK
+                	int option = InputKB.readInteger();
+                	switch(option) {
+                	case 1:
+                    	int amount = chooseAmount(chosenProduct);
+                    	addToCart(chosenProduct, amount);
+                    	break;
+                	case 2:
+                		System.out.println(chosenProduct);
+                		break;
+                	case 3:
+                		//We call the Marshaller method
+            			xmlMan.product2Xml(chosenProduct);				
+            			System.out.println("Your product information is in ./xmls/Product.xml");
+                	}
                 	break;
                 case 3: 
                 	//TODO ADD PAY

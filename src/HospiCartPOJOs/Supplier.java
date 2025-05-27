@@ -17,13 +17,13 @@ public class Supplier implements Serializable {
 	
 	private static final long serialVersionUID = 3452839978524351013L;
 	
-	@XmlAttribute(name = "Supplier ID")
+	@XmlAttribute(name = "Supplier_ID")
 	private Integer supplierId;
 	@XmlTransient
 	private List<Product> products;
-	@XmlElement(name = "Company Name")
+	@XmlElement(name = "Company_Name")
     private Manufacturer companyName;
-	@XmlElement(name = "Contact Number")
+	@XmlElement(name = "Contact_Number")
     private Integer contactNumber;
 	@XmlElement(name = "Address")
     private String address;

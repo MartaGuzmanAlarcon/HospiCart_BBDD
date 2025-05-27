@@ -18,13 +18,13 @@ public class Client implements Serializable {
 
 	private static final long serialVersionUID = -2672315887844188653L;
 	
-	@XmlAttribute(name = "Client ID")
+	@XmlAttribute(name = "ID")
 	private Integer id;
 	@XmlElement(name = "Name")
 	private String name;
 	@XmlElement(name = "Surame")
 	private String surname;
-	@XmlElement(name = "Phone Number")
+	@XmlElement(name = "Phone_Number")
 	private Integer phoneNumber;
 	@XmlElement(name = "Email")
 	private String email;
