@@ -55,7 +55,7 @@ public class OrderManagerJDBC implements IOrderManager {
       public void insertOrder(Order order) throws SQLException, ClientException{
        //I initialize the order fields and check if they are valid or if I need to throw an exception
        Date orderDate = order.getOrderDate();
-       OrderStatus status = order.getStatus();
+       OrderStatus status = order.getOrderStatus();
        Client client = order.getClient();
 
        //I insert the order information that I have up to now
@@ -150,7 +150,7 @@ public class OrderManagerJDBC implements IOrderManager {
     public void deleteOrder(int order_id)  throws ClientException, OrderExceptions, Exception{
     	Order order = getOrderByID(order_id);
     	//After obtaining the order that the user wants to delete, I check if the status of the order is "ORDERED", as it is the only scenario in which an order can be removed.
-    	if(order.getStatus() != OrderStatus.ORDERED) {
+    	if(order.getOrderStatus() != OrderStatus.ORDERED) {
     		throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.DELETE_ERROR);
     	} else {
 	    	//I create one SQL sequence to delete the order in all the entities that had some kind of relationship with it.
@@ -223,7 +223,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				order = new Order();
     				order.setOrderId(resultSet.getInt("order_id"));
     				order.setOrderDate(resultSet.getDate("order_date"));
-    				order.setStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+    				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				if(payment != null) {
@@ -289,7 +289,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				//I set the fields of the order object.
     				order.setOrderId(order_id);
     				order.setOrderDate(resultSet.getDate("order_date"));
-    				order.setStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+    				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
     				order.setClient(client);   
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
@@ -352,7 +352,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				//I set the fields of the order object.
     				order.setOrderId(order_id);
     				order.setOrderDate(order_date);
-    				order.setStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+    				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
     				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
@@ -421,7 +421,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				//I set the fields of the order object.
     				order.setOrderId(order_id);
     				order.setOrderDate(resultSet.getDate("order_date"));
-    				order.setStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+    				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
     				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
@@ -475,7 +475,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				int order_id = resultSet.getInt("order_id");
     				order.setOrderId(order_id);
     				order.setOrderDate(resultSet.getDate("order_date"));
-    				order.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
+    				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("status")));
     				
     				Payment payment = cm.getPaymentManager().getPaymentByOrderId(order_id);
     				if(payment != null) {
@@ -539,7 +539,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				//I set the fields of the order object.
     				order.setOrderId(order_id);
     				order.setOrderDate(resultSet.getDate("order_date"));
-    				order.setStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
+    				order.setOrderStatus(OrderStatus.valueOf(resultSet.getString("order_status")));
     				
     				//I call the methods of Payment, Shipment and ProductOrders and add the fields with the found information. For this, I used the order id.
     				Client client = cm.getClientManager().getClientByID(resultSet.getInt("user_id"));
@@ -577,7 +577,7 @@ public class OrderManagerJDBC implements IOrderManager {
     public void updateOrderStatus(int order_id, OrderStatus newStatus) throws OrderExceptions, ClientException{
     	Order order = getOrderByID(order_id);
     	//The new status' validity is checked in the setter method of status in Order.
-    	order.setStatus(newStatus);
+    	order.setOrderStatus(newStatus);
     	
     	String sql = "UPDATE client_order SET status = ? WHERE order_id = ?";
     	

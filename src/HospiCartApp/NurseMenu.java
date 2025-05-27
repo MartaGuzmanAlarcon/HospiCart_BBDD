@@ -395,7 +395,7 @@ public class NurseMenu {
 	     connectionManager.getPaymentManager().insertPayment(payment);
 
 	     // Set the order status into “ORDERED”
-	     cart.setStatus(OrderStatus.ORDERED);
+	     cart.setOrderStatus(OrderStatus.ORDERED);
 	     orderManager.updateOrderStatus(cart.getOrderId(), OrderStatus.ORDERED);
 
 	     Output.println("\nPayment received and order placed! Your order ID is " + shipment.getTrackingNumber());

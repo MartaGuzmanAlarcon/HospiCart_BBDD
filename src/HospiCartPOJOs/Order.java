@@ -235,12 +235,12 @@ public class Order implements Serializable {
 	}
 
 
-	public OrderStatus getStatus() {
+	public OrderStatus getOrderStatus() {
 		return status;
 	}
 
 
-	public void setStatus(OrderStatus status) throws OrderExceptions{
+	public void setOrderStatus(OrderStatus status) throws OrderExceptions{
 		if(status != OrderStatus.PENDING && status != OrderStatus.ORDERED && status != OrderStatus.DELIVERED && status != OrderStatus.CANCELLED) {
 			throw new OrderExceptions(OrderExceptions.ErrorTypeOrder.INVALID_STATUS);
 		}

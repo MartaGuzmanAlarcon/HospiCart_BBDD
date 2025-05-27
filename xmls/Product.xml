@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Product ID="62" Need_Prescription="false">
-    <Supplier Supplier_ID="13">
-        <Company_Name>MEDTRONIC</Company_Name>
+<Product ID="12" Need_Prescription="false">
+    <Supplier Supplier_ID="4">
+        <Company_Name>SANOFI</Company_Name>
     </Supplier>
-    <Name>Pulse Oximeter</Name>
-    <Description>Device for measuring blood oxygen levels</Description>
-    <Category>DIAGNOSTIC_TOOLS</Category>
-    <Price>45.0</Price>
-    <Stock_Quantity>400</Stock_Quantity>
+    <Name>Medical Bandages</Name>
+    <Description>Elastic bandages for wound care</Description>
+    <Category>SURGICAL_SUPPLIES</Category>
+    <Price>10.0</Price>
+    <Stock_Quantity>700</Stock_Quantity>
 </Product>

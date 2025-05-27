@@ -1,6 +1,7 @@
 package HospiCartApp;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class DoctorMenu {
 	private ClientManagerJDBC clientManager;
 	private Order cart;
 	private Client doctor; 
-	private ManagerImplXML xmlMan;
+	private ManagerImplXML xmlMan; 
 
 	
 	// NOTE: this attributes CAN NOT BE STATIC because they are per-session pieces of state.
@@ -52,16 +53,17 @@ public class DoctorMenu {
 	public void displayDoctorMenu() { 
 		Output.println("\n=== Welcome to the Doctor Menu! ===");
 		while(true) {
-        	Output.println("Dear doctor, please introduce the number of the operation you wish to perform:");
+        	Output.println("\nDear doctor, please introduce the number of the operation you wish to perform:");
         	//Output.println("1. Browse products");
             Output.println("1. View your cart");
             Output.println("2. Shop");
             Output.println("3. Pay");
-            Output.println("4. Account settings"); // Includes the UPDATE methods 
-            //View my accoutn should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
+            Output.println("4. View my orders");
+            Output.println("5. Account settings"); // Includes the UPDATE methods 
+            //View my account should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
             	//MY DATA should enable the user to SEE ITS PERSONAL INFORMATION, CHANGE PASSWORD, CHANGE ADDRESS.
             	//MY ORDERS should 
-            //should call the update mthods to updae the information of the 
+            //should call the update methods to update the information of the 
             //Output.println("0. Go back"); //ir a donde se llama al menu de doctor
             Output.println("0. Exit");
             
@@ -69,38 +71,41 @@ public class DoctorMenu {
             
             try {
             	switch (choice) {
-//            	case 1:  
-//            		browseProducts();
-//            		break;
                 case 1:  
                 	viewCart();          
                 	break;
                 case 2: 
-                	Product chosenProduct = chooseProduct();
-                	Output.println("What do you want to do with this product?");
-                	Output.println("1. Add to my cart");
-                	Output.println("2. See more details of the product");
-                	Output.println("3. See product as XML");
-                	//TODO THINK IF WE HAVE TO INCLUDE A GO BACK
-                	int option = InputKB.readInteger();
-                	switch(option) {
-                	case 1:
-                    	int amount = chooseAmount(chosenProduct);
-                    	addToCart(chosenProduct, amount);
-                    	break;
-                	case 2:
-                		System.out.println(chosenProduct);
-                		break;
-                	case 3:
-                		//We call the Marshaller method
-            			xmlMan.product2Xml(chosenProduct);				
-            			System.out.println("Your product information is in ./xmls/Product.xml");
+                	boolean keepShopping = true;
+                	while(keepShopping) {
+	                	Product chosenProduct = chooseProduct();
+	                	if(chosenProduct != null) {
+	                		productShoppingMenu(chosenProduct);
+	                	}
+	                	//We ask the user if he/she want to keep shopping
+	                	Output.println("Tap 0 to finish your shopping, or any other number if you have more items to add to your cart. ;)");
+	                	int option = InputKB.readInteger();
+	                	if(option == 0) {
+	                		keepShopping = false;
+	                		break;
+	                	}
                 	}
                 	break;
                 case 3: 
                 	pay();
                 	break;
-                case 4:
+                case 4: //TODO EDIT THE TO STRING!! or include outputs to print the orders of the user in a nice way
+                	List<Order> ordersOfDoctor = doctor.getOrders();
+                	if(ordersOfDoctor != null ) {
+                    	Output.println("\n======== ORDER RECORD ========");
+                    	for(int i=0; i<ordersOfDoctor.size(); i++) {
+                    		System.out.println(ordersOfDoctor.get(i));
+                    	}
+                	} else {
+                		Output.println("\nYou have not made any orders with us yet... \nLet's change that!  :)");
+                	}
+
+                	break;
+                case 5:
                 	accountSettings();
                 case 0:
 	                Output.println("Application closed!");
@@ -117,30 +122,46 @@ public class DoctorMenu {
 	        } catch(SQLException sqle) {
 	        	System.out.println("ERROR: " + sqle);
 	        }
-			
 		}
-		
 	}
 	
-	public void browseProducts() { 
-		Output.println("Press:");
-		Output.println("1. If you want to browse products by category");
-		Output.println("2. If you want to browse all products");
-		Output.println("3. If you want to go back");
-		int choice2 = InputKB.readInteger();
-		switch(choice2) {
-		case 1:
-			//We call the method that asks the user to introduce a category and returns the category.
-			Category category = getCategoryElection();
-			browseProductsByCategory(category);
-			break;
-		case 2:
-    		browseAllProducts(); 
-    		break;
-		case 3: 
-			displayDoctorMenu();
-			return; 
-		}   
+	public void productShoppingMenu(Product chosenProduct) {
+		boolean keepGoing = true;
+		while(keepGoing) {
+			try {
+				Output.println("\nWhat do you want to do with this product?");
+		    	Output.println("1. Add to my cart");
+		    	Output.println("2. See more details of the product");
+		    	Output.println("3. See product as XML");
+		    	//TODO THINK IF WE HAVE TO INCLUDE A GO BACK
+		    	int option = InputKB.readInteger();
+		    	
+		    	switch(option) {
+		    	case 1:
+		        	int amount = chooseAmount(chosenProduct);
+		        	addToCart(chosenProduct, amount);
+		        	keepGoing = false;
+		        	break;
+		    	case 2:
+		    		System.out.println(chosenProduct);
+		        	keepGoing = false;
+		    		break;
+		    	case 3:
+		    		//We call the Marshaller method
+					xmlMan.product2Xml(chosenProduct);				
+					System.out.println("\nYour product information is in ./xmls/Product.xml");
+		        	keepGoing = false;
+					break;
+				default:
+					Output.println("The introduced number is invalid. Please try again!");
+					break;
+		    	}
+			} catch(ClientException ce) {
+	        	System.out.println("ERROR: " + ce);
+	    	} catch(SQLException sqle) {
+	        	System.out.println("ERROR: " + sqle);
+	        }
+		}
 	}
 	
 	/**
@@ -153,8 +174,8 @@ public class DoctorMenu {
 		// Check for a brand new cart that’s never been inserted in the DB: If the user never calls addToCart(), and thus never inserted the Order into the DB, cart.getOrderId() will be null
 		// Recap: at this point the object Order has been created in Java thanks to the constructor, but it is not inserted in the DB until addToCart() is called
 //		if(cart.getOrderId() == null) {
-		if(cart.getProductOrders().isEmpty()) {
-			Output.println("Your cart is empty.");
+		if(cart == null || cart.getProductOrders().isEmpty()) {
+			Output.println("\nYour cart is empty.");
 			return; // Tells Java “stop executing this method right now and go back to the caller”, it is a way of exiting the method
 		} 
 		
@@ -164,12 +185,12 @@ public class DoctorMenu {
 		
 		// Check if there really zero items:
 		if (productsOrders.isEmpty()) {
-            Output.println("Your cart is empty.");
+            Output.println("\nYour cart is empty.");
             return; // To exit the method 
 		} 
 		
 		// Otherwise, show all products 
-		Output.println("Your current cart items:");
+		Output.println("\nYour current cart items:");
     	// Print column headers
         Output.println(String.format("%-20s %5s %10s", "Product", "Quantity", "Total"));
         Output.println("----------------------------------------");
@@ -207,39 +228,13 @@ public class DoctorMenu {
 		 Output.println(amount + " x '" + product.getName() + "' added to your cart.");
 	}
 	
-	
-//	private Product chooseProduct() {
-//		// Retrieve all the products from the DB, which are loaded in setApplication() method once we run the MainMenu 
-//		List<Product> products = productManager.getAllProducts();
-//		
-//		// Show all the products numbered
-//		Output.println("\nPlease choose a product:");
-//	    for (int i = 0; i < products.size(); i++) {
-//	        Product p = products.get(i);
-//	        Output.println(String.format("%2d) %s  [%s]  $%.2f", 
-//	            i+1, p.getName(), p.getCategory(), p.getPrice()));
-//	    }
-//	    
-//	    // Read until the user introduces a valid option 
-//	    while (true) {
-//	        int option = InputKB.readInteger();
-//	        if (option >= 0 && option < products.size()) {
-//	        	Product chosedProduct = products.get(option -1);
-//	    	    return chosedProduct;
-//	        } else {
-//	        	Output.println("Invalid selection. Please enter a number between 1 and " + (products.size()));
-//	        }
-//	    }
-//	    
-//	}
-	
 	private Product chooseProduct() {
 	    while (true) {
 	        // Display the options to the user
 	        Output.println("\nChoose how to browse products:");
 	        Output.println(" 1. By category");
 	        Output.println(" 2. Show all");
-	        Output.println(" 0. Cancel");
+	        Output.println(" 0. Go back");
 	        int browseOption = InputKB.readInteger();
 	        
 	        List<Product> candidates;
@@ -257,29 +252,33 @@ public class DoctorMenu {
 	            Output.println("Invalid option, try again.");
 	            continue;
 	        }
-	        
-	        // Show the candidates products numbered 
-	        Output.println("\nChoose a product by number:");
-	        for (int i = 0; i < candidates.size(); i++) {
-	            Product p = candidates.get(i);
-	            Output.println(String.format(" %2d) %s [%s] $%.2f",
-	                i + 1, p.getName(), p.getCategory(), p.getPrice()));
+		    boolean keepShopping = true;
+		    //We create a while loop that will iterate until the user selects stop shopping
+		    while(keepShopping) {
+		        // Show the candidates products numbered 
+		        Output.println("\nChoose a product by number:");
+		        for (int i = 0; i < candidates.size(); i++) {
+		            Product p = candidates.get(i);
+		            Output.println(String.format(" %2d) %s [%s] $%.2f",
+		                i + 1, p.getName(), p.getCategory(), p.getPrice()));
+		        }
+		        Output.println("  0) Stop shopping");
+		        
+		        // Read and validate their choice  
+		        int choice = InputKB.readInteger();
+		        if (choice == 0) {
+		            continue;  // back to browse mode
+		        }
+		        if (choice < 1 || choice > candidates.size()) {
+		            Output.println("That’s not a valid product number. Try again.");
+		            continue; 
+		        }
+		        
+		        // 4) Return the picked one
+		        Product chosenProduct = candidates.get(choice -1);
+		        return chosenProduct;
 	        }
-	        Output.println(" 0. Go back");
-	        
-	        // Read and validate their choice  
-	        int choice = InputKB.readInteger();
-	        if (choice == 0) {
-	            continue;  // back to browse mode
-	        }
-	        if (choice < 1 || choice > candidates.size()) {
-	            Output.println("That’s not a valid product number. Try again.");
-	            continue; 
-	        }
-	        
-	        // 4) Return the picked one
-	        Product chosedProduct = candidates.get(choice -1);
-	        return chosedProduct;
+	        return null;
 	    }
 	}
 
@@ -296,19 +295,7 @@ public class DoctorMenu {
 				return amount;
 			}
 		}
-	    
-	    
 	}
-	
-	/**
-	 * Method that calls the get all products method of product manager and prints all the products contained in the database.
-	 */
-	 public void browseAllProducts() {
-		 List<Product> products = productManager.getAllProducts();
-		 for(int i = 0; i < products.size(); i++) {
-			 System.out.println(products.get(i));
-		 }
-	 } 
 	 
 	 /**
 	  * Method that asks the user to select the category in which he/she is interested in.
@@ -347,7 +334,7 @@ public class DoctorMenu {
 	  */
 	 public void pay() throws SQLException, ClientException, OrderExceptions {
 	     // Check if there's something to pay for
-	     if (cart.getOrderId() == null) {
+	     if (cart == null || cart.getOrderId() == null) {
 	         Output.println("Your cart is empty. Add some products before trying to pay!");
 	         return;
 	     }
@@ -378,22 +365,60 @@ public class DoctorMenu {
 	     
 	     //Output.println("Enter payment amount:");
 	     //int  amount = InputKB.readInteger();
-	     Output.println("Enter payment method (e.g. CREDIT_CARD, DEBIT_CARD, PAYPAL, BANK_TRANSFER):");
-	     String method = InputKB.readString().toUpperCase();
+	     
+		 PaymentMethod[] methods = PaymentMethod.values();
+		 PaymentMethod paymentMethod = null;
+		 boolean keepGoing = true;
+		 while(keepGoing) {
+		     Output.println("Enter the number of the payment method you want to select:");
+			 for(int i = 0; i < methods.length; i++) {
+				 Output.println(" " + (i+1) + ". " + " " + methods[i]);
+			 }
+			 Output.println(" 0. CANCEL ORDER");
+			 int choice = InputKB.readInteger();
+			 if(choice > 0 && choice < methods.length+1) {
+				 paymentMethod = methods[choice-1];
+				 keepGoing = false;
+				 
+			     // Build & persist Payment
+			     Payment payment = new Payment();
+			     payment.setOrder(cart);
+			     payment.setAmount(orderTotalPrice);
+			     payment.setPaymentMethod(paymentMethod);
+			     payment.setPaymentStatus(PaymentStatus.COMPLETED);
+			     connectionManager.getPaymentManager().insertPayment(payment);
 
-	     // Build & persist Payment
-	     Payment payment = new Payment();
-	     payment.setOrder(cart);
-	     payment.setAmount(orderTotalPrice);
-	     payment.setPaymentMethod(PaymentMethod.valueOf(method));
-	     payment.setPaymentStatus(PaymentStatus.COMPLETED);
-	     connectionManager.getPaymentManager().insertPayment(payment);
+			     // Set the order status into “ORDERED”
+			     cart.setOrderStatus(OrderStatus.ORDERED);
+			     orderManager.updateOrderStatus(cart.getOrderId(), OrderStatus.ORDERED);
 
-	     // Set the order status into “ORDERED”
-	     cart.setStatus(OrderStatus.ORDERED);
-	     orderManager.updateOrderStatus(cart.getOrderId(), OrderStatus.ORDERED);
-
-	     Output.println("\nPayment received and order placed! Your order ID is " + shipment.getTrackingNumber());
+			     Output.println("\nPayment received and order placed! Your order ID is " + shipment.getTrackingNumber());
+			     List<Order> ordersOfClient = doctor.getOrders();
+			     if(ordersOfClient == null) {
+			    	 ordersOfClient = new ArrayList<>();
+			     }
+			     ordersOfClient.add(cart);
+		    	 doctor.setOrders(ordersOfClient);
+		         cart = new Order(doctor); //I "reset" the cart
+				 //TODO I THINK WE ARE MISSING SETTING THE CART TO NULL
+			     //TODO ARE WE ADDING THIS ORDER TO THE LIST OF ORDERS OF THE CLIENT?
+			 } else if(choice == 0) {
+				 cart.setOrderStatus(OrderStatus.CANCELLED);
+				 Output.println("Your order was cancelled.");
+				 //We still add the cancelled order to the list of orders of the user because he/she should be able to see it in the summary of all the orders he/she made
+			     List<Order> ordersOfClient = doctor.getOrders();
+			     if(ordersOfClient == null) {
+			    	 ordersOfClient = new ArrayList<>();
+			     }
+			     ordersOfClient.add(cart);
+		    	 doctor.setOrders(ordersOfClient);
+		         cart = new Order(doctor); //I "reset" the cart
+				 keepGoing = false;
+			 }
+			 else {
+				 Output.println("The introduced number is invalid, please try again.");
+			 }
+		 }
 	 }
 
 		/**
