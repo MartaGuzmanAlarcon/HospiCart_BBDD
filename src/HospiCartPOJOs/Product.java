@@ -5,19 +5,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "Product")
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 3199455987362996759L;
+	
+	@XmlAttribute(name = "Product ID")
 	private Integer productId;
+	@XmlElement(name = "Supplier")
 	private Supplier supplier;
+	@XmlTransient
 	private List<ProductOrder> productOrders; // 1 Product has many ProductOrders 
+	@XmlElement(name = "Name")
 	private String name;
+	@XmlElement(name = "Description")
 	private String description;
+	@XmlElement(name = "Category")
 	private Category category;
+	@XmlElement(name = "Price")
 	private Float price; 
+	//We set required to false in order to state that this attribute is not mandatory but optional
+	@XmlElement(name = "Stock Quantity", required = false)
 	private Integer stockQuantity;
+	@XmlAttribute(name = "Need Precription")
 	private Boolean needPrescription;
 
+	/**
+	 * Parameter-less constructor of Client in which the list of orders is created.
+	 */
 	public Product() {
 		super();
 		this.productOrders = new ArrayList<ProductOrder>();

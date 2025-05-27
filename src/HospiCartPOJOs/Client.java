@@ -5,18 +5,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "Client")
 public class Client implements Serializable {
 
 	private static final long serialVersionUID = -2672315887844188653L;
+	
+	@XmlAttribute(name = "Client ID")
 	private Integer id;
+	@XmlElement(name = "Name")
 	private String name;
+	@XmlElement(name = "Surame")
 	private String surname;
+	@XmlElement(name = "Phone Number")
 	private Integer phoneNumber;
-	private String email; // TODO ASK IF THIS IS THE USERNAME 
+	@XmlElement(name = "Email")
+	private String email;
+	@XmlElement(name = "Address")
 	private String address;
-	//private Role role; // "doctor" o "nurse"
+	//private Role role; // "doctor" o "nurse" TODO see if we have to delete this!
+	@XmlTransient
 	private List<Order> orders; // 1 Client has many Orders 
-
+	
+	/**
+	 * Parameter-less constructor of Client in which the list of orders is created.
+	 */
 	public Client() {
 		super();
 		this.orders = new ArrayList<Order>();

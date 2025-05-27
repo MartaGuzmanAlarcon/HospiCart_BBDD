@@ -5,16 +5,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Supplier implements Serializable {
 	
 	private static final long serialVersionUID = 3452839978524351013L;
+	
+	@XmlAttribute(name = "Supplier ID")
 	private Integer supplierId;
+	@XmlTransient
 	private List<Product> products;
+	@XmlElement(name = "Company Name")
     private Manufacturer companyName;
+	@XmlElement(name = "Contact Number")
     private Integer contactNumber;
+	@XmlElement(name = "Address")
     private String address;
     
-    
+	/**
+	 * Parameter-less constructor of Client in which the list of orders is created.
+	 */
 	public Supplier() {
 		super();
 		this.products = new ArrayList<Product>();

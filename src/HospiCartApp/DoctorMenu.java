@@ -8,6 +8,7 @@ import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
 import HospiCartJDBC.*;
 import HospiCartPOJOs.*;
+import HospiCartXML.ManagerImplXML;
 import Utilities.*;
 
 /**
@@ -21,6 +22,8 @@ public class DoctorMenu {
 	private ClientManagerJDBC clientManager;
 	private Order cart;
 	private Client doctor; 
+	private ManagerImplXML xmlMan;
+
 	
 	// NOTE: this attributes CAN NOT BE STATIC because they are per-session pieces of state.
 	// Making them static would cause that two different doctors logging in consecutively would trample on each other’s doctor/cart
@@ -39,7 +42,9 @@ public class DoctorMenu {
         this.clientManager = new ClientManagerJDBC(cm);
         this.doctor = doc;
         this.cart = new Order(doctor); // Initialize a brand-new, empty cart. In this way we are assigning an Order to a Client, which is a doctor in this case 
+		this.xmlMan = new ManagerImplXML();
 	}
+
 	
 	/**
 	 * Method that displays the doctor's menu.
@@ -441,6 +446,8 @@ public class DoctorMenu {
 		        	Output.println("3. If you want to change your name");
 		        	Output.println("4. If you want to change your surname");
 		        	Output.println("5. If you want to see your personal information");
+		        	Output.println("6. If you want to see your personal information as an XML");
+
 		        	//Output.println("6. If you want to log out");
 		        	Output.println("0. If you want to go back");	        
 		        	int option = InputKB.readInteger();
@@ -485,7 +492,8 @@ public class DoctorMenu {
 			   		break;
 			    case 5:
 			    	System.out.println(doctor);
-
+			    case 6:
+			    	client2Xml();
 			   	case 0: 
 			   		displayDoctorMenu();
 		    		keepGoing = false;
@@ -497,6 +505,12 @@ public class DoctorMenu {
 		    	}
 		    }
 		 }
+		
+		public void client2Xml() {
+			//We call the Marshaller method
+			xmlMan.client2Xml(doctor);				
+			System.out.println("Your client information is in ./xmls/Client.xml");
+		}
 	 
 	 // TODO METODO PAY QUE ASIGNE UN SHIPMENT UNA VEZ QUE EL PAGO SE HA PROCESADO
 	 // SETSHIPMENT DE ORDER PARA QUE ACTUALICE EL SHIPMENT EN JAVA 
