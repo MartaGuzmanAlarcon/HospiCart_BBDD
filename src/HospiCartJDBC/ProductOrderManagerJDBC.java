@@ -314,7 +314,7 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
 		
 		//SQL query
 		String sql = "UPDATE product_order SET amount = ?, total_price = ? "
-				+ "FROM product "
+				//+ "FROM product_order "
 				+ "WHERE order_id = ? AND product_id = ? ";
 
 		//I create the statement in the try catch block
@@ -328,12 +328,14 @@ public class ProductOrderManagerJDBC implements IProductOrderManager{
 			if(rowsAffected > 0) {
 				if(productOrder.getAmount() > product_amount) {
 					//I increase the stock
-					int newStock = productOrder.getAmount() - product_amount;
-					productManager.updateProductStock(product, newStock, true);
+					//int differenceOfUnits = productOrder.getAmount() - product_amount;
+					//int newStock = product.getStockQuantity() + differenceOfUnits;
+					productManager.updateProductStock(product, product_amount, true);
 				} else {
 					//I decrease the stock
-					int newStock = product_amount - productOrder.getAmount();
-					productManager.updateProductStock(product, newStock, false);
+					//int differenceOfUnits = product_amount - productOrder.getAmount();
+					//int newStock = product.getStockQuantity() - differenceOfUnits;
+					productManager.updateProductStock(product, product_amount, false);
 				}
 			} else {
 				throw new RuntimeException("An error occurred when updating the product order in the database.");

@@ -198,8 +198,7 @@ public class MainMenu {
             //We call the method of "JPAUserManager" that creates a user.
             userManager.register(user, 1);
             
-            Output.println("\nRegistration completed! We are glad you are here! \n\nWelcome to the 'Hospicart' family <3\n");
-            Output.println("Username: " + user.getEmail());
+            Output.println("\nRegistration completed! We are glad you are here! \n\nWelcome to the 'Hospicart' family, " + doctor.getName() + "! <3 \n");
     	}
     }
     
@@ -225,8 +224,7 @@ public class MainMenu {
             //We call the method of "JPAUserManager" that creates a user.
             userManager.register(user, 2);
                    
-            Output.println("\nRegistration completed! We are glad you are here! \n\nWelcome to the 'Hospicart' family <3\n");
-            Output.println("Username: " + user.getEmail());
+            Output.println("\nRegistration completed! We are glad you are here! \n\nWelcome to the 'Hospicart' family, " + nurse.getName() + "! <3 \n");
     	}
     }  
     /**
@@ -250,8 +248,7 @@ public class MainMenu {
             //We call the method of "JPAUserManager" that creates a user.
             userManager.register(user, 3);
               
-            Output.println("Registration completed! We are glad you are here! \n\nWelcome to the 'Hospicart' family <3\n");
-            Output.println("Username: " + user.getEmail());
+            Output.println("\nRegistration completed! We are glad you are here! \n\nWelcome to the 'Hospicart' family, " + supplier.getName() + "! <3 \n");
     	}
     }
     

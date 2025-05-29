@@ -60,10 +60,8 @@ public class DoctorMenu {
             Output.println("3. Pay");
             Output.println("4. View my orders");
             Output.println("5. Account settings"); // Includes the UPDATE methods 
-            //View my account should have a switch with options: MY DATA, MY ORDERS AND LOG OUT.
-            	//MY DATA should enable the user to SEE ITS PERSONAL INFORMATION, CHANGE PASSWORD, CHANGE ADDRESS.
-            	//MY ORDERS should 
-            //should call the update methods to update the information of the 
+            //View my account should have a switch with options: MY DATA AND LOG OUT.
+            //TODO ADD A LOG OUT OPTION THAT TAKES YOU BACK TO THE REGISTER LOG IN MENU!!!
             //Output.println("0. Go back"); //ir a donde se llama al menu de doctor
             Output.println("0. Exit");
             
@@ -107,6 +105,7 @@ public class DoctorMenu {
                 	break;
                 case 5:
                 	accountSettings();
+                	break;
                 case 0:
 	                Output.println("Application closed!");
 	                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
@@ -193,7 +192,7 @@ public class DoctorMenu {
 		Output.println("\nYour current cart items:");
     	// Print column headers
         Output.println(String.format("%-20s %5s %10s", "Product", "Quantity", "Total"));
-        Output.println("----------------------------------------");
+        Output.println("----------------------------------------------------------------------");
         for (ProductOrder po : productsOrders) {
             String name = po.getProduct().getName();
             int amount = po.getAmount();
@@ -290,7 +289,7 @@ public class DoctorMenu {
 			if(amount <= 0) {
 				Output.println("Quantity must be at least 1. Try again:");
 			} else if (amount > product.getStockQuantity()) {
-				Output.println("Threre are no more units of " + product.getName() + " in stock. Please enter a smaller amount.");
+				Output.println("Threre are not enough units of " + product.getName() + " in stock. Please enter an amount equal or smaller than " + product.getStockQuantity() + " .");
 			} else {
 				return amount;
 			}
