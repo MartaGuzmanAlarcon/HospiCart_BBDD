@@ -127,6 +127,10 @@ public class NurseMenu {
 		}
 	}
 	
+	/**
+	 * Method that offers the user different options once they have selected a product.
+	 * @param chosenProduct object of the class Product that stores the product the user chose.
+	 */
 	public void productShoppingMenu(Product chosenProduct) {
 		boolean keepGoing = true;
 		while(keepGoing) {
@@ -178,6 +182,7 @@ public class NurseMenu {
 	 * If the cart is empty either because no cart was inserted in the database or because the list of product orders is empty, the method exits.
 	 * @throws OrderExceptions
 	 * @throws ClientException
+	 * @throws SQLException
 	 */
 	public void viewCart() throws OrderExceptions, ClientException, SQLException { 
 		// Check for a brand new cart that’s never been inserted in the DB: If the user never calls addToCart(), and thus never inserted the Order into the DB, cart.getOrderId() will be null
@@ -345,7 +350,6 @@ public class NurseMenu {
 		// ADD A PRODUCT ORDER TO AN ORDER IN JAVA -> link them both
 		ProductOrder productOrder = new ProductOrder(amount, cart, product); // Attach our in-memory Order (cart) to a ProductOrder
 		// Add the productOrder to the list of products orders of the cart (order)
-		//List<ProductOrder> productOrders = cart.getProductOrders(); // Retrieve the product orders of the cart (order)
 		productOrders.add(productOrder);
 		cart.setProductOrders(productOrders);
 		
@@ -358,9 +362,6 @@ public class NurseMenu {
 		}
 		
 		 Output.println(amount + " x '" + product.getName() + "' added to your cart.");
-		 //We update the product's stock in both the data base and the instance 'product'
-		 //int newStock = product.getStockQuantity()-amount;
-		// product.setStockQuantity(newStock);
 	}
 	
 	
@@ -464,7 +465,7 @@ public class NurseMenu {
 	}
 	 
 	 /**
-	  * Method that asks the user to select the category in which they is interested in.
+	  * Method that asks the user to select the category in which they are interested in.
 	  * @return a variable of type Category.
 	  */
 	 private static Category getCategoryElection() {
@@ -630,6 +631,8 @@ public class NurseMenu {
 	 
 	/**
 	* Method that shows the user his/her personal data and asks if he/she wants to change the password or not.
+	* @throws SQLException
+	* @throws ClientException
 	*/
 	 public void accountSettings() throws SQLException, ClientException{
 	    boolean keepGoing = true;
