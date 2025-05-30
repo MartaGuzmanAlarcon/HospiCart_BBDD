@@ -3,6 +3,7 @@ package HospiCartApp;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import Exceptions.ClientException;
 import Utilities.*;
@@ -12,6 +13,7 @@ import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartJPA.UserManagerJPA;
 import HospiCartPOJOs.Client;
+import HospiCartPOJOs.Supplier;
 import HospiCartPOJOs.User;
 
 public class MainMenu {
@@ -33,7 +35,6 @@ public class MainMenu {
             productManager = new ProductManagerJDBC(connectionManager);
             supplierManager = new SupplierManagerJDBC(connectionManager);
             
-            //TODO ADD CHECK TO INSERT THE SUPPLIER AND PRODUCTS
             setApplication(); //I call the method that prepares the application by inserting the products we sell and the supplier.
             
             //We declare a boolean variable and set it to false in order to create a while that prints the menu in the screen that runs until 
@@ -74,7 +75,7 @@ public class MainMenu {
         	Output.println("ERROR: " + ioe);
         	ioe.printStackTrace();
         } catch (Exception e) {
-        	Output.println("Critical system error:"); //TODO
+        	Output.println("Critical system error:");
             e.printStackTrace();
         } finally {
         	closeConnections();
@@ -111,9 +112,10 @@ public class MainMenu {
 	                productManager = new ProductManagerJDBC(connectionManager);
 	            }
 	            String filePathSuppliers = "src/Utilities/data/Suppliers.txt";
-	            supplierManager.insertSuppliersFromCSV(filePathSuppliers);           
+	            supplierManager.insertSuppliersFromCSV(filePathSuppliers);    
+	            List<Supplier> insertedSuppliers = supplierManager.getAllSuppliers();
 	            String filePathProducts = "src/Utilities/data/Products.txt";
-	            productManager.insertProductsFromCSV(filePathProducts);
+	            productManager.insertProductsFromCSV(filePathProducts, insertedSuppliers);
 	        } catch (Exception e) {
 	            System.out.println("Error setting up application: " + e.getMessage());
 	            e.printStackTrace();
@@ -415,7 +417,6 @@ public class MainMenu {
 	                if(newPassword.equals(newPasswordConfirmed)) {
 	                	userManager.updatePassword(user.getEmail(), newPasswordConfirmed, false);
 	                	//I call the setter method for password, which encrypts it and sets it as the password of the user.
-	                	//TODO DO I HAVE TO ENCRYPT THE PASSWORD IN THE SETTER???
 	                	user.setPassword(newPasswordConfirmed);
 	                	Output.println("Password successfully reset!");
 	                	Output.println("\nRedirecting to 'Log In'...");
@@ -424,7 +425,6 @@ public class MainMenu {
 	                else {
 	                	//I tell the user that the password do not match and ask him/her what does he/she want to do.
 	                	Output.println("\nThe introduced passwords do not match!");
-	                	//TODO ADD A WHILE
 	                	boolean askAgain = true;
 	                	Output.println("Introduce: ");
 	                	while (askAgain) {

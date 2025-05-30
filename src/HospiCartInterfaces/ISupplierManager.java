@@ -7,11 +7,15 @@ import HospiCartPOJOs.Supplier;
 
 public interface ISupplierManager {
 
+    public void insertSupplierIfNotExists(Supplier supplier) throws SQLException;
+
 	public void insertSuppliersFromCSV(String filePath);
 	
 	public void insertSupplier(Supplier supplier) throws SQLException;
 
 	public void showCompanyNames();
+	
+	public List<Supplier> getAllSuppliers();
 	
     public Supplier getSupplierByID(int supplier_id) throws SQLException;
 

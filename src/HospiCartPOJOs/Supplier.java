@@ -49,6 +49,14 @@ public class Supplier implements Serializable {
 		this.address = _address;
 	}
 	
+	public Supplier(int _supplierId, Manufacturer _companyName, Integer _contactNumber, String _address) {
+		super();
+		this.supplierId = _supplierId;
+		this.companyName = _companyName;
+		this.contactNumber = _contactNumber;
+		this.address = _address;
+	}
+	
 	public Supplier(List<Product> _products, Manufacturer _companyName, Integer _contactNumber, String _address) {
 		super();
 		this.products = _products;

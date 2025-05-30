@@ -19,7 +19,7 @@ public class TestProductManager {
 		 //sm.insertSuppliersFromCSV("src/Utilities/data/Suppliers.txt");
 		// System.out.println("supplies table values inserted");
 
-		 pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
+		 //pm.insertProductsFromCSV("src/Utilities/data/Products.txt");
 
 		/*
 		 * int testProductId = 3; Product product = pm.getProductById(testProductId);

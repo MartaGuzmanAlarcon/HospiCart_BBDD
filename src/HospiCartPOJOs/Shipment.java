@@ -9,7 +9,6 @@ public class Shipment implements Serializable {
 	private Integer shipmentId;
 	private Order order;
 	private Integer trackingNumber;
-	private static Integer shipments_counter = 0;
 
 	/**
 	 * Constructor of shipment. This constructor will be used for all the cases except for creating a new order.
@@ -17,14 +16,23 @@ public class Shipment implements Serializable {
 	public Shipment() {
 		super();
 	}
-	//TODO comment this constructor
+	/**
+	 * Constructor of shipment. That receives a shipment, an order and a tracking number.
+	 * @param _shipmentId
+	 * @param _order
+	 * @param _trackingNumber
+	 */
 	public Shipment(int _shipmentId, Order _order, int _trackingNumber) {
 		super();
 		this.shipmentId = _shipmentId;
 		this.order = _order;
 		this.trackingNumber = _trackingNumber;
 	}
-	
+	/**
+	 * Constructor of shipment that only receives a shipment ID and a tracking number.
+	 * @param _shipmentId
+	 * @param _trackingNumber
+	 */
 	public Shipment(int _shipmentId, int _trackingNumber) {
 		super();
 		this.shipmentId = _shipmentId;
@@ -84,12 +92,6 @@ public class Shipment implements Serializable {
 	private Integer generateUniqueTrackingNumber(int order_id) {
 		Integer tracking_number = 100000 + order_id;
 		return tracking_number;
-		
-		/* TODO
-		 * I CHANGED THE ATTRIBUTE "TRACKING_NUMBER" FRO  STRING TO INTEGER (just like it is in the database) and also the getter and setter. 
-		 * The method "generateUniqueTrackingNumber" was implemented using integer values for variables of type Integer but I don't think it is appropriate because it limits our program a lot.
-		 * i.e. we would only be able to create 2,147,483,647 shipments (only 10 digits max) --> ASK RODRIGO IF WE CAN USE THIS ANYWAY, UNDERSTANDING ITS LIMITATIONS.
-		 */
 	}
 
 	// hashCode and equals

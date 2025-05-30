@@ -6,10 +6,14 @@ import java.util.List;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Manufacturer;
 import HospiCartPOJOs.Product;
+import HospiCartPOJOs.Supplier;
 
 public interface IProductManager {
 
-	//boolean insertProduct(int supplierId, Product product) throws SQLException; // Agregar un nuevo producto
+    public void insertProductsIfNotExists(Product product) throws SQLException;
+    
+	public void insertProductsFromCSV(String filePath, List<Supplier> suppliers);
+
 	boolean insertProduct(Product product) throws SQLException; // Agregar un nuevo producto
 	
 	boolean deleteProduct(int id); // Eliminar un producto
@@ -25,6 +29,8 @@ public interface IProductManager {
 	List<Product> getProductsByManufacturer(Manufacturer manufacturer);
 
 	List<Product> getLowStockProductsByCategory(Category category);
+	
+	public List<Product> getProductsBySupplier(int supplierId);
 
 	boolean updateProduct(Product product); // Actualizar producto
 

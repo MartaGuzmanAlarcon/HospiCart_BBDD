@@ -6,12 +6,6 @@ import java.util.List;
 
 import HospiCartInterfaces.IClientManager;
 import HospiCartPOJOs.Client;
-import HospiCartPOJOs.Order;
-import HospiCartPOJOs.Payment;
-import HospiCartPOJOs.ProductOrder;
-import HospiCartPOJOs.Role;
-import HospiCartPOJOs.Shipment;
-import HospiCartPOJOs.OrderStatus;
 import Exceptions.*;
 
 /*
@@ -173,39 +167,6 @@ public class ClientManagerJDBC implements IClientManager{
 	public Client getClientByID(Integer c_id) throws ClientException{
 		String sql = "SELECT id, name, surname, phone_number, email, address " +
 			      "FROM client WHERE id = ? ";
-//TODO: MAKE SURE THAT THIS WORKS!
-		/*
-		 * try (PreparedStatement stmt = c.prepareStatement(sql)){
-    		stmt.setInt(1, order_id);
-    		try(ResultSet resultSet = stmt.executeQuery()){
-		 */
-		/*try{
-			// Prepare statement
-			PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-			// Bind the ID parameter
-	        prep.setInt(1, c_id); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0
-	        
-	        // Execute the query
-	        ResultSet rs = prep.executeQuery();
-	        
-            // Check that the ID is is in the database 
-            if (!rs.next()) { // False if there are no more rows -> no client exists for the given id
-                throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);
-            }
-	    
-            // Construct the client to be returned 
-			Integer id = rs.getInt("id");
-			String name = rs.getString("name");
-			String surname = rs.getString("surname");
-			Integer phoneNumber = rs.getInt("phone_number");
-			String email = rs.getString("email");
-			String address = rs.getString("address"); 
-			Client client = new Client(id, name, surname, phoneNumber, email, address);
-			
-			// Close PreparedStatement and ResultSet
-			rs.close();
-			prep.close();*/
-			
 			try (PreparedStatement prep = manager.getConnection().prepareStatement(sql)){
 				// Bind the ID parameter
 		        prep.setInt(1, c_id); // The 1 binds to the first "?". NOTICE THAT IT STARTS FROM 1, NOT 0

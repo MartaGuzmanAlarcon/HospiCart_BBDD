@@ -105,7 +105,7 @@ public class PaymentManagerJDBC implements IPaymentManager {
 				Integer amount = rs.getInt("amount");
 				PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("payment_method")); // valueOf() is a function from Enum
 				PaymentStatus paymentStatus = PaymentStatus.valueOf(rs.getString("payment_status")); // valueOf() is a function from Enum
-				
+				//TODO CHECK THIS??????
 				// IMPLEMENT THIS ONCE THE CLASS ORDER IS FINISHED
 				// Payment payment = new Payment(paymentId, order, amount, paymentMethod, paymentStatus);
 				// payments.add(payment);
@@ -140,7 +140,7 @@ public class PaymentManagerJDBC implements IPaymentManager {
 			Integer amount = rs.getInt("amount");
 			PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("payment_method")); // valueOf() is a function from Enum
 			PaymentStatus paymentStatus = PaymentStatus.valueOf(rs.getString("payment_status")); // valueOf() is a function from Enum
-			
+			//TODO CHECK THIS !!!!
 			// IMPLEMENT THIS ONCE THE CLASS ORDER IS FINISHED
 			// payment = new Payment(paymentId, order, amount, paymentMethod, paymentStatus);
 			

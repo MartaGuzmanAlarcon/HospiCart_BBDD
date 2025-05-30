@@ -22,7 +22,6 @@ import java.io.IOException;
 public class ProductManagerJDBC implements IProductManager {
 
 	private Connection c;
-	private ConnectionManagerJDBC cm;
 
 	// Threshold limits per category, used for stock control
 	public static final int LIMIT_MEDICATION = 20;
@@ -43,44 +42,66 @@ public class ProductManagerJDBC implements IProductManager {
 	 *           connection.
 	 */
 	public ProductManagerJDBC(ConnectionManagerJDBC cm) {
-		this.cm = cm;
 		this.c = cm.getConnection();
 	}
 
+    /**
+     * Method that checks if the table products already exists and has information in it. 
+     * If it does not exist, it calls the method that inserts the products from the CSV file.
+     */
+    public void insertProductsIfNotExists(Product product) throws SQLException {
+    	//I check if the product has already been inserted or not by looking at its product id.
+    	if(product.getProductId() == null) {
+        	insertProduct(product);
+    	}
+    }
+	
 	/**
 	 * Inserts products from a CSV file into the 'product' table in the database.
 	 * The CSV file should have the following columns: product_id, supplier_id,
 	 * name, category, description, price, stock_quantity, and need_prescription.
 	 * 
 	 * @param filePath The path to the CSV file containing the product data.
+	 * @param suppliers list that contains objects of supplier
 	 */
-	public void insertProductsFromCSV(String filePath){
-
+	public void insertProductsFromCSV(String filePath, List<Supplier> suppliers){
 		String line;
 		String csvSplitBy = ",";
 
-		String sql = "INSERT INTO product (supplier_id, name, category, description, price, stock_quantity, need_prescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-		try (PreparedStatement stmt = c.prepareStatement(sql);
-				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-
-			// Saltar la cabecera
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			br.readLine();
+			List<Product> products = new ArrayList<>();
 
 			while ((line = br.readLine()) != null) {
 				String[] data = line.split(csvSplitBy);
 
-				stmt.setInt(1, Integer.parseInt(data[0])); // supplier_id
-				stmt.setString(2, data[1]); // name
-				stmt.setString(3, Category.valueOf(data[2].toUpperCase()).name()); // category
-				stmt.setString(4, data[3]); // description
-				stmt.setInt(5, Integer.parseInt(data[4])); // price
-				stmt.setInt(6, Integer.parseInt(data[5])); // stock_quantity
-				stmt.setBoolean(7, Boolean.parseBoolean(data[6])); // need_prescription
+				if (data.length != 7) {
+					System.out.println("Skipping invalid row: " + line);
+					continue;
+				}
+				int supplier_id = Integer.parseInt(data[0].trim()); // supplier_id
+				String product_name = data[1].trim(); // name
+				Category category = Category.valueOf(data[2].trim().toUpperCase()); // category
+				String description = data[3].trim(); // description
+				Float price = Float.parseFloat(data[4].trim()); // price
+				int stockQuantity = Integer.parseInt(data[5].trim()); // stock_quantity
+				boolean need_prescription = Boolean.parseBoolean(data[6].trim()); // need_prescription
 
-				stmt.executeUpdate();
+				Product product = new Product(product_name, category, description, price, stockQuantity, need_prescription);
+
+				for(int i=0; i<suppliers.size(); i++) {
+					if(supplier_id == suppliers.get(i).getSupplierId()) {
+						product.setSupplier(suppliers.get(i));
+						break;
+					}
+				}
+				
+				products.add(product);
 			}
-			c.commit();
+	        for (Product product : products) {
+	        	insertProductsIfNotExists(product);
+	        }
+	        //TODO REMOVE SQLException
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -342,6 +363,33 @@ public class ProductManagerJDBC implements IProductManager {
 		return products;
 	}
 	
+	@Override
+	public List<Product> getProductsBySupplier(int supplierId) {
+		List<Product> products = new ArrayList<>();
+		String sql = "SELECT p.product_id, p.name, p.category, p.description, p.price, p.stock_quantity, p.need_prescription " + "FROM product p "
+			    + "WHERE p.supplier_id = ? ";
+
+		try (PreparedStatement stmt = c.prepareStatement(sql)) {
+    		stmt.setInt(1, supplierId);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				Product product = new Product();
+				product.setProductId(rs.getInt("product_id"));
+				product.setName(rs.getString("name"));
+				product.setCategory(Category.valueOf(rs.getString("category").toUpperCase()));
+				product.setDescription(rs.getString("description"));
+				product.setPrice(rs.getFloat("price"));
+				product.setStockQuantity(rs.getInt("stock_quantity"));
+				product.setNeedPrescription(rs.getBoolean("need_prescription"));
+				
+				products.add(product);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return products;
+	}
+	
 	/**
 	 * Retrieves all products of a specific category that are below the stock
 	 * threshold.
@@ -389,8 +437,6 @@ public class ProductManagerJDBC implements IProductManager {
 
 		return products;
 	}
-	
-	// TODO CREATE METHOD getProductsByCategory(Category category);
 
 	/**
 	 * Updates an existing product in the database.
@@ -403,7 +449,7 @@ public class ProductManagerJDBC implements IProductManager {
 		String sql = "UPDATE product SET name = ?, category = ?, description = ?, price = ?, stock_quantity = ?, need_prescription = ? WHERE product_id = ?";
 		try (PreparedStatement stmt = c.prepareStatement(sql)) {
 			stmt.setString(1, product.getName());
-			stmt.setString(2, product.getCategory().name()); // Convertir el enum Category a String
+			stmt.setString(2, product.getCategory().name());
 			stmt.setString(3, product.getDescription());
 			stmt.setFloat(4, product.getPrice());
 			stmt.setInt(5, product.getStockQuantity());

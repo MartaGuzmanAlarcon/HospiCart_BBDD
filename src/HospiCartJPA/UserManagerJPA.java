@@ -31,7 +31,6 @@ public class UserManagerJPA implements IUserManager {
 			this.createRole(doctor);
 			this.createRole(nurse);
 			this.createRole(supplier);
-			//TODO SEE IF WE HAVE TO INCLUDE SUPPLIER AS A ROLE 
 		}
 	}
 	/**

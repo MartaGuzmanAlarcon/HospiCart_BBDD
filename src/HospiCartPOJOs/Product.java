@@ -38,6 +38,7 @@ public class Product implements Serializable {
 	private Integer stockQuantity;
 	@XmlAttribute(name = "Need_Prescription")
 	private Boolean needPrescription;
+	//private SupplierManager supplierManager = new SupplierManager();
 
 	/**
 	 * Parameter-less constructor of Client in which the list of orders is created.
@@ -57,6 +58,7 @@ public class Product implements Serializable {
         this.stockQuantity = stockQuantity;     
         this.needPrescription = needPrescription; 
     }
+	
 	//TODO: THINK IF WE HAVE TO INITIALISE THE LIST OF PRODUCT ORDERS
 	public Product(String name, Category category, String description, Float price, int stockQuantity, boolean needPrescription) {
        super();

@@ -22,7 +22,6 @@ import HospiCartPOJOs.Supplier;
 public class SupplierManagerJDBC implements ISupplierManager{
 
 	private Connection c;
-	private ConnectionManagerJDBC cm;
 	private ProductManagerJDBC productManager;
 
 	/**
@@ -33,11 +32,34 @@ public class SupplierManagerJDBC implements ISupplierManager{
 	 *           connection.
 	 */
 	public SupplierManagerJDBC(ConnectionManagerJDBC cm) {
-
-		this.cm = cm;
 		this.c = cm.getConnection();
 		this.productManager = new ProductManagerJDBC(cm);
 	}
+	
+    /**
+     * Method that checks if the table supplier already exists and has information in it. 
+     * If it does not exist, it calls the method that inserts the suppliers from the CSV file.
+     */
+    public void insertSupplierIfNotExists(Supplier supplier) throws SQLException {
+
+//    	if(supplier.getSupplierId() == null) {
+//    		insertSupplier(supplier);
+//    	}
+    	// I check if the supplier table already exists
+        String checkQuery = "SELECT COUNT(*) FROM supplier WHERE supplier_id = ?";
+        try (PreparedStatement stmt = c.prepareStatement(checkQuery)) {
+            stmt.setInt(1, supplier.getSupplierId());
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                
+                if (rs.getInt(1) == 0) {
+                    // Only insert if supplier doesn't exist
+                	insertSupplier(supplier);
+                }
+            }
+        }
+    }
 
 	/**
 	 * Inserts supplier data into the database from a CSV file. Each row in the CSV
@@ -51,35 +73,29 @@ public class SupplierManagerJDBC implements ISupplierManager{
 		String line;
 		String csvSplitBy = ",";
 
-		String sql = "INSERT INTO supplier (supplier_id, company_name, contact_number, address) VALUES (?, ?, ?, ?)";
-
-		try (PreparedStatement stmt = c.prepareStatement(sql);
-				BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-
-			// Saltar la cabecera
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 			br.readLine();
+			List<Supplier> suppliers = new ArrayList<>();
 
 			while ((line = br.readLine()) != null) {
 				String[] data = line.split(csvSplitBy);
 
-				if (data.length < 3) {
+				if (data.length < 4) {
 					System.out.println("Skipping invalid row: " + line);
 					continue;
 				}
 				Integer supplierId = Integer.parseInt(data[0].trim());
-				String companyName = data[1].trim(); // .trim(): elimina espacios en blanco
+				Manufacturer companyName = Manufacturer.valueOf(data[1].trim());
 				Integer contactNumber = Integer.parseInt(data[2].trim());
 				String address = data[3].trim();
 				
-				stmt.setInt(1, supplierId);
-				stmt.setString(2, companyName);
-				stmt.setInt(3, contactNumber);
-				stmt.setString(4, address);
+				Supplier supplier = new Supplier(supplierId, companyName, contactNumber, address);
+				suppliers.add(supplier);
 
-				stmt.executeUpdate();
 			}
-
-			c.commit();
+	        for (Supplier supplier : suppliers) {
+	            insertSupplierIfNotExists(supplier);
+	        }
 		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -117,14 +133,18 @@ public class SupplierManagerJDBC implements ISupplierManager{
             }
             //I obtain the list of products associated to the supplier and check if the products have been inserted into the database.
             List<Product> products = supplier.getProducts();
-            for(int i=0; i<products.size(); i++) {
-            	//If the ID of the products is null, it is because they have not been inserted into the database.
-            	if(products.get(i).getProductId() == null) {
-            		//Therefore, I set the inserted supplier as the supplier of the product and I insert the product in the database.
-            		products.get(i).setSupplier(supplier);
-            		productManager.insertProduct(products.get(i));
-            	}
+            //TODO BEFORE DOING THIS I SHOULD USE THE METHOD THAT RETRIEVES ALL THE PRODUCTS AND ASSIGN THEM TO THE SUPPLIER
+            if(products == null || products.isEmpty()) {
+            	products = productManager.getProductsBySupplier(supplier.getSupplierId());
             }
+            for(int i=0; i<products.size(); i++) {
+	           	//If the ID of the products is null, it is because they have not been inserted into the database.
+	          	if(products.get(i).getProductId() == null) {
+	          		//Therefore, I set the inserted supplier as the supplier of the product and I insert the product in the database.
+	           		products.get(i).setSupplier(supplier);
+	           		productManager.insertProduct(products.get(i));
+	           	}
+	        }
             c.commit(); //we do this because we disabled the auto-commit in the connection
         } catch (SQLException e) {
             //We "rollback" the transaction in case of error.
@@ -156,6 +176,27 @@ public class SupplierManagerJDBC implements ISupplierManager{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public List<Supplier> getAllSuppliers() {
+		List<Supplier> suppliers = new ArrayList<>();
+		String sql = "SELECT * "
+				+ "FROM supplier ";
+		try (Statement stmt = c.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+			while (rs.next()) {
+				Supplier supplier = new Supplier();
+				supplier.setSupplierId(rs.getInt("supplier_id"));
+				supplier.setCompanyName(Manufacturer.valueOf(rs.getString("company_name").toUpperCase())); // Convertir
+				supplier.setContactNumber(rs.getInt("contact_number"));
+				supplier.setAddress(rs.getString("address"));
+
+				suppliers.add(supplier);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return suppliers;
 	}
 	
 	/**
