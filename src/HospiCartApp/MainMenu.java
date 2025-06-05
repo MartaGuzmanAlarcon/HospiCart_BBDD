@@ -406,7 +406,7 @@ public class MainMenu {
 	                	tryAgain = false;
 	                	break;	
         		}
-        	} else { //If the use is not null it is because he/she has an account associated to it.
+        	} else { //If the user is not null it is because he/she has an account associated to it.
         		while(reintroducePassword) {
 	        		//I ask the user to introduce and confirm the new password and I check that they are in fact equal.
 	        		Output.println("Please introduce your new password: ");
