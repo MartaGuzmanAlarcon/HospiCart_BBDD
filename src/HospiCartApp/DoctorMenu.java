@@ -1,5 +1,6 @@
 package HospiCartApp;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,8 +30,8 @@ public class DoctorMenu {
 
 	//TODO MAKE "EXIT" BE "LOG OUT" --> IF THE USER EXITS THE PROGRAM WITH AN UNPAID ORDER, WE MUST INCREASE THE PRODUCT STOCK WITH THE UNPAID UNITS
 	
-	// NOTE: this attributes CAN NOT BE STATIC because they are per-session pieces of state.
-	// Making them static would cause that two different doctors logging in consecutively would trample on each other’s doctor/cart
+	// NOTE: this attributes CAN NOT BE STATIC because they are per-session pieces of state
+	// Making them static would cause two different doctors logging in consecutively to step on each other's doctor/cart
 
 	/**
 	 * Construct a DoctorMenu for the given doctor and cart, wired up to the shared JDBC connection.
@@ -403,7 +404,7 @@ public class DoctorMenu {
 		        
 		        // Read and validate their choice  
 		        int choice = InputKB.readInteger();
-		        if (choice == 0) {
+		        if (choice == 0) { // TODO FIX THIS IF 
 		            continue;  // back to browse mode
 		        }
 		        if (choice < 1 || choice > candidates.size()) {
@@ -645,7 +646,7 @@ public class DoctorMenu {
 			    	displayDoctorMenu(); //I take the supplier back to the supplier menu
 			   		break;
 			    case 2:
-			    	client2Xml();
+			    	client2XmlMenu();
 			    	break;
 			    case 3:
 			    	verifyPendingOrder();
@@ -753,9 +754,47 @@ public class DoctorMenu {
 	 /**
 	  * Method that calls the Marshaller method that converts a client to XML format
 	  */
-	public void client2Xml() {
+	public void client2XmlMenu() {
 		//We call the Marshaller method
 		xmlMan.client2Xml(doctor);				
 		System.out.println("Your client information is in ./xmls/Client.xml");
 	}
+	
+//	public void importClientFromXml() {
+//		// Create the path for the XML file. For simplicity, we used the same path that client2xml
+//		File file = new File("./xmls/Client.xml");
+//		
+//		if(!file.exists()) { // TODO WE SHOULD CHECK ALSO IF THE FILE IS EMPTY
+//			Output.println("No XML found at " + file.getAbsolutePath());
+//		}
+//		
+//		// Call ManagerImplXML to unmarshal
+//		Client doctorFromXML = xmlMan.xml2Client(file);
+//		
+//		// Check that the Doctor has been read correctly
+//		if(doctorFromXML == null) {
+//			Output.println("Failed to import Client from XML. Please check the file format");
+//		}
+//		
+//		// Set the doctor attribute -> since we are modifying the state of the object, we must return VOID 
+//		this.doctor = doctorFromXML;
+//		
+//		// At this point there are 2 options:
+//		//	1) The doctor was already registered and inserted in the DB -> call the correspondent UPADTE methods to update his/her personal info
+//		//	2) The doctor was not registered nor inserted in the DB -> call the INSERT method 
+//		try {
+//			if(doctor.getUserId() != null) { // If the ID is not null, the client is in the DB (since the DB is the only responsible for initializing the id values with AUTOINCREMENT
+//	            clientManager.updateName(doctor.getUserId(), doctor.getName());
+//	            clientManager.updateSurname(doctor.getUserId(), doctor.getSurname());
+//	            clientManager.updatePhoneNumber(doctor.getUserId(), doctor.getPhoneNumber());
+//	            clientManager.updateAddress(doctor.getUserId(), doctor.getAddress());
+//	            Output.println("Client data updated in the database from XML"); // TODO REMOVE THIS LINE ONCE WE HAVE CHECK THAT EVERYTHING WORKS 
+//			} else { // If the ID is null, we insert the doctor in the DB from the XML
+//				clientManager.insertClient(doctor);
+//	            Output.println("New client inserted into database from XML"); // TODO REMOVE THIS LINE ONCE WE HAVE CHECK THAT EVERYTHING WORKS 
+//			}
+//		} catch (Exception e) {
+//	        Output.println("Warning: Imported client but failed to synchronize with database: " + e.getMessage());
+//	    }
+//	}
 }

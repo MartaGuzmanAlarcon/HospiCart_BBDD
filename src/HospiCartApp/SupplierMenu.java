@@ -1,34 +1,40 @@
 package HospiCartApp;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import Exceptions.ClientException;
 import Exceptions.OrderExceptions;
+import HospiCartJDBC.ClientManagerJDBC;
 import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManagerJDBC;
 import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
 import HospiCartJPA.UserManagerJPA;
 import HospiCartPOJOs.Category;
+import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
 import HospiCartPOJOs.OrderStatus;
 import HospiCartPOJOs.Product;
 import HospiCartPOJOs.ProductOrder;
 import HospiCartPOJOs.Supplier;
 import HospiCartPOJOs.User;
+import HospiCartXML.ManagerImplXML;
 import Utilities.InputKB;
 import Utilities.Output;
 
 public class SupplierMenu {
-	private static ConnectionManagerJDBC connectionManager;
-	private static SupplierManagerJDBC supplierManager;
-	private static OrderManagerJDBC orderManager;
-	private static ProductManagerJDBC productManager;
-	private static Supplier supplier;
-	private static User user;
-	private static UserManagerJPA userManager;
+	private ConnectionManagerJDBC connectionManager;
+	private SupplierManagerJDBC supplierManager;
+	private OrderManagerJDBC orderManager;
+	private ProductManagerJDBC productManager;
+	private Supplier supplier;
+	private User user;
+	private UserManagerJPA userManager;
+	private ManagerImplXML xmlMan; 
+	private ClientManagerJDBC clientManager;
 	
 	/**
 	 * Constructor of SupplierMenu for the given supplier, wired up to the shared JDBC connection.
@@ -36,11 +42,14 @@ public class SupplierMenu {
 	 * @param supplier the currently‐logged‐in suppler.
 	 */
 	public SupplierMenu(ConnectionManagerJDBC cm, User supplierUser) {
-		// Initialize all the attributes with DoctorMenu. instead of this. because they are static variables 
-		SupplierMenu.connectionManager = cm; // Passing one cm is simpler than passing five or six different manager objects, cm includes all of them
-		SupplierMenu.productManager = new ProductManagerJDBC(cm);
-		SupplierMenu.supplierManager = new SupplierManagerJDBC(cm);
-		OrderManagerJDBC orderManager = new OrderManagerJDBC(cm);
+		// Initialize all the attributes 
+		this.connectionManager = cm; // Passing one cm is simpler than passing five or six different manager objects, cm includes all of them
+		this.productManager = new ProductManagerJDBC(cm);
+		this.supplierManager = new SupplierManagerJDBC(cm);
+		this.orderManager = new OrderManagerJDBC(cm);
+		this.clientManager = new ClientManagerJDBC(cm);
+		this.xmlMan = new ManagerImplXML();
+		
 		//SupplierMenu.supplier = supplier;
 		user = supplierUser; //TODO SEE IF THIS WORKS
 		userManager = new UserManagerJPA();
@@ -64,6 +73,7 @@ public class SupplierMenu {
 			Output.println("2. View the company's data");
 			Output.println("3. Manage products");
 			Output.println("4. Manage orders");
+			Output.println("5. Import a Client profile (Doctor/Nurse) from an XML");
 			Output.println("0. Exit");
 			try {	
 				int option = InputKB.readInteger();
@@ -608,4 +618,41 @@ public class SupplierMenu {
 		 }
 		 return true;
 	 }
+	 
+		public void importClientFromXml() { // TODO REVISE THE LOGIC OF THIS METHOD!!!
+		// Create the path for the XML file. For simplicity, we used the same path that client2xml
+		File file = new File("./xmls/Client.xml");
+		
+		if(!file.exists()) { // TODO WE SHOULD CHECK ALSO IF THE FILE IS EMPTY
+			Output.println("No XML found at " + file.getAbsolutePath());
+		}
+		
+		// Call the JAXB unmarshaller to get a Client object
+		Client clientFromXML = xmlMan.xml2Client(file);
+		
+		// Check that the Client has been imported correctly
+		if(clientFromXML == null) {
+			Output.println("Failed to import Client from XML");
+		}
+		
+		// Check if a client with this email already exists in the DB
+		Client clientInDB = null;
+		try {
+			clientInDB = clientManager.getClientByEmail(clientFromXML.getEmail()); // throws ClientException
+			
+			if(clientInDB != null) {
+				clientManager.updateName(clientInDB.getUserId(), clientFromXML.getName());
+	            clientManager.updateSurname(clientInDB.getUserId(), clientFromXML.getSurname());
+	            clientManager.updatePhoneNumber(clientInDB.getUserId(), clientFromXML.getPhoneNumber());
+	            clientManager.updateAddress(clientInDB.getUserId(), clientFromXML.getAddress());
+			} else {
+				clientManager.insertClient(clientFromXML);
+			}
+		} catch(ClientException ce) { 
+        	System.out.println("ERROR: " + ce); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		
+	}
 }
