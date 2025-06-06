@@ -30,11 +30,13 @@ public class SupplierMenu {
 	private SupplierManagerJDBC supplierManager;
 	private OrderManagerJDBC orderManager;
 	private ProductManagerJDBC productManager;
-	private Supplier supplier;
-	private User user;
 	//private UserManagerJPA userManager;
 	private ManagerImplXML xmlMan; 
 	private ClientManagerJDBC clientManager;
+	
+	private Supplier supplier;
+	private User user;
+	private Client importedClient; // We store the imported client from XML in a global variable to use it in several methods 
 	
 	/**
 	 * Constructor of SupplierMenu for the given supplier, wired up to the shared JDBC connection.
@@ -49,9 +51,7 @@ public class SupplierMenu {
 		this.orderManager = new OrderManagerJDBC(cm);
 		this.clientManager = new ClientManagerJDBC(cm);
 		this.xmlMan = new ManagerImplXML();
-		
-		//SupplierMenu.supplier = supplier;
-		user = supplierUser; //TODO SEE IF THIS WORKS
+		this.user = supplierUser; //TODO SEE IF THIS WORKS
 		//userManager = new UserManagerJPA();
 	}
 
@@ -74,6 +74,7 @@ public class SupplierMenu {
 			Output.println("3. Manage products");
 			Output.println("4. Manage orders");
 			Output.println("5. Import a Client profile (Doctor/Nurse) from an XML");
+			Output.println("6. View imported client's profile"); 
 			Output.println("0. Exit");
 			try {	
 				int option = InputKB.readInteger();
@@ -93,6 +94,12 @@ public class SupplierMenu {
 				case 4:
 					manageOrders();
 					keepGoing = false;
+					break;
+				case 5:
+					importClientFromXml();
+					break;
+				case 6:
+					viewClientsProfile();
 					break;
 				case 0:
 	                closeConnections();
@@ -551,40 +558,75 @@ public class SupplierMenu {
 		 return true;
 	 }
 	 
-		public void importClientFromXml() { // TODO REVISE THE LOGIC OF THIS METHOD!!!
-		// Create the path for the XML file. For simplicity, we used the same path that client2xml
-		File file = new File("./xmls/Client.xml");
-		
-		if(!file.exists()) { // TODO WE SHOULD CHECK ALSO IF THE FILE IS EMPTY
-			Output.println("No XML found at " + file.getAbsolutePath());
-		}
-		
-		// Call the JAXB unmarshaller to get a Client object
-		Client clientFromXML = xmlMan.xml2Client(file);
-		
-		// Check that the Client has been imported correctly
-		if(clientFromXML == null) {
-			Output.println("Failed to import Client from XML");
-		}
-		
-		// Check if a client with this email already exists in the DB
-		Client clientInDB = null;
-		try {
-			clientInDB = clientManager.getClientByEmail(clientFromXML.getEmail()); // throws ClientException
-			
-			if(clientInDB != null) {
-				clientManager.updateName(clientInDB.getUserId(), clientFromXML.getName());
-	            clientManager.updateSurname(clientInDB.getUserId(), clientFromXML.getSurname());
-	            clientManager.updatePhoneNumber(clientInDB.getUserId(), clientFromXML.getPhoneNumber());
-	            clientManager.updateAddress(clientInDB.getUserId(), clientFromXML.getAddress());
-			} else {
-				clientManager.insertClient(clientFromXML);
-			}
-		} catch(ClientException ce) { 
-        	System.out.println("ERROR: " + ce); 
-		} catch (SQLException e) {
+	 
+	 /**
+	  * Method that retrieves a client from XML file and turns it into a Java object.
+	  */
+	 public void importClientFromXml() { 
+	 // Create the path for the XML file. For simplicity, we used the same path that client2xml
+	 File file = new File("./xmls/Client.xml");
+	
+	 if(!file.exists()) { // TODO WE SHOULD CHECK ALSO IF THE FILE IS EMPTY
+		Output.println("No XML found at " + file.getAbsolutePath());
+	 }
+	
+	 // Call the JAXB unmarshaller to get a Client object
+	 Client clientFromXML = xmlMan.xml2Client(file);
+	
+	 // Check that the Client has been imported correctly
+	 if(clientFromXML == null) {
+		Output.println("Failed to import Client from XML");
+	 }
+	
+	 // NOTE: we use 2 instances of Client (clientFromXML and clientInDB) to avoid having 2 clients with the same email in the DB, which would happen if we import directly  
+	 //clientFromXML without checking if it already was in the DB
+	 
+	 try { // We assume that the client is already in the DB
+		Client clientInDB = clientManager.getClientByEmail(clientFromXML.getEmail()); // throws ClientException if no client exists for the given email
+		clientManager.updateName(clientInDB.getUserId(), clientFromXML.getName());
+        clientManager.updateSurname(clientInDB.getUserId(), clientFromXML.getSurname());
+        clientManager.updatePhoneNumber(clientInDB.getUserId(), clientFromXML.getPhoneNumber());
+        clientManager.updateAddress(clientInDB.getUserId(), clientFromXML.getAddress());
+        Output.println("Existing client (" + clientFromXML.getEmail() + ") was imported");
+        
+        // Keep track of the imported client 
+        this.importedClient = clientInDB; // Initialize the attribute to the correctly imported client, which is also in the DB
+	
+	 } catch(ClientException ce) {  // If the client imported was not inserted in the DB, we insert it here in the catch clause (we have tried to use an if-else within the try, but it didn't work)
+		 try {
+			 // Insert the new client
+			 clientManager.insertClient(clientFromXML); 
+			 // Retrieve the client from the DB and save it in a Java object -> now clientInDB has an ID assigned by the DB
+			 Client clientInDB = clientManager.getClientByEmail(clientFromXML.getEmail()); 
+			 // Initialize the attribute to the correctly imported Java object, which is also in the DB
+			 this.importedClient = clientInDB; 
+			 Output.println("New client (" + clientFromXML.getEmail() + ") was imported and inserted in the database");
+		 } catch (ClientException e) {
 			e.printStackTrace();
 		}	
-		
+	} catch (SQLException e) {
+		e.printStackTrace();
+		}	
 	}
+	 
+	 
+	 
+	 /**
+	  * Method that allows the supplier to view the imported client's profile.
+	  */
+	 public void viewClientsProfile() {
+		 if (this.importedClient == null) {
+			 Output.println("No client has been imported yet. Please import a client first by selecting option 5");
+	         return; // Returns to where the method was called
+	         }
+		 // Print the imported client's profile 
+		 Output.println("\n=== Imported Client Profile ===");
+		 Output.println("Name:       " + importedClient.getName() + " " + importedClient.getSurname());
+		 Output.println("Email:      " + importedClient.getEmail());
+		 Output.println("Phone:      " + importedClient.getPhoneNumber());
+		 Output.println("Address:    " + importedClient.getAddress());
+		 Output.println("User ID:    " + importedClient.getUserId());
+		 Output.println("==============================\n");
+	    }
+	 
 }
