@@ -81,11 +81,6 @@ public class OrderManagerJDBC implements IOrderManager {
                     throw new SQLException("Inserting order failed, no ID obtained.");
                 }
             }
-//            Shipment shipment = order.getShipment(); 
-//            shipment.setOrder(order);
-//            if(shipment.getShipmentId() == null) {
-//            	shipmentManager.insertShipment(shipment);
-//            }
             // Only handle shipment if one has been attached
             Shipment shipment = order.getShipment();
             if (shipment != null) {
@@ -95,16 +90,6 @@ public class OrderManagerJDBC implements IOrderManager {
                 }
             }
             
-//            List<ProductOrder> productOrders = order.getProductOrders();
-//            for(int i=0; i<productOrders.size(); i++) {
-//                ProductOrder productOrder = productOrders.get(i);
-//                //I check if the product order has an assigned order and I only set the order and insert the productOrder into the database to those that don't have it set.
-//                if(productOrder.getOrder() == null) {
-//                    productOrder.setOrder(order);
-//                	productOrderManager.insertProductOrder(productOrder);
-//                }
-//            }
-            
             // Now insert any productOrders
             for (ProductOrder po : order.getProductOrders()) {
                 if (po.getOrder() == null) {
@@ -112,11 +97,6 @@ public class OrderManagerJDBC implements IOrderManager {
                     productOrderManager.insertProductOrder(po);
                 }
             }
-//            //I print success messages
-//            System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
-//            System.out.println("\n- Shipment ID of order with ID " + order.getOrderId() + ": " + shipment.getShipmentId());
-//            System.out.println("\n- Tracking number of order with ID " + order.getOrderId() + ": " + shipment.getTrackingNumber());
-            
             // Print success messages
             System.out.println("\nThe order with ID " + order.getOrderId() + " was properly inserted in the database.");
             if (shipment != null) {
@@ -229,8 +209,6 @@ public class OrderManagerJDBC implements IOrderManager {
     				if(payment != null) {
     					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
     					order.setPayment(payment);
-//    					order.setStatus(Status.ORDERED);
-//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
     				}
     				
     				int user_id = resultSet.getInt("user_id");
@@ -296,8 +274,6 @@ public class OrderManagerJDBC implements IOrderManager {
     				if(payment != null) {
     					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
     					order.setPayment(payment);
-//    					order.setStatus(Status.ORDERED);
-//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
     				}
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -309,7 +285,7 @@ public class OrderManagerJDBC implements IOrderManager {
     				//Finally, I add the created order to the list of orders the user made.
     				ordersOfUser.add(order);
     			}
-                if(!hasRows) {
+                if(client == null && !hasRows) {
                 	//If the result set is empty, I throw a personalized exception that indicates that it was not found a user with the introduced user_id in the database.
     				throw new ClientException(ClientException.ErrorTypeClient.INVALID_CLIENT_ID);                
                 }
@@ -362,8 +338,6 @@ public class OrderManagerJDBC implements IOrderManager {
     				if(payment != null) {
     					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
     					order.setPayment(payment);
-//    					order.setStatus(Status.ORDERED);
-//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
     				}
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -431,8 +405,6 @@ public class OrderManagerJDBC implements IOrderManager {
     				if(payment != null) {
     					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
     					order.setPayment(payment);
-//    					order.setStatus(Status.ORDERED);
-//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
     				}
     				
     				Shipment shipment = cm.getShipmentManager().getShipmentByOrderID(order_id);
@@ -481,8 +453,6 @@ public class OrderManagerJDBC implements IOrderManager {
     				if(payment != null) {
     					//If the payment is different from null it is because it exists and we have to set the status of the order to ORDERED.
     					order.setPayment(payment);
-//    					order.setStatus(Status.ORDERED);
-//    					order.updateOrderStatus(order.getOrderId(), Status.ORDERED);
     				}
     				
     				int user_id = resultSet.getInt("user_id");
@@ -526,7 +496,7 @@ public class OrderManagerJDBC implements IOrderManager {
     	
     	String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status AS order_status "
     			+ "FROM client_order AS o "
-    			+ "WHERE o.order_status = ?";
+    			+ "WHERE o.status = ?";
     	
     	try(PreparedStatement stmt = c.prepareStatement(sql)){
     		stmt.setString(1, status.name());

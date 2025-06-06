@@ -77,8 +77,9 @@ public class NurseMenu {
                 	pay();
                 	break; 
                 case 4:
-                	List<Order> ordersOfDoctor = nurse.getOrders();
-                	if(ordersOfDoctor != null ) {
+                	List<Order> ordersOfDoctor = orderManager.getOrdersByUser(nurse.getUserId());
+                	
+                	if(ordersOfDoctor != null && ordersOfDoctor.size() >= 1) {
                     	Output.println("\n============================== ORDER RECORD ==============================");
                     	for(int i=0; i<ordersOfDoctor.size(); i++) {
                     		Order order = ordersOfDoctor.get(i);
@@ -417,6 +418,7 @@ public class NurseMenu {
 		        // Read and validate their choice  
 		        int choice = InputKB.readInteger();
 		        if (choice == 0) {
+		        	displayNurseMenu();
 		            continue;  // back to browse mode
 		        }
 		        if (choice < 1 || choice > candidates.size()) {

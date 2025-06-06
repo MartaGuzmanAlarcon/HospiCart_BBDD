@@ -12,7 +12,6 @@ import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManagerJDBC;
 import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
-//import HospiCartJPA.UserManagerJPA;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
@@ -30,7 +29,6 @@ public class SupplierMenu {
 	private SupplierManagerJDBC supplierManager;
 	private OrderManagerJDBC orderManager;
 	private ProductManagerJDBC productManager;
-	//private UserManagerJPA userManager;
 	private ManagerImplXML xmlMan; 
 	private ClientManagerJDBC clientManager;
 	
@@ -51,12 +49,10 @@ public class SupplierMenu {
 		this.orderManager = new OrderManagerJDBC(cm);
 		this.clientManager = new ClientManagerJDBC(cm);
 		this.xmlMan = new ManagerImplXML();
-		this.user = supplierUser; //TODO SEE IF THIS WORKS
-		//userManager = new UserManagerJPA();
+		this.user = supplierUser;
 	}
 
 	public void displaySupplierMenu() {
-		// TODO Auto-generated method stub
 		Output.println("\n\n=== Welcome to the Supplier Menu! ===");
 		String chosenCompany = outputCompanyNames();
 			supplier = supplierManager.getSupplierByCompanyName(chosenCompany);
@@ -73,9 +69,9 @@ public class SupplierMenu {
 			Output.println("2. View the company's data");
 			Output.println("3. Manage products");
 			Output.println("4. Manage orders");
-			Output.println("5. Import a Client profile (Doctor/Nurse) from an XML");
+			Output.println("5. Import a 'Client' profile (Doctor/Nurse) from an XML");
 			Output.println("6. View imported client's profile"); 
-			Output.println("0. Exit");
+			Output.println("0. Go back");
 			try {	
 				int option = InputKB.readInteger();
 				switch(option) {
@@ -103,6 +99,7 @@ public class SupplierMenu {
 					break;
 				case 0:
 					Output.println("Redirecting to home page ...");
+					//TODO REDIREC TO HOMEPAGE
 					return; // Returning from this method sends control back to MainMenu
 	            default:
 	            	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
@@ -149,8 +146,9 @@ public class SupplierMenu {
 				option = InputKB.readInteger();
 				if(option > 0 && option <= companyNames.size()) {
 					keepGoing = false;
+				} else {
+					Output.println("The introduced number is invalid, please try again.");
 				}
-				//TODO ADD AN ELSE THAT PRINTS AN ERROR MESSAGE TO THE USER SAYING INVALID NUMBER 
 			}
 		}
 		return companyNames.get(option-1);
@@ -193,7 +191,6 @@ public class SupplierMenu {
     	while(keepGoing) {
         	Output.println("1. Change the company's address");
         	Output.println("2. Change the company's contact number");
-        	Output.println("3. To go back");
         	Output.println("0. Go back");
         	
         	int option = InputKB.readInteger();
@@ -237,7 +234,6 @@ public class SupplierMenu {
     		Output.println("2. Add a new product");
     		Output.println("3. Delete a product");
     		Output.println("4. Manage my products' stock");
-        	Output.println("5. If you want to exit");
     		Output.println("0. Go back");
     		int option = InputKB.readInteger();
     		switch(option) {
@@ -273,6 +269,7 @@ public class SupplierMenu {
     			//We delete the product both from the list of the supplier and from the database
     			productsOfSupplier.remove(index);
     			productManager.deleteProduct(productID);
+    			Output.println("The product was successfully removed.");
     			//I obtain the list of products of the supplier and add the new product.
     			keepGoing = false;
 	    		displaySupplierMenuOptions(); //I take the supplier back to the supplier menu
@@ -282,12 +279,6 @@ public class SupplierMenu {
     			keepGoing = false;
 	    		displaySupplierMenuOptions(); //I take the supplier back to the supplier menu
     			break;
-	    	case 5:
-                closeConnections();
-                Output.println("Application closed!");
-                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
-                System.exit(0);
-                break;
 	    	case 0:
     			keepGoing = false;
 	    		displaySupplierMenuOptions();
@@ -371,14 +362,12 @@ public class SupplierMenu {
 	 }	 
 	 
 	 private void manageProductsStock() throws SQLException {
-		 Output.println("\nIntroduce the umber of the operation you wish to perform regarding the stock of your products: ");
+		 Output.println("\nIntroduce the number of the operation you wish to perform regarding the stock of your products: ");
 		 boolean keepGoing = true;
-		 boolean restocking = true;
 		 //TODO see the return statements
 		 while(keepGoing) {
 			 Output.println("1. Check and update products with low stock");
 			 Output.println("2. Update all products' stock");
-	     	 Output.println("3. If you want to exit");
 			 Output.println("0. Go back");
 			 int option = InputKB.readInteger();
 			 List<Product> productsWithLowStock = new ArrayList<>();
@@ -391,37 +380,23 @@ public class SupplierMenu {
 						 productsWithLowStock.add(product);
 					 }
 				 }
+				 
 				 if(productsWithLowStock.isEmpty()) {
 					 Output.println("None of your products have low stock. Redirecting ...");
 					 manageProducts();
 					 keepGoing = false;
 				 } else {
-					 while(restocking) {
-						 Output.println("Do you wish to re-stock these products? Press 1 for YES and 0 for NO");
-						 int wantsToRestock = InputKB.readInteger();
-						 if(wantsToRestock == 1) {
-							 restockProducts(productsWithLowStock);
-							 restocking = false;
-						 } else if(wantsToRestock == 0) {
-							 restocking = false;
-							 manageProducts();
-						 } else {
-					         Output.println("\nThe number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
-						 }
-					 }
+					 askRestock(productsWithLowStock);
 				 }
 				 break;
 			 case 2:
 				 List<Product> allProductsOfSupplier = supplier.getProducts();
-				 restockProducts(allProductsOfSupplier);
-				 restocking = false;
+				 askRestock(allProductsOfSupplier);
 				 break;
-		    	case 3:
-	                closeConnections();
-	                Output.println("Application closed!");
-	                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
-	                System.exit(0);
-	                break; 	 
+		    case 0:
+	    		keepGoing = false;
+	    		manageProducts();
+		    	break;
          default:
          	Output.println("\nThe number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
          	break;
@@ -429,40 +404,46 @@ public class SupplierMenu {
 		 }
 	 }
 	 
+	 private void askRestock(List<Product> listOfProducts) throws SQLException{
+		 boolean restocking = true;
+		 while(restocking) {
+			 Output.println("Introduce the number of the product you want to restock:");
+			 for(int j=1; j<listOfProducts.size()+1; j++) {
+				 Product product = listOfProducts.get(j-1);
+				 Output.println(" "+ j +". " + product.getName() +" | Current stock: " + product.getStockQuantity());
+			 }
+			 Output.println("0. Go back");
+			 int wantsToRestock = InputKB.readInteger();
+			 if(wantsToRestock >= 1 && wantsToRestock <listOfProducts.size()+1) {
+				 restockProducts(listOfProducts.get(wantsToRestock-1));
+				 restocking = false;
+			 } else if(wantsToRestock == 0) {
+				 restocking = false;
+				 manageProducts();
+			 } else {
+		         Output.println("\nThe number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
+			 }
+		 }
+		 
+	 }
+	 
 	 /**
 	  * Method that re-stocks the products that have low stock
-	  * @param productsWithLowStock
+	  * @param productToRestock
 	 * @throws SQLException 
 	  */
-	 private void restockProducts(List<Product> productsWithLowStock) throws SQLException {
+	 private void restockProducts(Product productToRestock) throws SQLException {
 		 boolean keepRestocking = true;
 		 while(keepRestocking) {
-			 Output.println("Intoduce the number of the product you want to restock: ");
-			 for(int i=0; i<productsWithLowStock.size(); i++) {
-				 Product product = productsWithLowStock.get(i);
-				 int currentStock = product.getStockQuantity();
-				 Output.println("Currently you have " + currentStock + " items of product with ID " + product.getProductId());
-				 Output.println("Introduce the amount you want to increase the stock of product with ID " + product.getProductId() + " by: ");
+				 int currentStock = productToRestock.getStockQuantity();
+				 Output.println("Introduce the amount you want to increase the stock of product with ID " + productToRestock.getProductId() + " by: ");
 				 int increaseStockBy = InputKB.readInteger();
 				 if(increaseStockBy >= 0) {
-					 //I set the new stock of the product
-					 product.setStockQuantity(currentStock + increaseStockBy);
 					 //I call the method that updates the stock of the product in the database
-					 productManager.updateProductStock(product, currentStock+increaseStockBy, true);
-					 Output.println("Do you want to re-stock another product with low stock? Introduce 1 for YES and 0 for NO");
-					 int choice = InputKB.readInteger();
-					 switch(choice) {
-					 case 1: 
-						 break;
-					 case 2:
-						 keepRestocking = false;
-						 manageProductsStock();
-						 break;
-			         default:
-			            Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
-			            break;						
-			         }
-				 }
+					 productManager.updateProductStock(productToRestock, increaseStockBy, true);
+					 //I set the new stock of the product
+					 productToRestock.setStockQuantity(currentStock + increaseStockBy);
+					 keepRestocking = false;
 			 }
 		 }
 	 }
@@ -474,10 +455,8 @@ public class SupplierMenu {
 		 while(keepGoing) {
 			 Output.println("1. See orders by state");
 			 Output.println("2. See all orders");
-	         Output.println("3. If you want to exit");
-	         //TODO AN EXCEPTION IS THROWN BECAUSE THE ORDER MANAGER IS NULL
-	         //ADD AN IF THAT SAYS IF THE SUPPLIER DOES NOT HAVE ANY ORDER!!!
-			 
+	         Output.println("0. Go back");
+	         			 
 			 int option = InputKB.readInteger();
 			 
 			 switch(option) {
@@ -507,6 +486,10 @@ public class SupplierMenu {
 					 Order order = allOrders.get(i);
 					 System.out.println(order);
 				 }
+				 keepGoing = false;
+				 displaySupplierMenuOptions();
+				 break;
+			 case 0:
 				 keepGoing = false;
 				 displaySupplierMenuOptions();
 				 break;

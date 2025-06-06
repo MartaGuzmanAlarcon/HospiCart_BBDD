@@ -23,8 +23,6 @@ public class MainMenu {
     private static ConnectionManagerJDBC connectionManager;
     private static ProductManagerJDBC productManager;
     private static SupplierManagerJDBC supplierManager;
-    //I create this variable in order to keep track of the activity of the user (i.e. if he /she has already logged in or not)
-    private static boolean loggedIn = false; //TODO create a log out method that receives this variable and logs the user out only if the variable is true.
 
   
     public static void main(String[] args) {
@@ -36,7 +34,6 @@ public class MainMenu {
             supplierManager = new SupplierManagerJDBC(connectionManager);
             
             setApplication(); //I call the method that prepares the application by inserting the products we sell and the supplier.
-            
             //We declare a boolean variable and set it to false in order to create a while that prints the menu in the screen that runs until 
             //the value of this variable is changes (when the user wants to leave the application) 
             boolean exit = false;
@@ -62,6 +59,7 @@ public class MainMenu {
                         closeConnections();
                         Output.println("Application closed!");
                         //If the user introduces a 0, then we set the variable "exit" to true so we can exit the switch.
+    	                System.exit(0);
                         exit = true;
                         break;
                     default:
@@ -100,7 +98,6 @@ public class MainMenu {
      * This method sets the "HospiCart" application by calling the method of Product that inserts all the products contained in a CSV file in the folder "Utilities".
      */
     public static void setApplication() {
-    	if(!loggedIn) {
 	    	try {
 	            // Make sure connection is valid before proceeding
 	            Connection c = connectionManager.getConnection();
@@ -119,7 +116,6 @@ public class MainMenu {
 	            System.out.println("Error setting up application: " + e.getMessage());
 	            e.printStackTrace();
 	        }
-    	}
     }
     
     /**
@@ -136,7 +132,7 @@ public class MainMenu {
         	Output.println("1. Register as a doctor");
         	Output.println("2. Register as a nurse");
         	Output.println("3. Register as a supplier");
-        	Output.println("0. Exit");
+        	Output.println("0. Go back");
         	
         	//We create an variable of type integer, which will store the number the customer introduced in the screen.
             int input = InputKB.readInteger();
@@ -156,8 +152,9 @@ public class MainMenu {
 		                break;
 		            case 0: // TODO RETURN TO THE PSVM 
 		                //If the user introduces a 0, then we set the variable "exit" to true so we can exit the switch.
-		            	Output.println("Redirecting to home page ...");
+		            	//Output.println("Redirecting to home page ...");
 		                keepGoing = false;
+    	                System.exit(0);
 		                return; // Returning from this method sends control back to psvm
 		            default:
 		            	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
@@ -254,7 +251,6 @@ public class MainMenu {
      * @throws IOException
      */
     public static void login() throws IOException {
-    	if(!loggedIn) {
 	    	Output.println("\n========== Log In ==========");
 	    	boolean keepGoing = true;
 	        while (keepGoing) {
@@ -271,7 +267,6 @@ public class MainMenu {
 	            	// We obtain the role of the user.
 	                String roleName = user.getRole().getName();
 	                Output.println("It is nice to see you again, dear " + roleName + "!");
-	                loggedIn = true;
 	                try {
 	                	// Retrieve the matching client for this user -> THIS IS THE REASON WHY IT'S VERY IMPORTANT THAT CLIENT AND ROLE SHARE A COMMON ATTRIBUTE
 		                Client loggedInClient = clientManager.getClientByEmail(user.getEmail()); // throws ClientException
@@ -340,9 +335,6 @@ public class MainMenu {
 	            	}
 	            }
 	        }
-    	} else {
-    		Output.println("\nYou have already logged in!");
-    	}
     }
     /**
      * Method that resets the password of a user.

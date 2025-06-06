@@ -80,8 +80,8 @@ public class DoctorMenu {
                 	pay();
                 	break;
                 case 4: 
-                	List<Order> ordersOfDoctor = doctor.getOrders();
-                	if(ordersOfDoctor != null ) {
+                	List<Order> ordersOfDoctor = orderManager.getOrdersByUser(doctor.getUserId());
+                	if(ordersOfDoctor != null && ordersOfDoctor.size() >= 1) {
                     	Output.println("\n============================== ORDER RECORD ==============================");
                     	for(int i=0; i<ordersOfDoctor.size(); i++) {
                     		Order order = ordersOfDoctor.get(i);
@@ -89,7 +89,7 @@ public class DoctorMenu {
                     		Output.println("- Order ID: " + order.getOrderId());
                     		Output.println("- Order date: " + order.getOrderDate());
                     		Output.println("- Order Status: " + order.getOrderStatus());
-                    		if(order.getOrderStatus() != OrderStatus.CANCELLED) {
+                    		if(order.getOrderStatus() != OrderStatus.CANCELLED && order.getOrderStatus() != OrderStatus.PENDING) {
 	                    		Output.println("- Payment: \tPayment ID: " + order.getPayment().getPaymentId() + "\tPayment method: " + order.getPayment().getPaymentMethod() + "\tTotal paid: " + order.getPayment().getAmount());
 	                    		Output.println("- Shipment: \tShipment ID: " + order.getShipment().getShipmentId() + "\tTracking Number: " + order.getShipment().getTrackingNumber());
 	                    		Output.println("- Product Orders: ");
@@ -402,6 +402,7 @@ public class DoctorMenu {
 		        // Read and validate their choice  
 		        int choice = InputKB.readInteger();
 		        if (choice == 0) { // TODO FIX THIS IF 
+		        	displayDoctorMenu();
 		            continue;  // back to browse mode
 		        }
 		        if (choice < 1 || choice > candidates.size()) {
@@ -742,6 +743,9 @@ public class DoctorMenu {
 			 } else{
 				 resetStock();
 				 System.out.println("Hope to see you again soon!");
+				 cart.setOrderStatus(OrderStatus.CANCELLED);
+				 orderManager.updateOrderStatus(cart.getOrderId(), OrderStatus.CANCELLED);
+				 //TODO THIS DOES NOT WORK --> it is going back to accountSettings which is the method that is calling it
 				 return; // Returning from this method sends control back to the method that called it -> displayDoctorMenu()
 			 }
 		 }
@@ -755,42 +759,4 @@ public class DoctorMenu {
 		xmlMan.client2Xml(doctor);				
 		System.out.println("Your client information is in ./xmls/Client.xml");
 	}
-	
-//	public void importClientFromXml() {
-//		// Create the path for the XML file. For simplicity, we used the same path that client2xml
-//		File file = new File("./xmls/Client.xml");
-//		
-//		if(!file.exists()) { // TODO WE SHOULD CHECK ALSO IF THE FILE IS EMPTY
-//			Output.println("No XML found at " + file.getAbsolutePath());
-//		}
-//		
-//		// Call ManagerImplXML to unmarshal
-//		Client doctorFromXML = xmlMan.xml2Client(file);
-//		
-//		// Check that the Doctor has been read correctly
-//		if(doctorFromXML == null) {
-//			Output.println("Failed to import Client from XML. Please check the file format");
-//		}
-//		
-//		// Set the doctor attribute -> since we are modifying the state of the object, we must return VOID 
-//		this.doctor = doctorFromXML;
-//		
-//		// At this point there are 2 options:
-//		//	1) The doctor was already registered and inserted in the DB -> call the correspondent UPADTE methods to update his/her personal info
-//		//	2) The doctor was not registered nor inserted in the DB -> call the INSERT method 
-//		try {
-//			if(doctor.getUserId() != null) { // If the ID is not null, the client is in the DB (since the DB is the only responsible for initializing the id values with AUTOINCREMENT
-//	            clientManager.updateName(doctor.getUserId(), doctor.getName());
-//	            clientManager.updateSurname(doctor.getUserId(), doctor.getSurname());
-//	            clientManager.updatePhoneNumber(doctor.getUserId(), doctor.getPhoneNumber());
-//	            clientManager.updateAddress(doctor.getUserId(), doctor.getAddress());
-//	            Output.println("Client data updated in the database from XML"); // TODO REMOVE THIS LINE ONCE WE HAVE CHECK THAT EVERYTHING WORKS 
-//			} else { // If the ID is null, we insert the doctor in the DB from the XML
-//				clientManager.insertClient(doctor);
-//	            Output.println("New client inserted into database from XML"); // TODO REMOVE THIS LINE ONCE WE HAVE CHECK THAT EVERYTHING WORKS 
-//			}
-//		} catch (Exception e) {
-//	        Output.println("Warning: Imported client but failed to synchronize with database: " + e.getMessage());
-//	    }
-//	}
 }
