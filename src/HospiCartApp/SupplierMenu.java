@@ -12,7 +12,7 @@ import HospiCartJDBC.ConnectionManagerJDBC;
 import HospiCartJDBC.OrderManagerJDBC;
 import HospiCartJDBC.ProductManagerJDBC;
 import HospiCartJDBC.SupplierManagerJDBC;
-import HospiCartJPA.UserManagerJPA;
+//import HospiCartJPA.UserManagerJPA;
 import HospiCartPOJOs.Category;
 import HospiCartPOJOs.Client;
 import HospiCartPOJOs.Order;
@@ -32,7 +32,7 @@ public class SupplierMenu {
 	private ProductManagerJDBC productManager;
 	private Supplier supplier;
 	private User user;
-	private UserManagerJPA userManager;
+	//private UserManagerJPA userManager;
 	private ManagerImplXML xmlMan; 
 	private ClientManagerJDBC clientManager;
 	
@@ -52,7 +52,7 @@ public class SupplierMenu {
 		
 		//SupplierMenu.supplier = supplier;
 		user = supplierUser; //TODO SEE IF THIS WORKS
-		userManager = new UserManagerJPA();
+		//userManager = new UserManagerJPA();
 	}
 
 	public void displaySupplierMenu() {
@@ -161,90 +161,20 @@ public class SupplierMenu {
     }
     
     /**
-     * Method that shows the user his/her personal data and asks if he/she wants to change the password or not.
+     * Method that shows the user their personal data.
      */
     private void viewPersonalData() {
     	Output.println("\nUsername: " + user.getEmail());
-		displaySupplierMenuOptions(); //I take the supplier back to the supplier menu TODO DELETE THIS IF WE CORRECT THE PART OF RESETTING THE PASSWORD
-
-//    	boolean keepGoing = true;
-//    	
-//    	while(keepGoing) {
-//        	Output.println("Do you want to change your password? Press 1 if yes or 0 if you want to go back.");
-//        	int option = InputKB.readInteger();
-//	    	switch(option) {
-//	    	case 1: 
-//	    		resetPassword();
-//	    		keepGoing = false;
-//	    		displaySupplierMenuOptions(); //I take the supplier back to the supplier menu
-//	    		break;
-//	    	case 0: 
-//	    		displaySupplierMenuOptions();
-//	    		keepGoing = false;
-//	    		break;
-//	    	default:
-//	    			Output.println("The number introduced is invlaid, please try again.");
-//	    			break;
-//	    		
-//	    	}
-//    	}
+    	System.out.println("Press 0 if you want to LOG OUT or another number otherwise");
+    	int choice = InputKB.readInteger();
+    	if(choice == 0) {
+			 System.out.println("Hope to see you again soon!");
+    		//TODO REDIRECT TO THE HOME PAGE AND LOG OUT THE USER
+    	} else {
+    		displaySupplierMenuOptions(); //I take the supplier back to the supplier menu
+    	}
     }
-//    /**
-//     * Method that resets the password of a user.
-//     */
-//    private void resetPassword() {
-//    	Output.println("\nHospiCart's got you!");
-//    	boolean reintroducePassword = true;
-//    	
-//        while(reintroducePassword) {
-//        	//I ask the user to introduce and confirm the new password and I check that they are in fact equal.
-//	  		Output.println("Please introduce your new password: ");
-//	        String newPassword = InputKB.readString();
-//	        Output.println("Confirm new password: ");
-//	        String newPasswordConfirmed = InputKB.readString();
-//	        //If the introduced passwords are equal
-//	        if(newPassword.equals(newPasswordConfirmed)) {
-//	               userManager.updatePassword(user.getEmail(), newPasswordConfirmed, true);
-//	               //I call the setter method for password, which encrypts it and sets it as the password of the user.
-//	               user.setPassword(newPasswordConfirmed);
-//	               Output.println("Password successfully reset!");
-//	               reintroducePassword = false;
-//	        }
-//	        else { 
-//	        	boolean keepGoing = true;
-//	        	while(keepGoing) {
-//	               //I tell the user that the password do not match and ask him/her what does he/she want to do.
-//	               Output.println("\nThe introduced passwords do not match!");
-//	               Output.println("Introduce: ");
-//	               Output.println("1. If you want to try again");
-//	               Output.println("2. If you want to go back");
-//	               Output.println("0. If you want to exit");
-//	               int option2 = InputKB.readInteger();
-//	               switch(option2) {
-//		        			case 1:
-//		        				//If the user wants to keep trying, I set the try again variable to true and just exit the switch case.
-//		        				reintroducePassword = true;
-//		        				break;
-//		        			case 2:
-//		        				reintroducePassword = false;
-//		        				keepGoing = false;
-//		        				viewPersonalData();
-//		        				break;
-//		        			case 0:
-//		        				keepGoing = false;
-//		        				//If the user wants to exit, I disconnect the application.
-//		        				closeConnections();
-//			                    Output.println("Application closed! Hope to see you again soon!");
-//		        				reintroducePassword = false;
-//		        				break; //TODO VERIFY IF IT WORKS CORRECTLY!!
-//			                default:
-//			                	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
-//			                	break;	
-//	            	}
-//	        	}
-//	         }
-//       }
-//    }
+
     
     /**
      * Method that shows the user his/her personal data and asks if he/she wants to change the password or not.
@@ -257,10 +187,10 @@ public class SupplierMenu {
     	boolean keepGoing = true;
     	
     	while(keepGoing) {
-        	Output.println("1. If you want to change the company's address");
-        	Output.println("2. If you want to change the company's contact number");
-        	Output.println("3. If you want to exit");
-        	Output.println("0. If you want to go back");
+        	Output.println("1. Change the company's address");
+        	Output.println("2. Change the company's contact number");
+        	Output.println("3. To go back");
+        	Output.println("0. Go back");
         	
         	int option = InputKB.readInteger();
         	
@@ -281,12 +211,6 @@ public class SupplierMenu {
 	    		keepGoing = false;
 	    		displaySupplierMenuOptions(); //I take the supplier back to the supplier menu
 	    		break;
-	    	case 3:
-                closeConnections();
-                Output.println("Application closed!");
-                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
-                System.exit(0); //I close the application
-                break;
 	    	case 0: 
 	    		displaySupplierMenuOptions();
 	    		keepGoing = false;
@@ -310,7 +234,7 @@ public class SupplierMenu {
     		Output.println("3. Delete a product");
     		Output.println("4. Manage my products' stock");
         	Output.println("5. If you want to exit");
-    		Output.println("0. Back");
+    		Output.println("0. Go back");
     		int option = InputKB.readInteger();
     		switch(option) {
     		case 1: 
@@ -360,7 +284,10 @@ public class SupplierMenu {
                 //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
                 System.exit(0);
                 break;
-                //TODO I AM MISSING THE CASE 0 THAT GOES BACK  TO "Dear supplier, ... view personal data, view company's data"
+	    	case 0:
+    			keepGoing = false;
+	    		displaySupplierMenuOptions();
+	    		break;
             default:
             	Output.println("\nThe number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
             	break;	
@@ -554,11 +481,16 @@ public class SupplierMenu {
 				 Output.println("Introduce the order state you are interested in among the following ones: ");
 				 OrderStatus statusChosen = getOrderStatusOfOrder();
 				 List<Order> ordersWithProvidedStatus = seeOrdersByCategory(statusChosen);
-				 //I print the result obtained
-				 Output.println("Orders with status '" + statusChosen + "': ");
-				 for(int i=0; i<ordersWithProvidedStatus.size(); i++) {
-					 Order order = ordersWithProvidedStatus.get(i);
-					 System.out.println(order);
+				 //TODO CHECK IF THIS IF WORKS
+				 if(ordersWithProvidedStatus.size() >= 1) {
+					 //I print the result obtained
+					 Output.println("Orders with status '" + statusChosen + "': ");
+					 for(int i=0; i<ordersWithProvidedStatus.size(); i++) {
+						 Order order = ordersWithProvidedStatus.get(i);
+						 System.out.println(order);
+					 }
+				 } else {
+					 System.out.println("Unfortunately, you do not have any orders with the status you selected");
 				 }
 				 keepGoing = false;
 				 displaySupplierMenuOptions();

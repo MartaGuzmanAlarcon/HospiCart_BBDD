@@ -1,6 +1,5 @@
 package HospiCartApp;
 
-import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class DoctorMenu {
 		while(true) {
         	Output.println("\nDear doctor, please introduce the number of the operation you wish to perform:");
         	//Output.println("1. Browse products");
-            Output.println("1. View your cart");
+            Output.println("1. View my cart");
             Output.println("2. Shop");
             Output.println("3. Pay");
             Output.println("4. View my orders");
@@ -112,8 +111,8 @@ public class DoctorMenu {
                 case 0:
                 	verifyPendingOrder();
 	                Output.println("Redirecting to home page ...");	                
-	                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
-	                System.exit(0); //I close the application
+	                //TODO CALL THE MAIN MENU
+	               // System.exit(0); //I close the application
 	                break;
                 default: 
                 	Output.println("Invalid option. Please try agin introducing a valid number.");    
@@ -224,9 +223,9 @@ public class DoctorMenu {
 		boolean keepGoing2 = true;
 		while(keepGoing2) {
 			Output.println("Press: ");
-			Output.println("1. If you want to change the quantity of a product");
-			Output.println("2. If you want to delete a product");
-			Output.println("3. If you want to continue shopping");
+			Output.println("1. To change the quantity of a product in your cart");
+			Output.println("2. To delete a product from your cart");
+			Output.println("3. To continue shopping");
 			int choice = InputKB.readInteger();
 			boolean keepGoing = true;
 			ProductOrder productOrderToEdit = null;
@@ -248,7 +247,7 @@ public class DoctorMenu {
 			switch(choice) {
 			case 1:
 				int currentAmount = productOrderToEdit.getAmount();
-				Output.println("Currently you have " + currentAmount + " units of '" + productOrderToEdit.getProduct().getName() + "' ");
+				Output.println("You had ordered " + currentAmount + " units of '" + productOrderToEdit.getProduct().getName() + "' ");
 				Product product = productOrderToEdit.getProduct();
 				//We reset the stock of the product by adding the units the user had ordered (because the received amount will be the total units he she wants to order)
 				productManager.updateProductStock(product, currentAmount, true);
@@ -625,12 +624,10 @@ public class DoctorMenu {
 		    while(keepGoing) {	    	
 		    	while(keepGoing) {
 		        	Output.println("\nPress:");
-		        	Output.println("1. If you want to see your personal information");
-		        	Output.println("2. If you want to see your personal information as an XML");
+		        	Output.println("1. See my personal information");
+		        	Output.println("2. See my personal information as an XML");
 		        	Output.println("3. LOG OUT");
-
-		        	//Output.println("6. If you want to log out");
-		        	Output.println("0. If you want to go back");	        
+		        	Output.println("0. Go back");	        
 		        	int option = InputKB.readInteger();
 		        	
 			    switch(option) {
@@ -673,11 +670,11 @@ public class DoctorMenu {
 	    	Output.println("\nPress:");
 	    	boolean keepGoing = true;
 	    	while(keepGoing) {
-	        	Output.println("1. If you want to change your address");
-	        	Output.println("2. If you want to change your phone number");
-	        	Output.println("3. If you want to change your name");
-	        	Output.println("4. If you want to change your surname");
-	        	Output.println("0. If you want to go back");	        
+	        	Output.println("1. Change my address");
+	        	Output.println("2. Change my phone number");
+	        	Output.println("3. Change my name");
+	        	Output.println("4. Change my surname");
+	        	Output.println("0. Go back");	             
 	        	int option = InputKB.readInteger();
 	        	
 			    switch(option) {
@@ -723,7 +720,7 @@ public class DoctorMenu {
 			    	accountSettings();
 			    	break;
 		    	default:
-			    	Output.println("The number introduced is invlaid, please try again.");
+			    	Output.println("The number introduced is invalid, please try again.");
 			    	break;
 			    }
 	    	}
@@ -746,7 +743,7 @@ public class DoctorMenu {
 				 pay();
 			 } else{
 				 resetStock();
-				 //TODO LOG OUT
+				 System.out.println("Hope to see you again soon!");
 			 }
 		 }
 	 }
