@@ -1,0 +1,12 @@
+<!DOCTYPE Client [
+
+<!ELEMENT Client (Name, Surname, Phone_Number, Email, Address)>
+<!ATTLIST Client ClientID ID #REQUIRED>
+
+<!ELEMENT Name (#PDATA)>
+<!ELEMENT Surname (#PCDATA)>
+<!ELEMENT Phone_Number (#PCDATA)>
+<!ELEMENT Email (#PCDATA)>
+<!ELEMENT Address (#PCDATA)>
+
+]>

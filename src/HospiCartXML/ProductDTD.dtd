@@ -1,0 +1,19 @@
+<!DOCTYPE Product [
+
+<!ELEMENT Product (Supplier, Name, Description, Category, Price, Stock_Quantity?)>
+<!ATTLIST Product ProductID ID #REQUIRED>
+<!ATTLIST Product Needs_Prescription (true | false) #REQUIRED>
+
+<!ELEMENT Name (#PDATA)>
+<!ELEMENT Description (#PCDATA)>
+<!ELEMENT Category (#PCDATA)>
+<!ELEMENT Price (#PCDATA)>
+<!ELEMENT Stock_Quantity (#PCDATA)>
+
+<!ELEMENT Supplier (Company_Name, Contact_Number, Address)>
+<!ATTLIST Supplier SupplierID ID #REQUIRED>
+<!ELEMENT Company_Name (#PCDATA)>
+<!ELEMENT Contact_Number (#PCDATA)>
+<!ELEMENT Address (#PCDATA)>
+
+]>
