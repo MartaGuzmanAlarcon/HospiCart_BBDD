@@ -110,10 +110,8 @@ public class DoctorMenu {
                 	break;
                 case 0:
                 	verifyPendingOrder();
-	                Output.println("Redirecting to home page ...");	                
-	                //TODO CALL THE MAIN MENU
-	               // System.exit(0); //I close the application
-	                break;
+	                Output.println("Redirecting to home page ...");
+	                return; // Returning from this method sends control back to MainMenu
                 default: 
                 	Output.println("Invalid option. Please try agin introducing a valid number.");    
               }
@@ -744,6 +742,7 @@ public class DoctorMenu {
 			 } else{
 				 resetStock();
 				 System.out.println("Hope to see you again soon!");
+				 return; // Returning from this method sends control back to the method that called it -> displayDoctorMenu()
 			 }
 		 }
 	 }

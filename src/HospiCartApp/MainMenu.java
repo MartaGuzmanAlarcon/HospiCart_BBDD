@@ -54,11 +54,9 @@ public class MainMenu {
                 switch (input) {
                     case 1:
                         register();
-                        exit = true;
                         break;
                     case 2:
                         login();
-                        exit = true;
                         break;
                     case 0:
                         closeConnections();
@@ -81,6 +79,7 @@ public class MainMenu {
         	closeConnections();
         }
     }
+    
     /**
      * Method to properly close all database connections
      */
@@ -146,25 +145,20 @@ public class MainMenu {
 		            case 1:
 		                registerDoctor();
 		                login();
-		                keepGoing = false;
 		                break;
 		            case 2:
 		                registerNurse();
 		                login();
-		                keepGoing = false;
 		                break;
 		            case 3:
 		                registerSupplier();
 		                login();
-		                keepGoing = false;
 		                break;
-		            case 0:
-		            	closeConnections();
-		                Output.println("Application closed! Hope to see you again soon!");
+		            case 0: // TODO RETURN TO THE PSVM 
 		                //If the user introduces a 0, then we set the variable "exit" to true so we can exit the switch.
+		            	Output.println("Redirecting to home page ...");
 		                keepGoing = false;
-		                System.exit(0); //We include this line to terminate the running application
-		                break;
+		                return; // Returning from this method sends control back to psvm
 		            default:
 		            	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
 		            	break;

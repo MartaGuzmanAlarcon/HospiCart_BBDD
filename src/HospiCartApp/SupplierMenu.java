@@ -102,11 +102,8 @@ public class SupplierMenu {
 					viewClientsProfile();
 					break;
 				case 0:
-	                closeConnections();
-	                Output.println("Application closed!");
-	                //If the user introduces a 0, then we set the variable "keepGoing" to false so we can exit the switch.
-	                System.exit(0); //I close the application
-	                break;
+					Output.println("Redirecting to home page ...");
+					return; // Returning from this method sends control back to MainMenu
 	            default:
 	            	Output.println("The number introduced is invalid. Please try again introducing a number that corresponds with one operation of the shown below: ");
 	            	break;				
